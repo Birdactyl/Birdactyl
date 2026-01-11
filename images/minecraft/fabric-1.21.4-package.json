@@ -1,0 +1,133 @@
+{
+  "name": "Minecraft Fabric",
+  "version": "1.21.4",
+  "author": "Birdactyl",
+  "description": "Lightweight Minecraft modding platform",
+  "icon": "https://s3.mcjars.app/icons/fabric.png",
+  "docker_image": "eclipse-temurin:21-jre-alpine",
+  "install_image": "eclipse-temurin:21-jdk-alpine",
+  "startup": "java -Xms128M -Xmx{{SERVER_MEMORY}}M -jar fabric-server-launch.jar nogui",
+  "startup_editable": false,
+  "docker_image_editable": false,
+  "install_script": "cd /home/container\nLOADER=$(curl -s https://meta.fabricmc.net/v2/versions/loader | jq -r '.[0].version')\nINSTALLER=$(curl -s https://meta.fabricmc.net/v2/versions/installer | jq -r '.[0].version')\ncurl -o fabric-installer.jar https://meta.fabricmc.net/v2/versions/loader/{{MC_VERSION}}/${LOADER}/${INSTALLER}/server/jar\nmv fabric-installer.jar fabric-server-launch.jar\necho \"eula=true\" > eula.txt",
+  "stop_signal": "SIGINT",
+  "stop_command": "stop",
+  "stop_timeout": 30,
+  "ports": [
+    {
+      "name": "Game",
+      "default": 25565,
+      "protocol": "tcp",
+      "primary": true
+    },
+    {
+      "name": "RCON",
+      "default": 25575,
+      "protocol": "tcp"
+    }
+  ],
+  "variables": [
+    {
+      "name": "SERVER_MEMORY",
+      "default": "2048",
+      "description": "Server memory in MB",
+      "user_editable": false
+    },
+    {
+      "name": "MC_VERSION",
+      "default": "1.21.4",
+      "description": "Minecraft version",
+      "user_editable": true
+    }
+  ],
+  "addon_sources": [
+    {
+      "id": "modrinth",
+      "name": "Modrinth Mods",
+      "icon": "https://modrinth.com/favicon.ico",
+      "search_url": "https://api.modrinth.com/v2/search?query={{query}}&facets=%5B%5B%22project_type%3Amod%22%5D%2C%5B%22categories%3Afabric%22%5D%2C%5B%22versions%3A{{MC_VERSION}}%22%5D%5D&limit={{limit}}&offset={{offset}}",
+      "versions_url": "https://api.modrinth.com/v2/project/{{id}}/version?loaders=%5B%22fabric%22%5D&game_versions=%5B%22{{MC_VERSION}}%22%5D",
+      "install_path": "mods",
+      "mapping": {
+        "results": "hits",
+        "id": "project_id",
+        "name": "title",
+        "description": "description",
+        "icon": "icon_url",
+        "author": "author",
+        "downloads": "downloads",
+        "version_id": "id",
+        "version_name": "version_number",
+        "download_url": "files.0.url",
+        "file_name": "files.0.filename"
+      }
+    },
+    {
+      "id": "curseforge",
+      "name": "CurseForge Mods",
+      "icon": "https://www.curseforge.com/favicon.ico",
+      "api_key": "curseforge",
+      "search_url": "https://api.curseforge.com/v1/mods/search?gameId=432&classId=6&modLoaderType=4&gameVersion={{MC_VERSION}}&searchFilter={{query}}&pageSize={{limit}}&index={{offset}}",
+      "versions_url": "https://api.curseforge.com/v1/mods/{{id}}/files?modLoaderType=4&gameVersion={{MC_VERSION}}",
+      "install_path": "mods",
+      "mapping": {
+        "results": "data",
+        "id": "id",
+        "name": "name",
+        "description": "summary",
+        "icon": "logo.url",
+        "author": "authors.0.name",
+        "downloads": "downloadCount",
+        "version_id": "id",
+        "version_name": "displayName",
+        "download_url": "downloadUrl",
+        "file_name": "fileName"
+      }
+    },
+    {
+      "id": "modrinth-modpacks",
+      "name": "Modrinth Modpacks",
+      "icon": "https://modrinth.com/favicon.ico",
+      "search_url": "https://api.modrinth.com/v2/search?query={{query}}&facets=%5B%5B%22project_type%3Amodpack%22%5D%2C%5B%22categories%3Afabric%22%5D%2C%5B%22versions%3A{{MC_VERSION}}%22%5D%5D&limit={{limit}}&offset={{offset}}",
+      "versions_url": "https://api.modrinth.com/v2/project/{{id}}/version?loaders=%5B%22fabric%22%5D&game_versions=%5B%22{{MC_VERSION}}%22%5D",
+      "install_path": "",
+      "type": "modpack",
+      "mapping": {
+        "results": "hits",
+        "id": "project_id",
+        "name": "title",
+        "description": "description",
+        "icon": "icon_url",
+        "author": "author",
+        "downloads": "downloads",
+        "version_id": "id",
+        "version_name": "version_number",
+        "download_url": "files.0.url",
+        "file_name": "files.0.filename"
+      }
+    },
+    {
+      "id": "curseforge-modpacks",
+      "name": "CurseForge Modpacks",
+      "icon": "https://www.curseforge.com/favicon.ico",
+      "type": "modpack",
+      "api_key": "curseforge",
+      "search_url": "https://api.curseforge.com/v1/mods/search?gameId=432&classId=4471&modLoaderType=4&gameVersion={{MC_VERSION}}&searchFilter={{query}}&pageSize={{limit}}&index={{offset}}",
+      "versions_url": "https://api.curseforge.com/v1/mods/{{id}}/files?modLoaderType=4&gameVersion={{MC_VERSION}}",
+      "install_path": "",
+      "mapping": {
+        "results": "data",
+        "id": "id",
+        "name": "name",
+        "description": "summary",
+        "icon": "logo.url",
+        "author": "authors.0.name",
+        "downloads": "downloadCount",
+        "version_id": "id",
+        "version_name": "displayName",
+        "download_url": "downloadUrl",
+        "file_name": "fileName"
+      }
+    }
+  ]
+}

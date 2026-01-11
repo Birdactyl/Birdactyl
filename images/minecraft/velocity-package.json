@@ -1,0 +1,55 @@
+{
+  "name": "Velocity Proxy",
+  "version": "latest",
+  "author": "Birdactyl",
+  "description": "Modern, high-performance Minecraft proxy",
+  "icon": "https://s3.mcjars.app/icons/velocity.png",
+  "docker_image": "eclipse-temurin:21-jre-alpine",
+  "install_image": "eclipse-temurin:21-jdk-alpine",
+  "startup": "java -Xms128M -Xmx{{SERVER_MEMORY}}M -jar velocity.jar",
+  "startup_editable": false,
+  "docker_image_editable": false,
+  "install_script": "cd /home/container\nVELOCITY_BUILD=$(curl -s https://api.papermc.io/v2/projects/velocity/versions/3.4.0-SNAPSHOT/builds | jq -r '.builds[-1].build')\ncurl -o velocity.jar https://api.papermc.io/v2/projects/velocity/versions/3.4.0-SNAPSHOT/builds/${VELOCITY_BUILD}/downloads/velocity-3.4.0-SNAPSHOT-${VELOCITY_BUILD}.jar",
+  "stop_signal": "SIGINT",
+  "stop_command": "shutdown",
+  "stop_timeout": 15,
+  "ports": [
+    {
+      "name": "Proxy",
+      "default": 25577,
+      "protocol": "tcp",
+      "primary": true
+    }
+  ],
+  "variables": [
+    {
+      "name": "SERVER_MEMORY",
+      "default": "512",
+      "description": "Proxy memory in MB",
+      "user_editable": false
+    }
+  ],
+  "addon_sources": [
+    {
+      "id": "modrinth",
+      "name": "Modrinth",
+      "icon": "https://modrinth.com/favicon.ico",
+      "search_url": "https://api.modrinth.com/v2/search?query={{query}}&facets=%5B%5B%22project_type%3Aplugin%22%5D%2C%5B%22categories%3Avelocity%22%5D%5D&limit={{limit}}&offset={{offset}}",
+      "versions_url": "https://api.modrinth.com/v2/project/{{id}}/version?loaders=%5B%22velocity%22%5D",
+      "install_path": "plugins",
+      "mapping": {
+        "results": "hits",
+        "id": "project_id",
+        "name": "title",
+        "description": "description",
+        "icon": "icon_url",
+        "author": "author",
+        "downloads": "downloads",
+        "version_id": "id",
+        "version_name": "version_number",
+        "download_url": "files.0.url",
+        "file_name": "files.0.filename"
+      }
+    }
+  ]
+}

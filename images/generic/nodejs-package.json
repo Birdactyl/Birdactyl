@@ -1,0 +1,21 @@
+{
+  "name": "Node.js",
+  "version": "22",
+  "author": "Birdactyl",
+  "description": "Node.js application hosting",
+  "docker_image": "node:22-alpine",
+  "install_image": "node:22-alpine",
+  "startup": "{{STARTUP_CMD}}",
+  "startup_editable": true,
+  "docker_image_editable": true,
+  "install_script": "cd /home/container\nif [ -f package.json ]; then npm install; fi",
+  "stop_signal": "SIGTERM",
+  "stop_timeout": 15,
+  "ports": [
+    { "name": "HTTP", "default": 3000, "protocol": "tcp", "primary": true }
+  ],
+  "variables": [
+    { "name": "SERVER_MEMORY", "default": "512", "description": "Memory limit in MB", "user_editable": false },
+    { "name": "STARTUP_CMD", "default": "npm start", "description": "Startup command", "user_editable": true }
+  ]
+}

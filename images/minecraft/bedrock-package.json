@@ -1,0 +1,61 @@
+{
+  "name": "Minecraft Bedrock",
+  "version": "latest",
+  "author": "Birdactyl",
+  "description": "Official Bedrock Dedicated Server for Windows/Xbox/Mobile players",
+  "icon": "https://s3.mcjars.app/icons/vanilla.png",
+  "docker_image": "ghcr.io/parkervcp/yolks:debian",
+  "install_image": "ghcr.io/parkervcp/installers:debian",
+  "startup": "LD_LIBRARY_PATH=. ./bedrock_server",
+  "startup_editable": false,
+  "docker_image_editable": false,
+  "install_script": "cd /home/container\napt-get update && apt-get install -y curl unzip jq libcurl4\nVERSION=$(curl -sL https://raw.githubusercontent.com/Bedrock-OSS/BDS-Versions/main/versions.json | jq -r '.linux.stable')\ncurl -A 'Mozilla/5.0' -L -o bedrock-server.zip \"https://www.minecraft.net/bedrockdedicatedserver/bin-linux/bedrock-server-${VERSION}.zip\"\nunzip -o bedrock-server.zip\nrm bedrock-server.zip\nchmod +x bedrock_server",
+  "stop_signal": "SIGINT",
+  "stop_command": "stop",
+  "stop_timeout": 30,
+  "ports": [
+    {
+      "name": "Game",
+      "default": 19132,
+      "protocol": "udp",
+      "primary": true
+    },
+    {
+      "name": "Game IPv6",
+      "default": 19133,
+      "protocol": "udp"
+    }
+  ],
+  "variables": [
+    {
+      "name": "SERVER_MEMORY",
+      "default": "1024",
+      "description": "Server memory in MB",
+      "user_editable": false
+    },
+    {
+      "name": "SERVER_NAME",
+      "default": "Birdactyl Bedrock Server",
+      "description": "Server name shown in server list",
+      "user_editable": true
+    },
+    {
+      "name": "GAMEMODE",
+      "default": "survival",
+      "description": "Default gamemode (survival/creative/adventure)",
+      "user_editable": true
+    },
+    {
+      "name": "DIFFICULTY",
+      "default": "easy",
+      "description": "Difficulty (peaceful/easy/normal/hard)",
+      "user_editable": true
+    },
+    {
+      "name": "MAX_PLAYERS",
+      "default": "10",
+      "description": "Maximum players",
+      "user_editable": true
+    }
+  ]
+}

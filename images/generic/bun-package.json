@@ -1,0 +1,21 @@
+{
+  "name": "Bun",
+  "version": "latest",
+  "author": "Birdactyl",
+  "description": "Bun JavaScript runtime - fast all-in-one toolkit",
+  "docker_image": "oven/bun:latest",
+  "install_image": "oven/bun:latest",
+  "startup": "{{STARTUP_CMD}}",
+  "startup_editable": true,
+  "docker_image_editable": true,
+  "install_script": "cd /home/container\nif [ -f package.json ]; then bun install; fi",
+  "stop_signal": "SIGTERM",
+  "stop_timeout": 15,
+  "ports": [
+    { "name": "HTTP", "default": 3000, "protocol": "tcp", "primary": true }
+  ],
+  "variables": [
+    { "name": "SERVER_MEMORY", "default": "512", "description": "Memory limit in MB", "user_editable": false },
+    { "name": "STARTUP_CMD", "default": "bun run start", "description": "Startup command", "user_editable": true }
+  ]
+}

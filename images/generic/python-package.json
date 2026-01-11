@@ -1,0 +1,21 @@
+{
+  "name": "Python",
+  "version": "3.12",
+  "author": "Birdactyl",
+  "description": "Python application hosting",
+  "docker_image": "python:3.12-slim",
+  "install_image": "python:3.12-slim",
+  "startup": "{{STARTUP_CMD}}",
+  "startup_editable": true,
+  "docker_image_editable": true,
+  "install_script": "cd /home/container\nif [ -f requirements.txt ]; then pip install -r requirements.txt; fi",
+  "stop_signal": "SIGTERM",
+  "stop_timeout": 15,
+  "ports": [
+    { "name": "HTTP", "default": 8000, "protocol": "tcp", "primary": true }
+  ],
+  "variables": [
+    { "name": "SERVER_MEMORY", "default": "512", "description": "Memory limit in MB", "user_editable": false },
+    { "name": "STARTUP_CMD", "default": "python main.py", "description": "Startup command", "user_editable": true }
+  ]
+}

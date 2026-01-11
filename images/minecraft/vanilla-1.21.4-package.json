@@ -1,0 +1,43 @@
+{
+  "name": "Minecraft Vanilla",
+  "version": "1.21.4",
+  "author": "Birdactyl",
+  "description": "Official Minecraft Java Edition server",
+  "icon": "https://s3.mcjars.app/icons/vanilla.png",
+  "docker_image": "eclipse-temurin:21-jre-alpine",
+  "install_image": "eclipse-temurin:21-jdk-alpine",
+  "startup": "java -Xms128M -Xmx{{SERVER_MEMORY}}M -jar server.jar --nogui",
+  "startup_editable": false,
+  "docker_image_editable": false,
+  "install_script": "cd /home/container\nMANIFEST=$(curl -s https://piston-meta.mojang.com/mc/game/version_manifest_v2.json)\nVERSION_URL=$(echo $MANIFEST | jq -r '.versions[] | select(.id==\"{{MC_VERSION}}\") | .url')\nSERVER_URL=$(curl -s $VERSION_URL | jq -r '.downloads.server.url')\ncurl -o server.jar $SERVER_URL\necho \"eula=true\" > eula.txt",
+  "stop_signal": "SIGINT",
+  "stop_command": "stop",
+  "stop_timeout": 30,
+  "ports": [
+    {
+      "name": "Game",
+      "default": 25565,
+      "protocol": "tcp",
+      "primary": true
+    },
+    {
+      "name": "RCON",
+      "default": 25575,
+      "protocol": "tcp"
+    }
+  ],
+  "variables": [
+    {
+      "name": "SERVER_MEMORY",
+      "default": "1024",
+      "description": "Server memory in MB",
+      "user_editable": false
+    },
+    {
+      "name": "MC_VERSION",
+      "default": "1.21.4",
+      "description": "Minecraft version",
+      "user_editable": true
+    }
+  ]
+}
