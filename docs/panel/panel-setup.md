@@ -52,13 +52,6 @@ See [Configuration Reference](configuration.md) for all options.
 ./panel
 ```
 
-Expected output:
-```
-[SUCCESS] Database connected (postgres)
-[SUCCESS] Plugin server on localhost:50050
-[SUCCESS] Server listening on 0.0.0.0:3000
-```
-
 ## Running as a Service
 
 Create `/etc/systemd/system/birdactyl-panel.service` (adjust paths to where you placed the binary):
