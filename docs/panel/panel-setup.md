@@ -111,7 +111,9 @@ panel.example.com {
 
 ## Root Admin Setup
 
-The first user to register becomes a regular user. To grant root admin privileges, add the user's UUID to `config.yaml`:
+The first user to register becomes a root admin user.
+
+To grant root admin privileges, add user's UUID to `config.yaml`:
 
 ```yaml
 root_admins:
