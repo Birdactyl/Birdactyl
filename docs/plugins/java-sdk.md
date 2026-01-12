@@ -409,16 +409,16 @@ public MyPlugin() {
     
     setUI(ui()
         .embedBundle("ui/bundle.js")
-        .page("/plugins/my-plugin", "DashboardPage")
+        .page("/", "DashboardPage")
             .title("My Plugin")
-            .icon("Puzzle")
+            .icon("puzzle")
             .done()
         .tab("my-tab", "ServerTab", UIBuilder.TAB_TARGET_SERVER, "My Tab")
-            .icon("Settings")
+            .icon("settings")
             .order(100)
             .done()
         .sidebarItem("my-plugin", "My Plugin", "/plugins/my-plugin", UIBuilder.SIDEBAR_SECTION_NAV)
-            .icon("Puzzle")
+            .icon("puzzle")
             .order(50)
             .done()
         .build());
@@ -431,9 +431,9 @@ Add standalone pages accessible via URL:
 
 ```java
 ui()
-    .page("/plugins/my-plugin/settings", "SettingsPage")
+    .page("/settings", "SettingsPage")
         .title("Settings")
-        .icon("Settings")
+        .icon("settings")
         .adminOnly()
         .done()
     .build();
@@ -452,7 +452,7 @@ Add tabs to existing panel sections:
 ```java
 ui()
     .tab("stats", "StatsTab", UIBuilder.TAB_TARGET_SERVER, "Statistics")
-        .icon("BarChart")
+        .icon("barChart")
         .order(50)
         .done()
     .build();
@@ -473,7 +473,7 @@ Add items to the panel sidebar:
 ```java
 ui()
     .sidebarItem("my-plugin", "My Plugin", "/plugins/my-plugin", UIBuilder.SIDEBAR_SECTION_NAV)
-        .icon("Puzzle")
+        .icon("puzzle")
         .order(50)
         .adminOnly()
         .child("Settings", "/plugins/my-plugin/settings")
@@ -499,20 +499,24 @@ Sidebar options:
 Create components using the SDK:
 
 ```tsx
-import { useContext, useEvent, useAPI } from '@birdactyl/plugin-ui';
+import { usePluginAPI, useState, useEffect, useEvent } from '@birdactyl/plugin-ui';
 
 export function DashboardPage() {
-    const ctx = useContext();
-    const api = useAPI();
+    const api = usePluginAPI();
+    const [data, setData] = useState(null);
     
     useEvent('server:status', (data) => {
         console.log('Server status changed:', data);
     });
     
+    useEffect(() => {
+        api.get('/stats').then(setData);
+    }, []);
+    
     return (
         <div>
             <h1>Dashboard</h1>
-            <p>User: {ctx.user?.username}</p>
+            <p>User: {api.getUser()?.username}</p>
         </div>
     );
 }

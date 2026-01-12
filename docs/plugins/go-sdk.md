@@ -298,10 +298,10 @@ func main() {
             Icon("puzzle").Order(100).Done().
         Tab("settings-tab", "SettingsTab", birdactyl.TabTargetUserSettings, "My Plugin").
             Icon("puzzle").Order(10).Done().
-        SidebarItem("my-plugin", "My Plugin", "/console/plugins/my-plugin", birdactyl.SidebarSectionPlatform).
+        SidebarItem("my-plugin", "My Plugin", "/plugins/my-plugin", birdactyl.SidebarSectionPlatform).
             Icon("puzzle").Order(50).
-            Child("Dashboard", "/console/plugins/my-plugin").
-            Child("Settings", "/console/plugins/my-plugin/settings").
+            Child("Dashboard", "/plugins/my-plugin").
+            Child("Settings", "/plugins/my-plugin/settings").
             Done()
 
     plugin.Start("localhost:50050")

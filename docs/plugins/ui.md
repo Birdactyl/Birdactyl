@@ -12,17 +12,17 @@ The plugin UI system consists of:
 
 ## Project Structure
 
-A plugin with UI typically has this structure:
+### Go Plugin
 
 ```
 my-plugin/
-  main.go              # Plugin backend
+  main.go
   go.mod
   dist/
-    bundle.js          # Built UI bundle (embedded in binary)
+    bundle.js
   ui/
     src/
-      index.tsx        # Entry point - exports all components
+      index.tsx
       pages/
         DashboardPage.tsx
         SettingsPage.tsx
@@ -33,9 +33,34 @@ my-plugin/
     tsconfig.json
 ```
 
-## Backend Setup (Go)
+### Java Plugin
 
-### Declaring UI Elements
+```
+my-plugin/
+  pom.xml
+  src/
+    main/
+      java/
+        com/example/
+          MyPlugin.java
+      resources/
+        bundle.js
+  ui/
+    src/
+      index.tsx
+      pages/
+        DashboardPage.tsx
+        SettingsPage.tsx
+      tabs/
+        ServerTab.tsx
+    package.json
+    vite.config.ts
+    tsconfig.json
+```
+
+## Backend Setup
+
+### Go
 
 Use the `UI()` builder to declare your plugin's UI:
 
@@ -63,19 +88,62 @@ func main() {
             Icon("puzzle").Order(100).Done().
         Tab("settings-tab", "SettingsTab", birdactyl.TabTargetUserSettings, "My Plugin").
             Icon("puzzle").Order(10).Done().
-        SidebarItem("my-plugin", "My Plugin", "/console/plugins/my-plugin", birdactyl.SidebarSectionPlatform).
+        SidebarItem("my-plugin", "My Plugin", "/plugins/my-plugin", birdactyl.SidebarSectionPlatform).
             Icon("puzzle").Order(50).
-            Child("Dashboard", "/console/plugins/my-plugin").
-            Child("Settings", "/console/plugins/my-plugin/settings").
+            Child("Dashboard", "/plugins/my-plugin").
+            Child("Settings", "/plugins/my-plugin/settings").
             Done()
 
     plugin.Start("localhost:50050")
 }
 ```
 
+### Java
+
+Use the `UIBuilder` to declare your plugin's UI:
+
+```java
+package com.example;
+
+import io.birdactyl.sdk.BirdactylPlugin;
+import io.birdactyl.sdk.UIBuilder;
+
+public class MyPlugin extends BirdactylPlugin {
+    public MyPlugin() {
+        super("my-plugin", "1.0.0");
+        setName("My Plugin");
+    }
+
+    public static void main(String[] args) throws Exception {
+        MyPlugin plugin = new MyPlugin();
+
+        UIBuilder ui = plugin.ui()
+            .embedBundle("bundle.js")
+            .page("/", "DashboardPage").title("Dashboard").icon("home").done()
+            .page("/settings", "SettingsPage").title("Settings").icon("settings").done()
+            .tab("server-tab", "ServerTab", UIBuilder.TAB_TARGET_SERVER, "My Plugin")
+                .icon("puzzle").order(100).done()
+            .tab("settings-tab", "SettingsTab", UIBuilder.TAB_TARGET_USER_SETTINGS, "My Plugin")
+                .icon("puzzle").order(10).done()
+            .sidebarItem("my-plugin", "My Plugin", "/plugins/my-plugin", UIBuilder.SIDEBAR_SECTION_PLATFORM)
+                .icon("puzzle").order(50)
+                .child("Dashboard", "/plugins/my-plugin")
+                .child("Settings", "/plugins/my-plugin/settings")
+                .done();
+
+        plugin.setUI(ui.build());
+        plugin.start("localhost:50050");
+    }
+}
+```
+
+## UI Elements
+
 ### Pages
 
-Pages are full-page views accessible via URL:
+Pages are full-page views accessible via URL. Served at `/plugins/{plugin-id}/{path}`.
+
+#### Go
 
 ```go
 plugin.UI().
@@ -85,20 +153,29 @@ plugin.UI().
     Page("/vip", "VIPPage").Title("VIP").Icon("star").Guard("vip").Done()
 ```
 
-Pages are served at `/console/plugins/{plugin-id}/{path}`.
+#### Java
+
+```java
+ui.page("/", "DashboardPage").title("Dashboard").icon("home").done()
+  .page("/settings", "SettingsPage").title("Settings").icon("settings").done()
+  .page("/admin", "AdminPage").title("Admin").icon("shield").adminOnly().done()
+  .page("/vip", "VIPPage").title("VIP").icon("star").guard("vip").done();
+```
 
 | Method | Description |
 |--------|-------------|
-| `Page(path, component)` | Create a page at path using the named component |
-| `Title(title)` | Set the page title |
-| `Icon(icon)` | Set the page icon |
-| `AdminOnly()` | Restrict to admin users |
-| `Guard(guard)` | Use a custom guard (evaluated by your `evaluateGuard` function) |
-| `Done()` | Return to the UI builder |
+| `page(path, component)` | Create a page at path using the named component |
+| `title(title)` | Set the page title |
+| `icon(icon)` | Set the page icon |
+| `adminOnly()` | Restrict to admin users |
+| `guard(guard)` | Use a custom guard (evaluated by your `evaluateGuard` function) |
+| `done()` | Return to the UI builder |
 
 ### Tabs
 
-Tabs inject into existing panel pages:
+Tabs inject into existing panel pages.
+
+#### Go
 
 ```go
 plugin.UI().
@@ -108,47 +185,70 @@ plugin.UI().
         Icon("settings").Order(10).Done()
 ```
 
-| Target | Description |
-|--------|-------------|
-| `TabTargetServer` | Adds a tab to the server detail page |
-| `TabTargetUserSettings` | Adds a tab to the user settings page |
+#### Java
+
+```java
+ui.tab("server-tab", "ServerTab", UIBuilder.TAB_TARGET_SERVER, "My Plugin")
+    .icon("puzzle").order(100).done()
+  .tab("settings-tab", "SettingsTab", UIBuilder.TAB_TARGET_USER_SETTINGS, "Plugin Settings")
+    .icon("settings").order(10).done();
+```
+
+| Target | Go Constant | Java Constant | Description |
+|--------|-------------|---------------|-------------|
+| `server` | `TabTargetServer` | `TAB_TARGET_SERVER` | Adds a tab to the server detail page |
+| `user-settings` | `TabTargetUserSettings` | `TAB_TARGET_USER_SETTINGS` | Adds a tab to the user settings page |
 
 | Method | Description |
 |--------|-------------|
-| `Tab(id, component, target, label)` | Create a tab |
-| `Icon(icon)` | Set the tab icon |
-| `Order(order)` | Set sort order (lower = earlier) |
-| `Done()` | Return to the UI builder |
+| `tab(id, component, target, label)` | Create a tab |
+| `icon(icon)` | Set the tab icon |
+| `order(order)` | Set sort order (lower = earlier) |
+| `done()` | Return to the UI builder |
 
 ### Sidebar Items
 
-Add items to the panel sidebar:
+Add items to the panel sidebar.
+
+#### Go
 
 ```go
 plugin.UI().
-    SidebarItem("my-plugin", "My Plugin", "/console/plugins/my-plugin", birdactyl.SidebarSectionPlatform).
+    SidebarItem("my-plugin", "My Plugin", "/plugins/my-plugin", birdactyl.SidebarSectionPlatform).
         Icon("puzzle").Order(50).
-        Child("Dashboard", "/console/plugins/my-plugin").
-        Child("Settings", "/console/plugins/my-plugin/settings").
+        Child("Dashboard", "/plugins/my-plugin").
+        Child("Settings", "/plugins/my-plugin/settings").
         Done().
-    SidebarItem("my-plugin-admin", "Admin", "/console/plugins/my-plugin/admin", birdactyl.SidebarSectionAdmin).
+    SidebarItem("my-plugin-admin", "Admin", "/plugins/my-plugin/admin", birdactyl.SidebarSectionAdmin).
         Icon("shield").AdminOnly().Done()
 ```
 
-| Section | Description |
-|---------|-------------|
-| `SidebarSectionNav` | Main navigation section |
-| `SidebarSectionPlatform` | Platform section (below servers) |
-| `SidebarSectionAdmin` | Admin section (admin users only) |
+#### Java
+
+```java
+ui.sidebarItem("my-plugin", "My Plugin", "/plugins/my-plugin", UIBuilder.SIDEBAR_SECTION_PLATFORM)
+    .icon("puzzle").order(50)
+    .child("Dashboard", "/plugins/my-plugin")
+    .child("Settings", "/plugins/my-plugin/settings")
+    .done()
+  .sidebarItem("my-plugin-admin", "Admin", "/plugins/my-plugin/admin", UIBuilder.SIDEBAR_SECTION_ADMIN)
+    .icon("shield").adminOnly().done();
+```
+
+| Section | Go Constant | Java Constant | Description |
+|---------|-------------|---------------|-------------|
+| `nav` | `SidebarSectionNav` | `SIDEBAR_SECTION_NAV` | Main navigation section |
+| `platform` | `SidebarSectionPlatform` | `SIDEBAR_SECTION_PLATFORM` | Platform section (below servers) |
+| `admin` | `SidebarSectionAdmin` | `SIDEBAR_SECTION_ADMIN` | Admin section (admin users only) |
 
 | Method | Description |
 |--------|-------------|
-| `SidebarItem(id, label, href, section)` | Create a sidebar item |
-| `Icon(icon)` | Set the icon |
-| `Order(order)` | Set sort order |
-| `AdminOnly()` | Restrict to admin users |
-| `Child(label, href)` | Add a child link |
-| `Done()` | Return to the UI builder |
+| `sidebarItem(id, label, href, section)` | Create a sidebar item |
+| `icon(icon)` | Set the icon |
+| `order(order)` | Set sort order |
+| `adminOnly()` | Restrict to admin users |
+| `child(label, href)` | Add a child link |
+| `done()` | Return to the UI builder |
 
 ## Frontend Setup
 
@@ -422,6 +522,8 @@ events.emit('plugin:my-plugin:custom-event', { foo: 'bar' });
 
 ## Building
 
+### Go
+
 1. Build the UI:
 ```bash
 cd ui
@@ -437,6 +539,39 @@ go build -o my-plugin
 3. Copy to plugins directory:
 ```bash
 cp my-plugin /path/to/panel/plugins/
+```
+
+### Java
+
+1. Build the UI (output to `src/main/resources`):
+```bash
+cd ui
+npm install
+npm run build
+```
+
+2. Update your `pom.xml` to include the bundle as a resource:
+```xml
+<build>
+    <resources>
+        <resource>
+            <directory>src/main/resources</directory>
+            <includes>
+                <include>bundle.js</include>
+            </includes>
+        </resource>
+    </resources>
+</build>
+```
+
+3. Build the plugin JAR:
+```bash
+mvn package
+```
+
+4. Copy to plugins directory:
+```bash
+cp target/my-plugin.jar /path/to/panel/plugins/
 ```
 
 ## Example Components
