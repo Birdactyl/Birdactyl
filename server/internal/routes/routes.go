@@ -209,8 +209,12 @@ func SetupRoutes(app *fiber.App) {
 	servers.Delete("/:id/schedules/:scheduleId", writeLimit, handlers.DeleteSchedule)
 	servers.Post("/:id/schedules/:scheduleId/run", writeLimit, handlers.RunScheduleNow)
 	servers.Get("/:id/activity", readLimit, server.GetServerActivity)
+	servers.Get("/:id/sftp", readLimit, server.GetSFTPDetails)
+	servers.Post("/:id/sftp/password", writeLimit, server.ResetSFTPPassword)
 
 	internal := api.Group("/internal")
 	nodes := internal.Group("/nodes", middleware.RequireNodeAuth())
 	nodes.Post("/heartbeat", handlers.NodeHeartbeat)
+
+	internal.Post("/sftp/auth", middleware.RequireNodeAuth(), handlers.ValidateSFTPAuth)
 }

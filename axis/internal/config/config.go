@@ -29,6 +29,7 @@ type NodeConfig struct {
 	DataDir   string `yaml:"data_dir"`
 	BackupDir string `yaml:"backup_dir"`
 	DisplayIP string `yaml:"display_ip"`
+	SFTPPort  int    `yaml:"sftp_port"`
 }
 
 var cfg *Config
@@ -63,6 +64,9 @@ func Load(path string) (*Config, error) {
 	if cfg.Node.BackupDir == "" {
 		cfg.Node.BackupDir = "/var/lib/birdactyl/backups"
 	}
+	if cfg.Node.SFTPPort == 0 {
+		cfg.Node.SFTPPort = 2022
+	}
 
 	return cfg, nil
 }
@@ -94,6 +98,7 @@ node:
   data_dir: "/var/lib/birdactyl/servers"
   backup_dir: "/var/lib/birdactyl/backups"
   display_ip: ""
+  sftp_port: 2022
 
 logging:
   file: "logs/axis.log"

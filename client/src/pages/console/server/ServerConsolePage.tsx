@@ -20,6 +20,7 @@ import SubusersPage from './SubusersPage';
 import AddonsPage from './AddonsPage';
 import DatabasesPage from './DatabasesPage';
 import ActivityPage from './ActivityPage';
+import SFTPPage from './SFTPPage';
 
 const tabs = [
   { name: 'Console', path: '', icon: 'console' },
@@ -30,6 +31,7 @@ const tabs = [
   { name: 'Schedules', path: '/schedules', icon: 'clock' },
   { name: 'Startup', path: '/startup', icon: 'sliders' },
   { name: 'Network', path: '/network', icon: 'globe' },
+  { name: 'SFTP', path: '/sftp', icon: 'key' },
   { name: 'Resources', path: '/resources', icon: 'pieChart' },
   { name: 'Activity', path: '/activity', icon: 'activity' },
   { name: 'Subusers', path: '/subusers', icon: 'users' },
@@ -190,6 +192,7 @@ export default function ServerConsolePage() {
         <Route path="schedules" element={<SchedulesPage />} />
         <Route path="startup" element={<StartupPage />} />
         <Route path="network" element={<NetworkPage />} />
+        <Route path="sftp" element={<SFTPPage />} />
         <Route path="resources" element={<ResourcesPage />} />
         <Route path="activity" element={<ActivityPage />} />
         <Route path="settings" element={<ServerSettingsPage />} />

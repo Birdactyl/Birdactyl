@@ -106,6 +106,8 @@ const (
 	ActionAllocationAdd        = "server.allocation.add"
 	ActionAllocationDelete     = "server.allocation.delete"
 	ActionAllocationSetPrimary = "server.allocation.set_primary"
+
+	ActionSFTPPasswordReset = "server.sftp.password_reset"
 )
 
 func LogActivity(userID uuid.UUID, username, action, description, ip, userAgent string, isAdmin bool, metadata map[string]interface{}) {

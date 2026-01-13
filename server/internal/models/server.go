@@ -19,24 +19,25 @@ const (
 )
 
 type Server struct {
-	ID          uuid.UUID      `json:"id" gorm:"primaryKey"`
-	Name        string         `json:"name" gorm:"type:varchar(255);not null"`
-	Description string         `json:"description" gorm:"type:varchar(500)"`
-	UserID      uuid.UUID      `json:"user_id" gorm:"not null;index"`
-	NodeID      uuid.UUID      `json:"node_id" gorm:"not null;index"`
-	PackageID   uuid.UUID      `json:"package_id" gorm:"not null"`
-	Status      ServerStatus   `json:"status" gorm:"type:varchar(20);default:'installing'"`
-	IsSuspended bool           `json:"is_suspended" gorm:"default:false"`
-	ContainerID string         `json:"container_id,omitempty" gorm:"type:varchar(64)"`
-	Memory      int            `json:"memory" gorm:"not null"`
-	CPU         int            `json:"cpu" gorm:"not null"`
-	Disk        int            `json:"disk" gorm:"not null"`
-	Startup     string         `json:"startup" gorm:"type:text"`
-	DockerImage string         `json:"docker_image" gorm:"type:varchar(500)"`
-	Ports       datatypes.JSON `json:"ports" gorm:"type:json"`
-	Variables   datatypes.JSON `json:"variables" gorm:"type:json"`
-	CreatedAt   time.Time      `json:"created_at"`
-	UpdatedAt   time.Time      `json:"updated_at"`
+	ID           uuid.UUID      `json:"id" gorm:"primaryKey"`
+	Name         string         `json:"name" gorm:"type:varchar(255);not null"`
+	Description  string         `json:"description" gorm:"type:varchar(500)"`
+	UserID       uuid.UUID      `json:"user_id" gorm:"not null;index"`
+	NodeID       uuid.UUID      `json:"node_id" gorm:"not null;index"`
+	PackageID    uuid.UUID      `json:"package_id" gorm:"not null"`
+	Status       ServerStatus   `json:"status" gorm:"type:varchar(20);default:'installing'"`
+	IsSuspended  bool           `json:"is_suspended" gorm:"default:false"`
+	ContainerID  string         `json:"container_id,omitempty" gorm:"type:varchar(64)"`
+	Memory       int            `json:"memory" gorm:"not null"`
+	CPU          int            `json:"cpu" gorm:"not null"`
+	Disk         int            `json:"disk" gorm:"not null"`
+	Startup      string         `json:"startup" gorm:"type:text"`
+	DockerImage  string         `json:"docker_image" gorm:"type:varchar(500)"`
+	Ports        datatypes.JSON `json:"ports" gorm:"type:json"`
+	Variables    datatypes.JSON `json:"variables" gorm:"type:json"`
+	SFTPPassword string         `json:"-" gorm:"type:varchar(255)"`
+	CreatedAt    time.Time      `json:"created_at"`
+	UpdatedAt    time.Time      `json:"updated_at"`
 
 	User    *User    `json:"user,omitempty" gorm:"foreignKey:UserID"`
 	Node    *Node    `json:"node,omitempty" gorm:"foreignKey:NodeID"`

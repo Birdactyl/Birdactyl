@@ -65,3 +65,16 @@ export const deleteAllocation = (serverId: string, port: number) => api.delete<S
 export const updateServerResources = (serverId: string, memory: number, cpu: number, disk: number) => api.patch<Server>(`/servers/${serverId}/resources`, { memory, cpu, disk });
 export const updateServerName = (serverId: string, name?: string, description?: string) => api.patch<Server>(`/servers/${serverId}/name`, { name, description });
 export const updateServerVariables = (serverId: string, variables: Record<string, string>, startup: string, dockerImage: string) => api.patch<Server>(`/servers/${serverId}/variables`, { variables, startup, docker_image: dockerImage });
+
+export interface SFTPDetails {
+  host: string;
+  port: number;
+  username: string;
+}
+
+export interface SFTPPasswordReset {
+  password: string;
+}
+
+export const getSFTPDetails = (serverId: string) => api.get<SFTPDetails>(`/servers/${serverId}/sftp`);
+export const resetSFTPPassword = (serverId: string) => api.post<SFTPPasswordReset>(`/servers/${serverId}/sftp/password`);

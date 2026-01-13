@@ -16,8 +16,8 @@ export type { IPBan, PaginatedIPBans } from './ipbans';
 export { getAvailableNodes, getAvailablePackages } from './packages';
 export type { Package, PackagePort, PackageVariable, PackageConfigFile, AddonSource, AddonSourceMapping } from './packages';
 
-export { getServers, getServer, getServerStatus, getServerPermissions, createServer, startServer, stopServer, restartServer, killServer, reinstallServer, deleteServer, addAllocation, setPrimaryAllocation, deleteAllocation, updateServerResources, updateServerName, updateServerVariables } from './servers';
-export type { Server, ServerStatusResponse } from './servers';
+export { getServers, getServer, getServerStatus, getServerPermissions, createServer, startServer, stopServer, restartServer, killServer, reinstallServer, deleteServer, addAllocation, setPrimaryAllocation, deleteAllocation, updateServerResources, updateServerName, updateServerVariables, getSFTPDetails, resetSFTPPassword } from './servers';
+export type { Server, ServerStatusResponse, SFTPDetails, SFTPPasswordReset } from './servers';
 
 export { listFiles, readFile, searchFiles, deleteFile, bulkDeleteFiles, bulkCopyFiles, bulkCompressFiles, moveFile, copyFile, compressFile, decompressFile, createFolder, writeFile, getDownloadUrl, uploadFile, connectServerLogs } from './files';
 export type { FileEntry, SearchResult } from './files';

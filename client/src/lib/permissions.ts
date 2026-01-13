@@ -43,6 +43,9 @@ export const Permissions = {
 
   ACTIVITY_VIEW: 'activity.view',
 
+  SFTP_VIEW: 'sftp.view',
+  SFTP_RESET_PASSWORD: 'sftp.reset_password',
+
   ADMIN: '*',
 } as const;
 
@@ -58,6 +61,7 @@ export const PermissionGroups = {
   settings: [Permissions.SETTINGS_VIEW, Permissions.SETTINGS_RENAME, Permissions.SETTINGS_RESOURCES],
   server: [Permissions.REINSTALL],
   activity: [Permissions.ACTIVITY_VIEW],
+  sftp: [Permissions.SFTP_VIEW, Permissions.SFTP_RESET_PASSWORD],
 };
 
 export const PermissionLabels: Record<string, string> = {
@@ -96,6 +100,8 @@ export const PermissionLabels: Record<string, string> = {
   [Permissions.SETTINGS_RESOURCES]: 'Update Resources',
   [Permissions.REINSTALL]: 'Reinstall Server',
   [Permissions.ACTIVITY_VIEW]: 'View Activity Log',
+  [Permissions.SFTP_VIEW]: 'View SFTP Details',
+  [Permissions.SFTP_RESET_PASSWORD]: 'Reset SFTP Password',
 };
 
 export function hasPermission(permissions: string[], required: string): boolean {

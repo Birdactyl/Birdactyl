@@ -16,6 +16,7 @@ import (
 	"cauthon-axis/internal/logger"
 	"cauthon-axis/internal/pairing"
 	"cauthon-axis/internal/panel"
+	"cauthon-axis/internal/sftp"
 )
 
 func main() {
@@ -81,6 +82,10 @@ func main() {
 	}
 
 	go heartbeatLoop(client)
+
+	if err := sftp.Start(cfg.Node.SFTPPort); err != nil {
+		logger.Warn("SFTP server failed to start: %v", err)
+	}
 
 	app := api.NewServer()
 

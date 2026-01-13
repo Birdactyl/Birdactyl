@@ -62,3 +62,31 @@ func (c *Client) SendHeartbeat() error {
 
 	return nil
 }
+
+func (c *Client) ValidateSFTPCredentials(serverID, password string) error {
+	payload := map[string]string{
+		"server_id": serverID,
+		"password":  password,
+	}
+
+	body, _ := json.Marshal(payload)
+	req, err := http.NewRequest("POST", c.panelURL+"/api/v1/internal/sftp/auth", bytes.NewReader(body))
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+c.token)
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to connect to panel: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("authentication failed")
+	}
+
+	return nil
+}
