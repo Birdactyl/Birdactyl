@@ -64,15 +64,34 @@ Return `birdactyl.Allow()` to let the action proceed, or `birdactyl.Block("reaso
 Add HTTP endpoints with `Route`:
 
 ```go
-plugin.Route("GET", "/api/plugins/my-plugin/status", func(r birdactyl.Request) birdactyl.Response {
+plugin.Route("GET", "/status", func(r birdactyl.Request) birdactyl.Response {
     return birdactyl.JSON(map[string]string{"status": "ok"})
 })
 
-plugin.Route("POST", "/api/plugins/my-plugin/action", func(r birdactyl.Request) birdactyl.Response {
+plugin.Route("POST", "/action", func(r birdactyl.Request) birdactyl.Response {
     name := r.Body["name"].(string)
     return birdactyl.JSON(map[string]interface{}{"received": name})
 })
 ```
+
+### Rate Limiting
+
+Apply optional rate limits to routes:
+
+```go
+plugin.Route("POST", "/webhook", handler).RateLimit(5, 10)
+
+plugin.Route("GET", "/data", handler).RateLimitPreset(birdactyl.PresetRead)
+plugin.Route("POST", "/update", handler).RateLimitPreset(birdactyl.PresetWrite)
+plugin.Route("POST", "/sensitive", handler).RateLimitPreset(birdactyl.PresetStrict)
+```
+
+Available presets:
+- `PresetRead` - 60/min, burst 80
+- `PresetWrite` - 30/min, burst 40
+- `PresetStrict` - 10/min, burst 15
+
+Routes without rate limits are unlimited.
 
 The `Request` struct:
 - `Method` - HTTP method

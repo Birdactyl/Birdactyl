@@ -6,14 +6,14 @@ Routes let your plugin add custom HTTP endpoints to the panel. Users and other s
 
 **Go:**
 ```go
-plugin.Route("GET", "/api/plugins/my-plugin/status", func(r birdactyl.Request) birdactyl.Response {
+plugin.Route("GET", "/status", func(r birdactyl.Request) birdactyl.Response {
     return birdactyl.JSON(map[string]string{"status": "ok"})
 })
 ```
 
 **Java:**
 ```java
-route("GET", "/api/plugins/my-plugin/status", request -> {
+route("GET", "/status", request -> {
     return Response.json(Map.of("status", "ok"));
 });
 ```
@@ -23,16 +23,16 @@ route("GET", "/api/plugins/my-plugin/status", request -> {
 You can register routes for any HTTP method:
 
 ```go
-plugin.Route("GET", "/api/plugins/my-plugin/items", getItems)
-plugin.Route("POST", "/api/plugins/my-plugin/items", createItem)
-plugin.Route("PUT", "/api/plugins/my-plugin/items", updateItem)
-plugin.Route("DELETE", "/api/plugins/my-plugin/items", deleteItem)
+plugin.Route("GET", "/items", getItems)
+plugin.Route("POST", "/items", createItem)
+plugin.Route("PUT", "/items", updateItem)
+plugin.Route("DELETE", "/items", deleteItem)
 ```
 
 Use `*` to match any method:
 
 ```go
-plugin.Route("*", "/api/plugins/my-plugin/webhook", handleWebhook)
+plugin.Route("*", "/webhook", handleWebhook)
 ```
 
 ## Path Patterns
@@ -40,11 +40,81 @@ plugin.Route("*", "/api/plugins/my-plugin/webhook", handleWebhook)
 Routes support wildcard matching with `*`:
 
 ```go
-plugin.Route("GET", "/api/plugins/my-plugin/files/*", func(r birdactyl.Request) birdactyl.Response {
+plugin.Route("GET", "/files/*", func(r birdactyl.Request) birdactyl.Response {
     return birdactyl.JSON(map[string]string{"path": r.Path})
 })
 ```
 
+## Rate Limiting
+
+You can optionally apply rate limiting to your routes. If no rate limit is specified, the route is unlimited.
+
+### Custom Rate Limits
+
+Specify requests per minute and burst limit:
+
+**Go:**
+```go
+plugin.Route("POST", "/webhook", handleWebhook).RateLimit(5, 10)
+
+plugin.Route("GET", "/data", getData).RateLimit(30, 40)
+```
+
+**Java:**
+```java
+route("POST", "/webhook", this::handleWebhook).rateLimit(5, 10);
+
+route("GET", "/data", this::getData).rateLimit(30, 40);
+```
+
+### Preset Rate Limits
+
+Use panel presets for common scenarios:
+
+| Preset | Requests/Min | Burst |
+|--------|-------------|-------|
+| `read` | 60 | 80 |
+| `write` | 30 | 40 |
+| `strict` | 10 | 15 |
+
+**Go:**
+```go
+plugin.Route("GET", "/status", getStatus).RateLimitPreset(birdactyl.PresetRead)
+
+plugin.Route("POST", "/action", doAction).RateLimitPreset(birdactyl.PresetWrite)
+
+plugin.Route("POST", "/sensitive", sensitive).RateLimitPreset(birdactyl.PresetStrict)
+```
+
+**Java:**
+```java
+route("GET", "/status", this::getStatus).rateLimitPreset(PRESET_READ);
+
+route("POST", "/action", this::doAction).rateLimitPreset(PRESET_WRITE);
+
+route("POST", "/sensitive", this::sensitive).rateLimitPreset(PRESET_STRICT);
+```
+
+### Rate Limit Response
+
+When a client exceeds the rate limit, they receive:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": 429,
+    "message": "Rate limit exceeded",
+    "retry_after": 5
+  }
+}
+```
+
+Response headers are always included:
+- `X-RateLimit-Limit` - Requests allowed per minute
+- `X-RateLimit-Remaining` - Requests remaining
+- `X-RateLimit-Reset` - Seconds until limit resets
+- `Retry-After` - Seconds to wait (only on 429)
 
 ## Request Data
 
@@ -52,7 +122,7 @@ plugin.Route("GET", "/api/plugins/my-plugin/files/*", func(r birdactyl.Request) 
 
 **Go:**
 ```go
-plugin.Route("GET", "/api/plugins/my-plugin/auth", func(r birdactyl.Request) birdactyl.Response {
+plugin.Route("GET", "/auth", func(r birdactyl.Request) birdactyl.Response {
     token := r.Headers["Authorization"]
     return birdactyl.JSON(map[string]string{"token": token})
 })
@@ -60,7 +130,7 @@ plugin.Route("GET", "/api/plugins/my-plugin/auth", func(r birdactyl.Request) bir
 
 **Java:**
 ```java
-route("GET", "/api/plugins/my-plugin/auth", request -> {
+route("GET", "/auth", request -> {
     String token = request.header("Authorization");
     return Response.json(Map.of("token", token));
 });
@@ -70,7 +140,7 @@ route("GET", "/api/plugins/my-plugin/auth", request -> {
 
 **Go:**
 ```go
-plugin.Route("GET", "/api/plugins/my-plugin/search", func(r birdactyl.Request) birdactyl.Response {
+plugin.Route("GET", "/search", func(r birdactyl.Request) birdactyl.Response {
     query := r.Query["q"]
     page := r.Query["page"]
     return birdactyl.JSON(map[string]string{"query": query, "page": page})
@@ -79,7 +149,7 @@ plugin.Route("GET", "/api/plugins/my-plugin/search", func(r birdactyl.Request) b
 
 **Java:**
 ```java
-route("GET", "/api/plugins/my-plugin/search", request -> {
+route("GET", "/search", request -> {
     String query = request.query("q");
     int page = request.queryInt("page", 1);
     boolean active = request.queryBool("active", true);
@@ -91,7 +161,7 @@ route("GET", "/api/plugins/my-plugin/search", request -> {
 
 **Go:**
 ```go
-plugin.Route("POST", "/api/plugins/my-plugin/items", func(r birdactyl.Request) birdactyl.Response {
+plugin.Route("POST", "/items", func(r birdactyl.Request) birdactyl.Response {
     name := r.Body["name"].(string)
     count := int(r.Body["count"].(float64))
     rawJSON := r.RawBody
@@ -101,7 +171,7 @@ plugin.Route("POST", "/api/plugins/my-plugin/items", func(r birdactyl.Request) b
 
 **Java:**
 ```java
-route("POST", "/api/plugins/my-plugin/items", request -> {
+route("POST", "/items", request -> {
     Map<String, Object> body = request.json();
     String name = (String) body.get("name");
     MyRequest typed = request.json(MyRequest.class);
@@ -116,7 +186,7 @@ The panel passes the authenticated user's ID with each request:
 
 **Go:**
 ```go
-plugin.Route("GET", "/api/plugins/my-plugin/me", func(r birdactyl.Request) birdactyl.Response {
+plugin.Route("GET", "/me", func(r birdactyl.Request) birdactyl.Response {
     if r.UserID == "" {
         return birdactyl.Error(401, "Not authenticated")
     }
@@ -127,7 +197,7 @@ plugin.Route("GET", "/api/plugins/my-plugin/me", func(r birdactyl.Request) birda
 
 **Java:**
 ```java
-route("GET", "/api/plugins/my-plugin/me", request -> {
+route("GET", "/me", request -> {
     if (request.getUserId().isEmpty()) {
         return Response.error(401, "Not authenticated");
     }
@@ -205,15 +275,15 @@ return Response.ok(bytes)
     .header("X-Custom", "value");
 ```
 
-## Route Naming Convention
+## Route URL Structure
 
-Keep your routes under `/api/plugins/{plugin-id}/` to avoid conflicts:
+Plugin routes are accessible at `/api/v1/plugins/{plugin-id}/{path}`:
 
 ```
-/api/plugins/my-plugin/status
-/api/plugins/my-plugin/items
-/api/plugins/my-plugin/items/{id}
-/api/plugins/my-plugin/config
+/api/v1/plugins/my-plugin/status
+/api/v1/plugins/my-plugin/items
+/api/v1/plugins/my-plugin/items/123
+/api/v1/plugins/my-plugin/config
 ```
 
 ## Best Practices
@@ -224,3 +294,4 @@ Keep your routes under `/api/plugins/{plugin-id}/` to avoid conflicts:
 4. Check authentication when needed
 5. Keep routes fast - offload heavy work to background tasks
 6. Use consistent response formats
+7. Apply rate limits to protect against abuse, especially on write endpoints and webhooks

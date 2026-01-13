@@ -82,16 +82,35 @@ Return `EventResult.allow()` to let the action proceed, or `EventResult.block("r
 Add HTTP endpoints with `route`:
 
 ```java
-route("GET", "/api/plugins/my-plugin/status", request -> {
+route("GET", "/status", request -> {
     return Response.json(Map.of("status", "ok"));
 });
 
-route("POST", "/api/plugins/my-plugin/action", request -> {
+route("POST", "/action", request -> {
     Map<String, Object> body = request.json();
     String name = (String) body.get("name");
     return Response.json(Map.of("received", name));
 });
 ```
+
+### Rate Limiting
+
+Apply optional rate limits to routes:
+
+```java
+route("POST", "/webhook", this::handleWebhook).rateLimit(5, 10);
+
+route("GET", "/data", this::getData).rateLimitPreset(PRESET_READ);
+route("POST", "/update", this::doUpdate).rateLimitPreset(PRESET_WRITE);
+route("POST", "/sensitive", this::sensitive).rateLimitPreset(PRESET_STRICT);
+```
+
+Available presets:
+- `PRESET_READ` - 60/min, burst 80
+- `PRESET_WRITE` - 30/min, burst 40
+- `PRESET_STRICT` - 10/min, burst 15
+
+Routes without rate limits are unlimited.
 
 The `Request` class:
 - `getMethod()` - HTTP method
