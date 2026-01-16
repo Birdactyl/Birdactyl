@@ -135,8 +135,8 @@ api_keys:
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `node.listen` | string | `0.0.0.0:8443` | Address and port the node daemon listens on |
-| `node.data_dir` | string | `/var/lib/cauthon` | Directory for server data storage |
-| `node.backup_dir` | string | `/var/lib/cauthon/backups` | Directory for server backups |
+| `node.data_dir` | string | `/var/lib/birdactyl` | Directory for server data storage |
+| `node.backup_dir` | string | `/var/lib/birdactyl/backups` | Directory for server backups |
 | `node.display_ip` | string | - | Public IP/hostname shown to users |
 
 #### Logging
