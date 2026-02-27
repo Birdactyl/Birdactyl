@@ -43,7 +43,6 @@ func Init(engine string, socketPath string) error {
 	if socketPath != "" {
 		opts = append(opts, client.WithHost("unix://"+socketPath))
 	} else if Engine == "podman" {
-		// Try to find the socket. Prefer rootless if we're not running as root.
 		foundSocket := ""
 		if os.Geteuid() != 0 {
 			if runtimeDir := os.Getenv("XDG_RUNTIME_DIR"); runtimeDir != "" {
