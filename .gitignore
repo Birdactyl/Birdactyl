@@ -24,3 +24,5 @@ client/node_modules/
 client/dist/
 client/.vite/
 client/bun.lock
+
+war without reason
