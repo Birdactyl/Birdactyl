@@ -1,0 +1,22 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+.pnpm-debug.log
+client/dist/
+
+# Go
+server/panel
+server/logs/
+server/config.yaml
+server/plugins/
+*.db
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+.github/

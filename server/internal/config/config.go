@@ -109,27 +109,23 @@ func Load(path string) (*Config, error) {
 				return
 			}
 			loadErr = ErrConfigGenerated
-			return
-		}
-
-		data, err := os.ReadFile(path)
-		if err != nil {
-			loadErr = fmt.Errorf("failed to read config: %w", err)
-			return
 		}
 
 		cfg = &Config{}
-		if err := yaml.Unmarshal(data, cfg); err != nil {
-			loadErr = fmt.Errorf("failed to parse config: %w", err)
-			cfg = nil
-			return
+		data, err := os.ReadFile(path)
+		if err == nil {
+			if err := yaml.Unmarshal(data, cfg); err != nil {
+				loadErr = fmt.Errorf("failed to parse config: %w", err)
+				cfg = nil
+				return
+			}
 		}
 
 		needsSave := cfg.Auth.JWTSecret == ""
 		cfg.setDefaults()
 		cfg.loadEnvOverrides()
-		
-		if needsSave {
+
+		if needsSave && data != nil {
 			saveJWTSecret(path, cfg.Auth.JWTSecret)
 		}
 	})
@@ -278,8 +274,16 @@ func (c *Config) setDefaults() {
 }
 
 func (c *Config) loadEnvOverrides() {
+	if v := os.Getenv("DB_DRIVER"); v != "" {
+		c.Database.Driver = v
+	}
 	if v := os.Getenv("DB_HOST"); v != "" {
 		c.Database.Host = v
+	}
+	if v := os.Getenv("DB_PORT"); v != "" {
+		if port, err := fmt.Sscanf(v, "%d", &c.Database.Port); err == nil && port == 1 {
+			// success
+		}
 	}
 	if v := os.Getenv("DB_USER"); v != "" {
 		c.Database.User = v
@@ -289,6 +293,20 @@ func (c *Config) loadEnvOverrides() {
 	}
 	if v := os.Getenv("DB_NAME"); v != "" {
 		c.Database.Name = v
+	}
+	if v := os.Getenv("DB_SSLMODE"); v != "" {
+		c.Database.SSLMode = v
+	}
+	if v := os.Getenv("PANEL_HOST"); v != "" {
+		c.Server.Host = v
+	}
+	if v := os.Getenv("PANEL_PORT"); v != "" {
+		if port, err := fmt.Sscanf(v, "%d", &c.Server.Port); err == nil && port == 1 {
+			// success
+		}
+	}
+	if v := os.Getenv("JWT_SECRET"); v != "" {
+		c.Auth.JWTSecret = v
 	}
 }
 
