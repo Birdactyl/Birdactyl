@@ -22,13 +22,16 @@ import (
 
 func main() {
 	cfg, err := config.Load("config.yaml")
-	if err != nil {
-		if err == config.ErrConfigGenerated {
-			logger.Success("Generated default config.yaml")
+	if err != nil && err != config.ErrConfigGenerated {
+		logger.Fatal("Config load failed: %v", err)
+	}
+
+	if err == config.ErrConfigGenerated {
+		logger.Success("Generated default config.yaml")
+		if cfg.Database.Host == "localhost" && os.Getenv("DB_HOST") == "" {
 			logger.Warn("Please configure your database settings, then restart the server.")
 			os.Exit(0)
 		}
-		logger.Fatal("Config load failed: %v", err)
 	}
 
 	if cfg.Logging.File != "" {
