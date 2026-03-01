@@ -16,6 +16,8 @@ func SetupRoutes(app *fiber.App) {
 	plugins.RegisterUIRoutes(app)
 	plugins.RegisterPluginRoutes(app)
 
+	app.Static("/", "./public")
+
 	api := app.Group("/api/v1")
 
 	readLimit := middleware.ThousandTHR(middleware.ThousandTHRConfig{
@@ -217,4 +219,8 @@ func SetupRoutes(app *fiber.App) {
 	nodes.Post("/heartbeat", handlers.NodeHeartbeat)
 
 	internal.Post("/sftp/auth", middleware.RequireNodeAuth(), handlers.ValidateSFTPAuth)
+
+	app.Get("*", func(c *fiber.Ctx) error {
+		return c.SendFile("./public/index.html")
+	})
 }
