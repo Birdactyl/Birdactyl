@@ -256,9 +256,18 @@ List<PanelAPI.User> users = api.listUsers();
 List<PanelAPI.File> files = api.listFiles("server-id", "/");
 byte[] content = api.readFile("server-id", "/server.properties");
 api.writeFile("server-id", "/motd.txt", "Welcome!".getBytes());
+
+api.createServer("Server", "user-id", "node-id", "pkg-id", 2048, 100, 10240);
+api.getServerStats("server-id");
+api.updateServerVariables("server-id", Map.of("MAX", "10"));
+api.addSubuser("server-id", "[email]", List.of("control.start"));
+api.listBackups("server-id");
+api.queryDB("SELECT 1");
+api.broadcastEvent("plugin:hello", Map.of("foo", "bar"));
 ```
 
 See [Panel API](panel-api.md) for the full reference.
+
 
 ## Async API
 

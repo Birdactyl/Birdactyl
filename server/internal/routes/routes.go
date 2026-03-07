@@ -95,7 +95,9 @@ func SetupRoutes(app *fiber.App) {
 	adminRoutes.Post("/users/set-admin", strictLimit, admin.AdminSetAdmin)
 	adminRoutes.Post("/users/revoke-admin", strictLimit, admin.AdminRevokeAdmin)
 	adminRoutes.Post("/users/force-reset", strictLimit, admin.AdminForcePasswordReset)
+	adminRoutes.Post("/users/2fa-disable", strictLimit, admin.AdminDisable2FA)
 	adminRoutes.Patch("/users/:id", writeLimit, admin.AdminUpdateUser)
+
 	adminRoutes.Get("/users/:userId/api-keys", readLimit, admin.AdminGetUserAPIKeys)
 	adminRoutes.Post("/users/:userId/api-keys", writeLimit, admin.AdminCreateUserAPIKey)
 	adminRoutes.Delete("/users/:userId/api-keys/:keyId", writeLimit, admin.AdminDeleteUserAPIKey)

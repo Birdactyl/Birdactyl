@@ -18,6 +18,8 @@ server:
 |--------|------|---------|-------------|
 | `host` | string | `0.0.0.0` | IP address to bind |
 | `port` | int | `3000` | Port to listen on |
+| `base_url` | string | - | Base URL for the panel (e.g. `https://panel.example.com`) |
+
 
 ### Logging
 
@@ -120,12 +122,38 @@ plugins:
 |--------|------|---------|-------------|
 | `address` | string | `localhost:50050` | gRPC server address |
 | `directory` | string | `plugins` | Plugin directory |
+| `load_mode` | string | `manual` | `manual` or `managed` |
 | `allow_dynamic` | bool | `true` | Allow runtime plugin loading |
 | `container.enabled` | bool | `false` | Run plugins in containers |
 | `container.image` | string | - | Container image |
 | `container.network_mode` | string | `host` | Docker network mode |
 | `container.memory_limit` | string | `512m` | Memory limit |
 | `container.cpu_limit` | string | `1.0` | CPU limit |
+
+
+### SMTP
+
+```yaml
+smtp:
+  enabled: false
+  host: "smtp.gmail.com"
+  port: 587
+  username: ""
+  password: ""
+  from_email: "noreply@example.com"
+  from_name: "Birdactyl"
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `enabled` | bool | `false` | Enable email notifications |
+| `host` | string | - | SMTP server host |
+| `port` | int | `587` | SMTP server port |
+| `username` | string | - | SMTP username |
+| `password` | string | - | SMTP password |
+| `from_email` | string | - | Sender email address |
+| `from_name` | string | `Birdactyl` | Sender name |
+
 
 ### Root Admins
 
@@ -185,7 +213,9 @@ node:
 | `backup_dir` | string | `/var/lib/birdactyl/backups` | Backup directory |
 | `display_ip` | string | - | Public IP for users |
 | `sftp_port` | int | `2022` | Port for the SFTP server |
+| `container_engine` | string | `docker` | `docker` or `podman` |
 | `docker_socket` | string | - | Custom Docker socket path |
+
 
 ### Logging
 
@@ -204,7 +234,14 @@ The panel supports environment variable overrides:
 
 | Variable | Overrides |
 |----------|-----------|
+| `DB_DRIVER` | `database.driver` |
 | `DB_HOST` | `database.host` |
+| `DB_PORT` | `database.port` |
 | `DB_USER` | `database.user` |
 | `DB_PASSWORD` | `database.password` |
 | `DB_NAME` | `database.name` |
+| `DB_SSLMODE` | `database.sslmode` |
+| `PANEL_HOST` | `server.host` |
+| `PANEL_PORT` | `server.port` |
+| `JWT_SECRET` | `auth.jwt_secret` |
+

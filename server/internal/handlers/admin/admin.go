@@ -579,3 +579,34 @@ func AdminDeleteUsers(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{"success": true, "data": fiber.Map{"affected": affected}})
 }
+func AdminDisable2FA(c *fiber.Ctx) error {
+	currentUser := c.Locals("user").(*models.User)
+	var req BulkUserIDsRequest
+	if err := c.BodyParser(&req); err != nil || len(req.UserIDs) == 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"success": false, "error": "Invalid request"})
+	}
+
+	var uuids []uuid.UUID
+	for _, id := range req.UserIDs {
+		if uid, err := uuid.Parse(id); err == nil {
+			uuids = append(uuids, uid)
+		}
+	}
+
+	var users []models.User
+	database.DB.Where("id IN ?", uuids).Find(&users)
+	usernames := make([]string, len(users))
+	for i, u := range users {
+		usernames[i] = u.Username
+	}
+
+	result := database.DB.Model(&models.User{}).Where("id IN ?", uuids).Updates(map[string]interface{}{
+		"totp_enabled": false,
+		"totp_secret":  "",
+		"backup_codes": "",
+	})
+
+	handlers.LogActivity(currentUser.ID, currentUser.Username, handlers.Action2FADisable, "Administratively disabled 2FA for: "+strings.Join(usernames, ", "), c.IP(), c.Get("User-Agent"), true, map[string]interface{}{"users": usernames})
+
+	return c.JSON(fiber.Map{"success": true, "data": fiber.Map{"affected": result.RowsAffected}})
+}

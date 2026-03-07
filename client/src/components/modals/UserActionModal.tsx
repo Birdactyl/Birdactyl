@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
-import { adminBanUsers, adminUnbanUsers, adminDeleteUsers, adminSetAdmin, adminRevokeAdmin, adminForcePasswordReset } from '../../lib/api';
+import { adminBanUsers, adminUnbanUsers, adminDeleteUsers, adminSetAdmin, adminRevokeAdmin, adminForcePasswordReset, adminDisable2FA } from '../../lib/api';
+
 import { notify, Modal, Button } from '../';
 
-type ActionType = 'ban' | 'unban' | 'delete' | 'setAdmin' | 'revokeAdmin' | 'forceReset';
+type ActionType = 'ban' | 'unban' | 'delete' | 'setAdmin' | 'revokeAdmin' | 'forceReset' | 'disable2FA';
+
 
 interface Props {
   type: ActionType;
@@ -19,7 +21,9 @@ const config: Record<ActionType, { title: string; description: string; fn: (ids:
   setAdmin: { title: 'Grant Admin', description: 'They will have full administrative access.', fn: adminSetAdmin, success: 'Admin granted', error: 'Could not set admin' },
   revokeAdmin: { title: 'Revoke Admin', description: 'They will lose administrative privileges.', fn: adminRevokeAdmin, success: 'Admin revoked', error: 'Could not revoke admin' },
   forceReset: { title: 'Force Password Reset', description: 'They will be required to change their password on next login.', fn: adminForcePasswordReset, success: 'Password reset required', error: 'Could not force reset' },
+  disable2FA: { title: 'Disable 2FA', description: 'Two-factor authentication will be disabled for these accounts.', fn: adminDisable2FA, success: '2FA disabled', error: 'Could not disable 2FA' },
 };
+
 
 export default function UserActionModal({ type, ids, open, onClose, onComplete }: Props) {
   const [loading, setLoading] = useState(false);

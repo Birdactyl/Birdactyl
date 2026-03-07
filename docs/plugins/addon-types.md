@@ -110,6 +110,33 @@ birdactyl.WriteFile("/plugins/MyPlugin/config.yml", []byte("enabled: true\n"))
 Action.writeFile("/plugins/MyPlugin/config.yml", "enabled: true\n".getBytes())
 ```
 
+### Run Command
+
+**Go:**
+```go
+birdactyl.RunCommand("echo 'Hello World'")
+```
+
+**Java:**
+```java
+Action.runCommand("echo 'Hello World'")
+```
+
+### Proxy to Node
+
+Sends a raw payload to a custom endpoint on the target node's Axis daemon.
+
+**Go:**
+```go
+birdactyl.ProxyToNode("/custom/endpoint", []byte(`{"foo": "bar"}`))
+```
+
+**Java:**
+```java
+Action.proxyToNode("/custom/endpoint", "{\"foo\": \"bar\"}".getBytes())
+```
+
+
 ## Response Types
 
 ### Success

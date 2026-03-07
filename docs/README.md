@@ -10,6 +10,9 @@ Birdactyl is a modern game server management panel built in Go and React. This d
 - [Frontend Setup](panel/frontend-setup.md) - Building and deploying the client
 - [Database Setup](panel/database-setup.md) - Database configuration options
 - [Configuration Reference](panel/configuration.md) - Complete configuration options
+- [Email Setup](panel/email-setup.md) - SMTP and verification settings
+- [Security (2FA)](panel/security-2fa.md) - 2FA and account security
+
 
 ## Plugin System Documentation
 

@@ -16,6 +16,7 @@ import (
 	"birdactyl-panel-backend/internal/models"
 	pb "birdactyl-panel-backend/internal/plugins/proto"
 	"birdactyl-panel-backend/internal/services"
+	"birdactyl-panel-backend/internal/config"
 
 	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
@@ -409,6 +410,55 @@ func (s *PanelServer) SetUserResources(ctx context.Context, req *pb.SetUserResou
 
 func (s *PanelServer) ForcePasswordReset(ctx context.Context, req *pb.IDRequest) (*pb.Empty, error) {
 	database.DB.Model(&models.User{}).Where("id = ?", req.Id).Update("force_password_reset", true)
+	return &pb.Empty{}, nil
+}
+
+func (s *PanelServer) RequestPasswordReset(ctx context.Context, req *pb.EmailRequest) (*pb.Empty, error) {
+	baseURL := config.Get().Server.BaseURL
+	err := services.RequestPasswordReset(req.Email, baseURL)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return &pb.Empty{}, nil
+}
+
+func (s *PanelServer) SendVerificationEmail(ctx context.Context, req *pb.IDRequest) (*pb.Empty, error) {
+	uid, err := uuid.Parse(req.Id)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid user id")
+	}
+	baseURL := config.Get().Server.BaseURL
+	err = services.SendVerificationEmail(uid, baseURL)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return &pb.Empty{}, nil
+}
+
+func (s *PanelServer) GetUser2FAStatus(ctx context.Context, req *pb.IDRequest) (*pb.TwoFactorStatus, error) {
+	uid, err := uuid.Parse(req.Id)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid user id")
+	}
+	var user models.User
+	if err := database.DB.First(&user, "id = ?", uid).Error; err != nil {
+		return nil, status.Error(codes.NotFound, "user not found")
+	}
+
+	return &pb.TwoFactorStatus{IsEnabled: user.TOTPEnabled}, nil
+}
+
+func (s *PanelServer) AdminDisable2FA(ctx context.Context, req *pb.Handle2FARequest) (*pb.Empty, error) {
+	uid, err := uuid.Parse(req.UserId)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid user id")
+	}
+	
+	database.DB.Model(&models.User{}).Where("id = ?", uid).Updates(map[string]interface{}{
+		"totp_enabled": false,
+		"totp_secret":  "",
+	})
+	
 	return &pb.Empty{}, nil
 }
 
@@ -1061,4 +1111,12 @@ func (s *PanelServer) CallPlugin(ctx context.Context, req *pb.CallPluginRequest)
 	}
 
 	return &pb.CallPluginResponse{Data: resp.Body}, nil
+}
+
+func (s *PanelServer) SendEmail(ctx context.Context, req *pb.SendEmailRequest) (*pb.Empty, error) {
+	err := services.SendEmail(req.To, req.Subject, req.HtmlBody)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return &pb.Empty{}, nil
 }

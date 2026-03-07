@@ -190,9 +190,18 @@ users := api.ListUsers()
 files := api.ListFiles("server-id", "/")
 content, _ := api.ReadFile("server-id", "/server.properties")
 api.WriteFile("server-id", "/motd.txt", []byte("Welcome!"))
+
+api.CreateServer("Server", "user-id", "node-id", "pkg-id", 2048, 100, 10240)
+api.GetServerStats("server-id")
+api.UpdateServerVariables("server-id", map[string]string{"MAX": "10"})
+api.AddSubuser("server-id", "[email]", []string{"control.start"})
+api.ListBackups("server-id")
+api.QueryDB("SELECT 1")
+api.BroadcastEvent("plugin:hello", nil)
 ```
 
 See [Panel API](panel-api.md) for the full reference.
+
 
 ## Async API
 
