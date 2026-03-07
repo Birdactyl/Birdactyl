@@ -12,6 +12,7 @@ import (
 	"birdactyl-panel-backend/internal/database"
 	"birdactyl-panel-backend/internal/logger"
 	"birdactyl-panel-backend/internal/middleware"
+	"birdactyl-panel-backend/internal/models"
 	"birdactyl-panel-backend/internal/plugins"
 	"birdactyl-panel-backend/internal/routes"
 	"birdactyl-panel-backend/internal/services"
@@ -51,6 +52,13 @@ func main() {
 		logger.Fatal("Database connection failed: %v", err)
 	}
 	logger.Success("Database connected (%s)", cfg.Database.Driver)
+
+	for _, uid := range cfg.RootAdmins {
+		result := database.DB.Model(&models.User{}).Where("id = ? AND is_admin = ?", uid, false).Update("is_admin", true)
+		if result.RowsAffected > 0 {
+			logger.Success("Promoted root admin %s", uid)
+		}
+	}
 
 	services.InitScheduler()
 
