@@ -176,6 +176,19 @@ func Login(c *fiber.Ctx) error {
 		if mixinErr, ok := err.(*plugins.MixinError); ok {
 			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"success": false, "error": mixinErr.Message})
 		}
+		if err == services.Err2FARequired && user != nil {
+			challengeToken, tokenErr := services.GenerateChallengeToken(user.ID)
+			if tokenErr != nil {
+				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"success": false, "error": "Failed to generate challenge"})
+			}
+			return c.JSON(fiber.Map{
+				"success": true,
+				"data": fiber.Map{
+					"2fa_required":    true,
+					"challenge_token": challengeToken,
+				},
+			})
+		}
 		status := fiber.StatusUnauthorized
 		if err == services.ErrUserBanned {
 			status = fiber.StatusForbidden

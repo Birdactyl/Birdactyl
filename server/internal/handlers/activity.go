@@ -21,6 +21,11 @@ const (
 	ActionProfileSessionRevoke  = "profile.session_revoke"
 	ActionProfileSessionsRevoke = "profile.sessions_revoke_all"
 
+	Action2FASetup       = "profile.2fa_setup"
+	Action2FAEnable      = "profile.2fa_enable"
+	Action2FADisable     = "profile.2fa_disable"
+	Action2FABackupCodes = "profile.2fa_backup_codes"
+
 	ActionServerCreate    = "server.create"
 	ActionServerDelete    = "server.delete"
 	ActionServerStart     = "server.start"

@@ -1,8 +1,8 @@
 export { api, request, API_BASE } from './client';
 export type { ParsedResponse } from './client';
 
-export { register, login, refresh, logout, getMe, getResources, updateProfile, updatePassword, getSessions, revokeSession, revokeAllSessions, getAPIKeys, createAPIKey, deleteAPIKey } from './auth';
-export type { Session, User, Resources, APIKey, APIKeyCreated } from './auth';
+export { register, login, refresh, logout, getMe, getResources, updateProfile, updatePassword, getSessions, revokeSession, revokeAllSessions, getAPIKeys, createAPIKey, deleteAPIKey, setup2FA, enable2FA, disable2FA, regenerateBackupCodes, verify2FA } from './auth';
+export type { Session, User, Resources, APIKey, APIKeyCreated, TwoFactorSetupData } from './auth';
 
 export { adminGetUsers, adminCreateUser, adminBanUsers, adminUnbanUsers, adminDeleteUsers, adminSetAdmin, adminRevokeAdmin, adminForcePasswordReset, adminUpdateUser, adminGetNodes, adminRefreshNodes, adminCreateNode, adminGetNode, adminUpdateNode, adminDeleteNode, adminResetNodeToken, adminGetPairingCode, adminPairNode, adminGetServers, adminCreateServer, adminSuspendServers, adminUnsuspendServers, adminDeleteServers, adminUpdateServerResources, adminTransferServer, adminGetTransferStatus, adminGetAllTransfers, adminViewServer, adminGetPackages, adminCreatePackage, adminGetPackage, adminUpdatePackage, adminDeletePackage, adminGetRegistrationStatus, adminSetRegistrationStatus, adminGetServerCreationStatus, adminSetServerCreationStatus, adminGetUserAPIKeys, adminCreateUserAPIKey, adminDeleteUserAPIKey } from './admin';
 export type { PaginatedUsers, PaginatedServers, Node, NodeToken, TransferStatus } from './admin';

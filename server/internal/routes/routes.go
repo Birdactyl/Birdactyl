@@ -63,6 +63,14 @@ func SetupRoutes(app *fiber.App) {
 	authRoutes.Get("/api-keys", middleware.RequireAuth(), readLimit, auth.GetAPIKeys)
 	authRoutes.Post("/api-keys", middleware.RequireAuth(), writeLimit, auth.CreateAPIKey)
 	authRoutes.Delete("/api-keys/:id", middleware.RequireAuth(), writeLimit, auth.DeleteAPIKey)
+	authRoutes.Post("/2fa/setup", middleware.RequireAuth(), strictLimit, auth.TwoFactorSetup)
+	authRoutes.Post("/2fa/enable", middleware.RequireAuth(), strictLimit, auth.TwoFactorEnable)
+	authRoutes.Post("/2fa/disable", middleware.RequireAuth(), strictLimit, auth.TwoFactorDisable)
+	authRoutes.Post("/2fa/backup-codes", middleware.RequireAuth(), strictLimit, auth.TwoFactorBackupCodes)
+	authRoutes.Post("/2fa/verify", middleware.ThousandTHR(middleware.ThousandTHRConfig{
+		RequestsPerMinute: 10,
+		BurstLimit:        10,
+	}), auth.TwoFactorVerify)
 
 	adminRoutes := api.Group("/admin", middleware.RequireAuth(), middleware.RequireAdmin())
 	adminRoutes.Get("/users", readLimit, admin.AdminGetUsers)

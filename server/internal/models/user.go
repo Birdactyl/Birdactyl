@@ -15,6 +15,9 @@ type User struct {
 	IsAdmin            bool           `gorm:"default:false" json:"is_admin"`
 	IsBanned           bool           `gorm:"default:false" json:"is_banned"`
 	ForcePasswordReset bool           `gorm:"default:false" json:"force_password_reset"`
+	TOTPSecret         string         `gorm:"type:varchar(255)" json:"-"`
+	TOTPEnabled        bool           `gorm:"default:false" json:"totp_enabled"`
+	BackupCodes        string         `gorm:"type:text" json:"-"`
 	RAMLimit           *int           `gorm:"default:null" json:"ram_limit"`
 	CPULimit           *int           `gorm:"default:null" json:"cpu_limit"`
 	DiskLimit          *int           `gorm:"default:null" json:"disk_limit"`
