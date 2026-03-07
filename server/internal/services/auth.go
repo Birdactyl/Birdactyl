@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"birdactyl-panel-backend/internal/config"
@@ -92,6 +93,12 @@ func Register(email, username, password, ip, userAgent string) (*models.User, *T
 		return tx.Create(&models.IPRegistration{IP: ip, UserID: user.ID}).Error
 	})
 	if err != nil {
+		if strings.Contains(err.Error(), "UNIQUE constraint failed: users.email") || strings.Contains(err.Error(), "Duplicate entry") {
+			return nil, nil, ErrEmailTaken
+		}
+		if strings.Contains(err.Error(), "UNIQUE constraint failed: users.username") {
+			return nil, nil, ErrUsernameTaken
+		}
 		return nil, nil, err
 	}
 
@@ -119,6 +126,10 @@ func Login(email, password, ip, userAgent string) (*models.User, *TokenPair, err
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
 		return nil, nil, ErrInvalidCredentials
+	}
+
+	if err := CheckEmailVerification(&user, "auth.login"); err != nil {
+		return nil, nil, err
 	}
 
 	if user.TOTPEnabled {

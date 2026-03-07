@@ -18,6 +18,8 @@ type User struct {
 	TOTPSecret         string         `gorm:"type:varchar(255)" json:"-"`
 	TOTPEnabled        bool           `gorm:"default:false" json:"totp_enabled"`
 	BackupCodes        string         `gorm:"type:text" json:"-"`
+	ResetNonce         string         `gorm:"type:varchar(64)" json:"-"`
+	EmailVerified      bool           `gorm:"default:false" json:"email_verified"`
 	RAMLimit           *int           `gorm:"default:null" json:"ram_limit"`
 	CPULimit           *int           `gorm:"default:null" json:"cpu_limit"`
 	DiskLimit          *int           `gorm:"default:null" json:"disk_limit"`

@@ -16,6 +16,7 @@ interface EventMap {
   'navigation': { path: string; previousPath: string };
   'user:login': { userId: string; username: string };
   'user:logout': {};
+  'email:verification_required': { email?: string };
   [key: `plugin:${string}`]: unknown;
 }
 

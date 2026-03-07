@@ -16,7 +16,8 @@ export const refresh = () => api.post('/auth/refresh', { refresh_token: getRefre
 export const logout = async () => { const r = await api.post('/auth/logout'); clearTokens(); return r; };
 export const getMe = () => api.get<User>('/auth/me');
 export const getResources = () => api.get<Resources>('/auth/resources');
-export const updateProfile = (username: string, email: string) => api.patch<{ id: string; username: string; email: string }>('/auth/profile', { username, email });
+export const updateProfile = (username: string, email: string, totpCode?: string) => api.patch<{ id: string; username: string; email: string }>('/auth/profile', { username, email, totp_code: totpCode });
+export const sendEmailChangeCode = () => api.post('/auth/profile/email-change-code', {});
 export const updatePassword = (currentPassword: string, newPassword: string) => api.patch('/auth/password', { current_password: currentPassword, new_password: newPassword });
 export const getSessions = () => api.get<Session[]>('/auth/sessions');
 export const revokeSession = (sessionId: string) => api.delete(`/auth/sessions/${sessionId}`);
@@ -34,3 +35,9 @@ export const enable2FA = (code: string) => api.post<{ backup_codes: string[] }>(
 export const disable2FA = (password: string) => api.post('/auth/2fa/disable', { password });
 export const regenerateBackupCodes = (password: string) => api.post<{ backup_codes: string[] }>('/auth/2fa/backup-codes', { password });
 export const verify2FA = (challengeToken: string, code: string) => api.post('/auth/2fa/verify', { challenge_token: challengeToken, code });
+
+export const requestPasswordReset = (email: string) => api.post('/auth/forgot-password', { email });
+export const resetPassword = (token: string, password: string) => api.post('/auth/reset-password', { token, password });
+
+export const sendVerificationEmail = (email?: string) => api.post('/auth/email/send-verification', email ? { email } : {});
+export const verifyEmail = (token: string) => api.post('/auth/email/verify', { token });

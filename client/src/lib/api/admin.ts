@@ -88,7 +88,8 @@ export const adminSetRegistrationStatus = (enabled: boolean) => api.patch<{ enab
 export const adminGetServerCreationStatus = () => api.get<{ enabled: boolean }>('/admin/settings/server-creation');
 export const adminSetServerCreationStatus = (enabled: boolean) => api.patch<{ enabled: boolean }>('/admin/settings/server-creation', { enabled });
 
-
+export const adminGetEmailVerificationSettings = () => api.get<{ enabled: boolean; restrictions: string[] }>('/admin/settings/email-verification');
+export const adminSetEmailVerificationSettings = (data: { enabled?: boolean; restrictions?: string[] }) => api.patch('/admin/settings/email-verification', data);
 export interface AdminDatabaseHost {
   id: string;
   name: string;

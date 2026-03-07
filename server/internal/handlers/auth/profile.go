@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"fmt"
 	"birdactyl-panel-backend/internal/handlers"
 	"birdactyl-panel-backend/internal/config"
 	"birdactyl-panel-backend/internal/models"
@@ -70,6 +71,15 @@ func GetResources(c *fiber.Ctx) error {
 type UpdateProfileRequest struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
+	TotpCode string `json:"totp_code"`
+}
+
+func SendEmailChangeCode(c *fiber.Ctx) error {
+	claims := c.Locals("claims").(*services.AccessClaims)
+	if err := services.SendEmailChangeCode(claims.UserID); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"success": false, "error": "Failed to send code"})
+	}
+	return c.JSON(fiber.Map{"success": true, "message": "Verification code sent to your current email address."})
 }
 
 func UpdateProfile(c *fiber.Ctx) error {
@@ -80,16 +90,33 @@ func UpdateProfile(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"success": false, "error": "Invalid request body"})
 	}
 
-	user, err := services.UpdateProfile(claims.UserID, req.Username, req.Email)
+	user, emailChanged, err := services.UpdateProfile(claims.UserID, req.Username, req.Email, req.TotpCode)
 	if err != nil {
 		status := fiber.StatusInternalServerError
 		if err == services.ErrEmailTaken || err == services.ErrUsernameTaken {
 			status = fiber.StatusConflict
+		} else if err == services.ErrTOTPInvalidCode {
+			status = fiber.StatusUnauthorized
 		}
 		return c.Status(status).JSON(fiber.Map{"success": false, "error": err.Error()})
 	}
 
 	handlers.Log(c, user, handlers.ActionProfileUpdate, "Updated profile", map[string]interface{}{"username": req.Username, "email": req.Email})
+
+	if emailChanged && services.IsEmailVerificationEnabled() {
+		cfg := config.Get()
+		if cfg.SMTPEnabled() {
+			baseURL := cfg.Server.BaseURL
+			if baseURL == "" {
+				proto := "http"
+				if c.Get("X-Forwarded-Proto") == "https" || c.Secure() {
+					proto = "https"
+				}
+				baseURL = fmt.Sprintf("%s://%s", proto, c.Hostname())
+			}
+			go services.SendVerificationEmail(user.ID, baseURL)
+		}
+	}
 
 	return c.JSON(fiber.Map{"success": true, "data": user})
 }

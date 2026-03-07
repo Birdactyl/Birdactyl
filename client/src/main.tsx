@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage'
 import AuthPage from './pages/AuthPage'
 import ConsolePage from './pages/ConsolePage'
 import { ProtectedRoute, NotificationContainer, useNotifications, ContextMenuProvider } from './components'
+import { EmailVerificationModal } from './components/modals'
 import { initAuth } from './lib/auth'
 import { initPluginHost } from './lib/pluginHost'
 import { loadAllPlugins } from './lib/pluginLoader'
@@ -32,6 +33,7 @@ function App() {
   return (
     <>
       <NotificationContainer notifications={notifications} onClose={removeNotification} />
+      <EmailVerificationModal />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/auth" element={<AuthPage />} />

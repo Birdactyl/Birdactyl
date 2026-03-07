@@ -15,11 +15,26 @@ type Config struct {
 	Server     ServerConfig          `yaml:"server"`
 	Database   DatabaseConfig        `yaml:"database"`
 	Auth       AuthConfig            `yaml:"auth"`
+	SMTP       SMTPConfig            `yaml:"smtp"`
 	Resources  ResourcesConfig       `yaml:"resources"`
 	Logging    LoggingConfig         `yaml:"logging"`
 	Plugins    PluginsConfig         `yaml:"plugins"`
 	RootAdmins []string              `yaml:"root_admins"`
 	APIKeys    map[string]APIKeyConfig `yaml:"api_keys"`
+}
+
+type SMTPConfig struct {
+	Enabled   bool   `yaml:"enabled"`
+	Host      string `yaml:"host"`
+	Port      int    `yaml:"port"`
+	Username  string `yaml:"username"`
+	Password  string `yaml:"password"`
+	FromEmail string `yaml:"from_email"`
+	FromName  string `yaml:"from_name"`
+}
+
+func (c *Config) SMTPEnabled() bool {
+	return c.SMTP.Enabled && c.SMTP.Host != "" && c.SMTP.FromEmail != ""
 }
 
 type APIKeyConfig struct {
@@ -28,8 +43,9 @@ type APIKeyConfig struct {
 }
 
 type ServerConfig struct {
-	Host string `yaml:"host"`
-	Port int    `yaml:"port"`
+	Host    string `yaml:"host"`
+	Port    int    `yaml:"port"`
+	BaseURL string `yaml:"base_url"`
 }
 
 type LoggingConfig struct {
@@ -154,6 +170,7 @@ func generateDefaultConfig(path string) error {
 	defaultConfig := `server:
   host: "0.0.0.0"
   port: 3000
+  base_url: ""
 
 logging:
   file: "logs/panel.log"
@@ -186,6 +203,15 @@ resources:
   default_cpu: 200
   default_disk: 10240
   max_servers: 3
+
+smtp:
+  enabled: false
+  host: "smtp.gmail.com"
+  port: 587
+  username: ""
+  password: ""
+  from_email: "noreply@example.com"
+  from_name: "Birdactyl"
 
 plugins:
   address: "localhost:50050"
@@ -256,6 +282,12 @@ func (c *Config) setDefaults() {
 	if c.Resources.DefaultCPU == 0 {
 		c.Resources.DefaultCPU = 200
 	}
+	if c.SMTP.Port == 0 {
+		c.SMTP.Port = 587
+	}
+	if c.SMTP.FromName == "" {
+		c.SMTP.FromName = "Birdactyl"
+	}
 	if c.Resources.DefaultDisk == 0 {
 		c.Resources.DefaultDisk = 10240
 	}
@@ -282,7 +314,6 @@ func (c *Config) loadEnvOverrides() {
 	}
 	if v := os.Getenv("DB_PORT"); v != "" {
 		if port, err := fmt.Sscanf(v, "%d", &c.Database.Port); err == nil && port == 1 {
-			// success
 		}
 	}
 	if v := os.Getenv("DB_USER"); v != "" {
@@ -302,7 +333,6 @@ func (c *Config) loadEnvOverrides() {
 	}
 	if v := os.Getenv("PANEL_PORT"); v != "" {
 		if port, err := fmt.Sscanf(v, "%d", &c.Server.Port); err == nil && port == 1 {
-			// success
 		}
 	}
 	if v := os.Getenv("JWT_SECRET"); v != "" {

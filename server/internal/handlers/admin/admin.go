@@ -556,6 +556,16 @@ func AdminDeleteUsers(c *fiber.Ctx) error {
 		_, err := plugins.ExecuteMixin(string(plugins.MixinUserDelete), mixinInput, func(input map[string]interface{}) (interface{}, error) {
 			database.DB.Where("user_id = ?", uid).Delete(&models.Session{})
 			database.DB.Where("user_id = ?", uid).Delete(&models.ActivityLog{})
+
+			var user models.User
+			if err := database.DB.Where("id = ?", uid).First(&user).Error; err == nil {
+				suffix := "-deleted-" + uuid.New().String()[:8]
+				database.DB.Model(&models.User{}).Where("id = ?", uid).Updates(map[string]interface{}{
+					"username": user.Username + suffix,
+					"email":    user.Email + suffix,
+				})
+			}
+
 			return nil, database.DB.Where("id = ?", uid).Delete(&models.User{}).Error
 		})
 
