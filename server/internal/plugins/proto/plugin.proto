@@ -13,6 +13,9 @@ service PluginService {
   rpc OnSchedule(ScheduleRequest) returns (Empty);
   rpc OnMixin(MixinRequest) returns (MixinResponse);
   rpc Shutdown(Empty) returns (Empty);
+  
+  // Custom Events
+  rpc SendEmail(SendEmailRequest) returns (Empty);
 }
 
 message PluginMessage {
@@ -92,6 +95,10 @@ service PanelService {
   rpc RevokeAdmin(IDRequest) returns (Empty);
   rpc SetUserResources(SetUserResourcesRequest) returns (Empty);
   rpc ForcePasswordReset(IDRequest) returns (Empty);
+  rpc RequestPasswordReset(EmailRequest) returns (Empty);
+  rpc SendVerificationEmail(IDRequest) returns (Empty);
+  rpc GetUser2FAStatus(IDRequest) returns (TwoFactorStatus);
+  rpc AdminDisable2FA(Handle2FARequest) returns (Empty);
 
   // Subusers
   rpc ListSubusers(IDRequest) returns (ListSubusersResponse);
@@ -168,6 +175,8 @@ service PanelService {
 
   // Inter-plugin communication
   rpc CallPlugin(CallPluginRequest) returns (CallPluginResponse);
+
+  rpc SendEmail(SendEmailRequest) returns (Empty);
 }
 
 // Common
@@ -176,6 +185,15 @@ message IDRequest { string id = 1; }
 message EmailRequest { string email = 1; }
 message UsernameRequest { string username = 1; }
 message BoolRequest { bool value = 1; }
+
+message SendEmailRequest {
+  string to = 1;
+  string subject = 2;
+  string html_body = 3;
+}
+
+message Handle2FARequest { string user_id = 1; }
+message TwoFactorStatus { bool is_enabled = 1; }
 
 message PluginInfo {
   string id = 1;

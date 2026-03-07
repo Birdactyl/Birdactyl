@@ -398,8 +398,16 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  SlidePanel,
+  StatusDot,
+  FloatingBar,
+  ContextMenu,
+  ContextMenuZone,
+  ContextMenuProvider,
   Icons,
 } from '@birdactyl/plugin-ui';
+
+
 ```
 
 #### Button
@@ -473,6 +481,43 @@ const columns = [
     <DropdownMenuItem onSelect={() => handleDelete()} destructive>Delete</DropdownMenuItem>
   </DropdownMenuContent>
 </DropdownMenu>
+
+#### SlidePanel
+
+```tsx
+<SlidePanel open={isOpen} onClose={() => setIsOpen(false)} title="Details">
+  <p>Content goes here</p>
+</SlidePanel>
+```
+
+#### StatusDot
+
+```tsx
+<StatusDot status="running" /> // Green
+<StatusDot status="starting" /> // Yellow
+<StatusDot status="stopped" /> // Gray
+<StatusDot status="offline" /> // Red
+```
+
+#### FloatingBar
+
+```tsx
+<FloatingBar show={hasSelection}>
+  <Button onClick={handleBulkDelete}>Delete Selected</Button>
+</FloatingBar>
+```
+
+#### ContextMenu
+
+```tsx
+<ContextMenuZone items={[
+  { label: 'Edit', onClick: handleEdit },
+  { label: 'Delete', onClick: handleDelete, destructive: true },
+]}>
+  <div className="p-4 bg-neutral-800">Right click me</div>
+</ContextMenuZone>
+```
+
 ```
 
 #### Icons

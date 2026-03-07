@@ -46,6 +46,11 @@ plugins:
 
 See [Configuration Reference](configuration.md) for all options.
 
+For specific feature setup, see:
+- [Email Setup](email-setup.md)
+- [Security & 2FA](security-2fa.md)
+
+
 ## Running
 
 ```bash
@@ -135,7 +140,14 @@ logging:
 
 Database settings can be overridden with environment variables:
 
+- `DB_DRIVER` - Database driver (`postgres`, `mysql`, `sqlite`)
 - `DB_HOST` - Database host
+- `DB_PORT` - Database port
 - `DB_USER` - Database username
 - `DB_PASSWORD` - Database password
 - `DB_NAME` - Database name
+- `DB_SSLMODE` - Database SSL mode (postgres only)
+- `PANEL_HOST` - Panel bind address
+- `PANEL_PORT` - Panel port
+- `JWT_SECRET` - JWT signing secret
+

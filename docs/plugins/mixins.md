@@ -203,6 +203,11 @@ public MyPlugin() {
 | `server.kill` | server_id |
 | `server.suspend` | server_id |
 | `server.unsuspend` | server_id |
+| `server.reinstall` | server_id |
+| `server.transfer` | server_id, target_node_id |
+| `server.sendCommand` | server_id, command |
+| `server.updateVariables`| server_id, variables |
+
 
 ### User Operations
 
@@ -214,6 +219,15 @@ public MyPlugin() {
 | `user.authenticate` | email, password |
 | `user.ban` | user_id |
 | `user.unban` | user_id |
+| `user.register` | email, username, password |
+| `user.setAdmin` | user_id |
+| `user.revokeAdmin` | user_id |
+| `user.setResources` | user_id, ram_limit, cpu_limit, disk_limit, server_limit |
+| `user.forcePasswordReset` | user_id |
+| `user.requestPasswordReset` | email |
+| `user.get2FAStatus` | user_id |
+| `user.adminDisable2FA` | user_id |
+
 
 ### File Operations
 
@@ -225,6 +239,96 @@ public MyPlugin() {
 | `file.upload` | server_id, path |
 | `file.move` | server_id, from, to |
 | `file.copy` | server_id, from, to |
+| `file.createFolder` | server_id, path |
+| `file.compress` | server_id, paths, destination |
+| `file.decompress` | server_id, path |
+
+### Subuser Operations
+
+| Target | Input Fields |
+|--------|--------------|
+| `subuser.list` | server_id |
+| `subuser.add` | server_id, email, permissions |
+| `subuser.update` | server_id, user_id, permissions |
+| `subuser.remove` | server_id, user_id |
+
+### Backup Operations
+
+| Target | Input Fields |
+|--------|--------------|
+| `backup.list` | server_id |
+| `backup.create` | server_id, name |
+| `backup.delete` | server_id, backup_id |
+| `backup.restore` | server_id, backup_id |
+
+### Database Operations
+
+| Target | Input Fields |
+|--------|--------------|
+| `database.list` | server_id |
+| `database.create` | server_id, name |
+| `database.delete` | database_id |
+| `database.rotatePassword`| database_id |
+
+### Node Operations
+
+| Target | Input Fields |
+|--------|--------------|
+| `node.list` | |
+| `node.get` | node_id |
+| `node.create` | name, fqdn, port |
+| `node.delete` | node_id |
+| `node.resetToken` | node_id |
+
+### Package Operations
+
+| Target | Input Fields |
+|--------|--------------|
+| `package.list` | |
+| `package.get` | package_id |
+| `package.create` | name, description, docker_image, ... |
+| `package.update` | package_id, name, ... |
+| `package.delete` | package_id |
+
+### IP Ban Operations
+
+| Target | Input Fields |
+|--------|--------------|
+| `ipban.list` | |
+| `ipban.create` | ip, reason |
+| `ipban.delete` | ban_id |
+
+### Allocation Operations
+
+| Target | Input Fields |
+|--------|--------------|
+| `allocation.add` | server_id, port |
+| `allocation.delete` | server_id, port |
+| `allocation.setPrimary` | server_id, port |
+
+### Database Host Operations
+
+| Target | Input Fields |
+|--------|--------------|
+| `dbhost.list` | |
+| `dbhost.create` | name, host, port, username, password |
+| `dbhost.update` | host_id, name, ... |
+| `dbhost.delete` | host_id |
+
+### Settings Operations
+
+| Target | Input Fields |
+|--------|--------------|
+| `settings.get` | |
+| `settings.setRegistration` | enabled |
+| `settings.setServerCreation`| enabled |
+
+### Activity Log Operations
+
+| Target | Input Fields |
+|--------|--------------|
+| `activitylog.get` | limit |
+
 
 ## Best Practices
 

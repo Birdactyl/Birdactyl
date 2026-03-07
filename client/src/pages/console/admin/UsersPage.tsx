@@ -95,9 +95,11 @@ const VerificationActionGroups: Record<string, { label: string; actions: { key: 
   },
 };
 
-interface User { id: string; username: string; email: string; is_admin: boolean; is_banned: boolean; is_root_admin: boolean; force_password_reset: boolean; ram_limit: number | null; cpu_limit: number | null; disk_limit: number | null; server_limit: number | null; created_at: string; }
+interface User { id: string; username: string; email: string; is_admin: boolean; is_banned: boolean; is_root_admin: boolean; force_password_reset: boolean; totp_enabled: boolean; ram_limit: number | null; cpu_limit: number | null; disk_limit: number | null; server_limit: number | null; created_at: string; }
+
 type Filter = 'all' | 'admin' | 'banned';
-type ActionType = 'ban' | 'unban' | 'delete' | 'setAdmin' | 'revokeAdmin' | 'forceReset';
+type ActionType = 'ban' | 'unban' | 'delete' | 'setAdmin' | 'revokeAdmin' | 'forceReset' | 'disable2FA';
+
 
 export default function UsersPage() {
   const table = useTable<User, Filter>({
@@ -184,7 +186,9 @@ export default function UsersPage() {
     ...(!user.is_admin && !user.is_root_admin ? [{ label: 'Set Admin', onClick: () => setConfirmAction({ type: 'setAdmin', ids: [user.id] }) }] : []),
     ...(user.is_admin && !user.is_root_admin ? [{ label: 'Revoke Admin', onClick: () => setConfirmAction({ type: 'revokeAdmin', ids: [user.id] }) }] : []),
     { label: 'Force Password Reset', onClick: () => setConfirmAction({ type: 'forceReset', ids: [user.id] }) },
+    ...(user.totp_enabled ? [{ label: 'Disable 2FA', onClick: () => setConfirmAction({ type: 'disable2FA', ids: [user.id] }), variant: 'danger' as const }] : []),
     'separator' as const,
+
     ...(user.is_banned
       ? [{ label: 'Unban', onClick: () => setConfirmAction({ type: 'unban', ids: [user.id] }) }]
       : [{ label: 'Ban', onClick: () => setConfirmAction({ type: 'ban', ids: [user.id] }), variant: 'danger' as const }]
@@ -219,7 +223,9 @@ export default function UsersPage() {
             <span className="inline-flex items-center rounded-md bg-neutral-500/10 px-2 py-1 text-xs font-medium text-neutral-400 ring-1 ring-inset ring-neutral-500/20">User</span>
           )}
           {user.force_password_reset && <span className="inline-flex items-center rounded-md bg-orange-500/10 px-2 py-1 text-xs font-medium text-orange-400 ring-1 ring-inset ring-orange-500/20">Reset</span>}
+          {user.totp_enabled && <span className="inline-flex items-center rounded-md bg-blue-500/10 px-2 py-1 text-xs font-medium text-blue-400 ring-1 ring-inset ring-blue-500/20">2FA</span>}
         </div>
+
       )
     },
     { key: 'joined', header: 'Joined', render: (user: User) => <span className="text-sm text-neutral-400">{new Date(user.created_at).toLocaleDateString()}</span> },
@@ -305,8 +311,10 @@ export default function UsersPage() {
           {hasSelectedBanned && <button onClick={() => setConfirmAction({ type: 'unban', ids: Array.from(table.selected) })} className="text-xs font-medium px-3 py-1.5 rounded-lg text-green-400 hover:bg-green-500/10 transition-colors">Unban</button>}
           {hasSelectedNonAdmin && <button onClick={() => setConfirmAction({ type: 'setAdmin', ids: Array.from(table.selected) })} className="text-xs font-medium px-3 py-1.5 rounded-lg text-amber-400 hover:bg-amber-500/10 transition-colors">Set Admin</button>}
           {hasSelectedRevokableAdmin && <button onClick={() => setConfirmAction({ type: 'revokeAdmin', ids: selectedUsers.filter(u => u.is_admin && !u.is_root_admin).map(u => u.id) })} className="text-xs font-medium px-3 py-1.5 rounded-lg text-amber-400 hover:bg-amber-500/10 transition-colors">Revoke Admin</button>}
+          {selectedUsers.some(u => u.totp_enabled) && <button onClick={() => setConfirmAction({ type: 'disable2FA', ids: selectedUsers.filter(u => u.totp_enabled).map(u => u.id) })} className="text-xs font-medium px-3 py-1.5 rounded-lg text-blue-400 hover:bg-blue-500/10 transition-colors">Disable 2FA</button>}
           <button onClick={() => setConfirmAction({ type: 'forceReset', ids: Array.from(table.selected) })} className="text-xs font-medium px-3 py-1.5 rounded-lg text-orange-400 hover:bg-orange-500/10 transition-colors">Force Reset</button>
           <button onClick={() => setConfirmAction({ type: 'delete', ids: Array.from(table.selected) })} className="text-xs font-medium px-3 py-1.5 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors">Delete</button>
+
         </BulkActionBar>
 
         <div className="rounded-xl bg-neutral-800/30">

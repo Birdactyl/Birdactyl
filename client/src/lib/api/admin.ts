@@ -3,9 +3,10 @@ import type { Server } from './servers';
 import type { Package } from './packages';
 
 export interface PaginatedUsers {
-  users: { id: string; username: string; email: string; is_admin: boolean; is_banned: boolean; is_root_admin: boolean; force_password_reset: boolean; ram_limit: number | null; cpu_limit: number | null; disk_limit: number | null; server_limit: number | null; created_at: string }[];
+  users: { id: string; username: string; email: string; is_admin: boolean; is_banned: boolean; is_root_admin: boolean; force_password_reset: boolean; totp_enabled: boolean; ram_limit: number | null; cpu_limit: number | null; disk_limit: number | null; server_limit: number | null; created_at: string }[];
   page: number; per_page: number; total: number; total_pages: number; admin_count: number;
 }
+
 
 export interface Node {
   id: string; name: string; fqdn: string; port: number; is_online: boolean; auth_error: boolean; last_heartbeat: string | null; icon?: string;
@@ -27,7 +28,9 @@ export const adminUnbanUsers = (userIds: string[]) => api.post<{ affected: numbe
 export const adminSetAdmin = (userIds: string[]) => api.post<{ affected: number }>('/admin/users/set-admin', { user_ids: userIds });
 export const adminRevokeAdmin = (userIds: string[]) => api.post<{ affected: number }>('/admin/users/revoke-admin', { user_ids: userIds });
 export const adminForcePasswordReset = (userIds: string[]) => api.post<{ affected: number }>('/admin/users/force-reset', { user_ids: userIds });
+export const adminDisable2FA = (userIds: string[]) => api.post<{ affected: number }>('/admin/users/2fa-disable', { user_ids: userIds });
 export const adminDeleteUsers = (userIds: string[]) => api.post<{ affected: number }>('/admin/users/delete', { user_ids: userIds });
+
 export const adminUpdateUser = (userId: string, data: { email?: string; username?: string; password?: string; ram_limit?: number | null; cpu_limit?: number | null; disk_limit?: number | null; server_limit?: number | null }) => api.patch(`/admin/users/${userId}`, data);
 
 export const adminGetNodes = () => api.get<Node[]>('/admin/nodes');

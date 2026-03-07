@@ -119,6 +119,12 @@ onEvent("server.start", event -> {
 | `server.unsuspend` | server_id | Server unsuspended |
 | `server.reinstall` | server_id | Server reinstalling |
 | `server.transfer` | server_id, target_node_id | Server transferring |
+| `server.creating` | name, user_id, node_id | Before server is created |
+| `server.updating` | server_id, name, memory | Before server is updated |
+| `server.suspending` | server_id | Before server is suspended |
+| `server.unsuspending`| server_id | Before server is unsuspended |
+| `server.statusUpdate`| server_id, status | After server status change |
+
 
 ### User Events
 
@@ -131,6 +137,13 @@ onEvent("server.start", event -> {
 | `user.ban` | user_id | User banned |
 | `user.unban` | user_id | User unbanned |
 | `user.password_reset` | user_id | Password reset requested |
+| `user.registering` | email, username | Before user registers |
+| `user.creating` | email, username | Before user is created by admin |
+| `user.updating` | user_id, email, username | Before user is updated |
+| `user.banning` | user_id | Before user is banned |
+| `user.unbanning` | user_id | Before user is unbanned |
+| `user.statusUpdate` | user_id, active | After user status change |
+
 
 ### File Events
 
@@ -139,6 +152,12 @@ onEvent("server.start", event -> {
 | `file.upload` | server_id, path, size | File uploaded |
 | `file.delete` | server_id, path | File deleted |
 | `file.write` | server_id, path | File written |
+| `file.create` | server_id, path | Folder created |
+| `file.move` | server_id, from, to | File/Folder moved |
+| `file.copy` | server_id, from, to | File/Folder copied |
+| `file.compress` | server_id, destination | Files compressed |
+| `file.decompress` | server_id, path | Archive decompressed |
+
 
 ### Backup Events
 
@@ -162,6 +181,49 @@ onEvent("server.start", event -> {
 | `subuser.add` | server_id, user_id, email | Subuser added |
 | `subuser.remove` | server_id, subuser_id | Subuser removed |
 | `subuser.update` | server_id, subuser_id | Subuser permissions updated |
+ 
+ ### Node Events
+ 
+ | Event | Data | Description |
+ |-------|------|-------------|
+ | `node.create` | node_id, name, fqdn | Node created |
+ | `node.creating` | name, fqdn | Before node is created |
+ | `node.update` | node_id, name, fqdn | Node updated |
+ | `node.updating` | node_id, name | Before node is updated |
+ | `node.delete` | node_id | Node deleted |
+ | `node.deleting` | node_id | Before node is deleted |
+ | `node.heartbeat` | node_id, is_online | Node heartbeat received |
+ | `node.online` | node_id | Node came online |
+ | `node.offline` | node_id | Node went offline |
+ 
+ ### Package Events
+ 
+ | Event | Data | Description |
+ |-------|------|-------------|
+ | `package.create` | package_id, name | Package created |
+ | `package.creating` | name, docker_image | Before package is created |
+ | `package.update` | package_id, name | Package updated |
+ | `package.updating` | package_id, name | Before package is updated |
+ | `package.delete` | package_id | Package deleted |
+ | `package.deleting` | package_id | Before package is deleted |
+ 
+ ### System Events
+ 
+ | Event | Data | Description |
+ |-------|------|-------------|
+ | `system.startup` | version | Panel starting up |
+ | `system.shutdown` | | Panel shutting down |
+ | `system.maintenance` | enabled | Maintenance mode toggled |
+ 
+ ### Plugin Events
+ 
+ | Event | Data | Description |
+ |-------|------|-------------|
+ | `plugin.loading` | plugin_id | Before a plugin is loaded |
+ | `plugin.loaded` | plugin_id | After a plugin is loaded |
+ | `plugin.unloading` | plugin_id | Before a plugin is unloaded |
+ | `plugin.unloaded` | plugin_id | After a plugin is unloaded |
+
 
 ### Console Events
 
