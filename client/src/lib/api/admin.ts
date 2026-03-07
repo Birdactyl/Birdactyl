@@ -40,7 +40,17 @@ export const adminResetNodeToken = (id: string) => api.post<NodeToken>(`/admin/n
 export const adminGetPairingCode = () => api.get<{ code: string }>('/admin/nodes/pairing-code');
 export const adminPairNode = (name: string, fqdn: string, port: number, code: string) => api.post<{ node: Node; token: NodeToken }>('/admin/nodes/pair', { name, fqdn, port, code });
 
-export const adminGetServers = () => api.get<Server[]>('/admin/servers');
+export interface PaginatedServers {
+  servers: Server[];
+  page: number; per_page: number; total: number; total_pages: number;
+}
+
+export const adminGetServers = (page = 1, perPage = 20, search = '', filter = 'all') => {
+  const params = new URLSearchParams({ page: String(page), per_page: String(perPage) });
+  if (search) params.set('search', search);
+  if (filter !== 'all') params.set('filter', filter);
+  return api.get<PaginatedServers>(`/admin/servers?${params}`);
+};
 export const adminCreateServer = (data: { name: string; node_id: string; package_id: string; memory: number; cpu: number; disk: number; user_id?: string }) => api.post<Server>('/admin/servers', data);
 export const adminSuspendServers = (serverIds: string[]) => api.post<{ affected: number }>('/admin/servers/suspend', { server_ids: serverIds });
 export const adminUnsuspendServers = (serverIds: string[]) => api.post<{ affected: number }>('/admin/servers/unsuspend', { server_ids: serverIds });

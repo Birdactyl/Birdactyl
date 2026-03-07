@@ -1,6 +1,8 @@
 package server
 
 import (
+	"math"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -15,14 +17,54 @@ import (
 )
 
 func AdminGetServers(c *fiber.Ctx) error {
-	servers, err := services.GetAllServers()
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"success": false, "error": "Failed to fetch servers",
-		})
+	page, _ := strconv.Atoi(c.Query("page", "1"))
+	perPage, _ := strconv.Atoi(c.Query("per_page", "20"))
+	search := c.Query("search", "")
+	filter := c.Query("filter", "")
+
+	if page < 1 {
+		page = 1
+	}
+	if perPage < 1 {
+		perPage = 20
 	}
 
-	return c.JSON(fiber.Map{"success": true, "data": servers})
+	query := database.DB.Model(&models.Server{}).Preload("User").Preload("Node").Preload("Package")
+	if search != "" {
+		val := database.ILikeValue(search)
+		query = query.Where(
+			database.ILike("servers.name", val)+" OR servers.id::text LIKE ? OR servers.user_id IN (SELECT id FROM users WHERE "+database.ILike("username", val)+")",
+			val, "%"+search+"%", val,
+		)
+	}
+	switch filter {
+	case "running":
+		query = query.Where("status = ? AND is_suspended = ?", models.ServerStatusRunning, false)
+	case "stopped":
+		query = query.Where("status != ? AND is_suspended = ?", models.ServerStatusRunning, false)
+	case "suspended":
+		query = query.Where("is_suspended = ?", true)
+	}
+
+	var total int64
+	query.Count(&total)
+
+	var servers []models.Server
+	offset := (page - 1) * perPage
+	query.Order("created_at DESC").Offset(offset).Limit(perPage).Find(&servers)
+
+	totalPages := int(math.Ceil(float64(total) / float64(perPage)))
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"data": fiber.Map{
+			"servers":     servers,
+			"page":        page,
+			"per_page":    perPage,
+			"total":       total,
+			"total_pages": totalPages,
+		},
+	})
 }
 
 func AdminCreateServer(c *fiber.Ctx) error {

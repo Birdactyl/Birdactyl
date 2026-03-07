@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { adminGetServers, adminViewServer, adminGetServerCreationStatus, adminSetServerCreationStatus, adminGetTransferStatus, adminGetAllTransfers, adminGetNodes, getAvailablePackages, type Server, type Node, type TransferStatus, type Package, startServer, stopServer, killServer } from '../../../lib/api';
 import { useTable } from '../../../hooks/useTable';
@@ -7,28 +7,16 @@ import { EditServerModal, AdminCreateServerModal, ConfirmActionModal, BulkTransf
 
 type Filter = 'all' | 'running' | 'stopped' | 'suspended';
 
-const filterServer = (s: Server, search: string, filter: Filter): boolean => {
-  if (search) {
-    const q = search.toLowerCase();
-    if (!s.name.toLowerCase().includes(q) && !s.user?.username?.toLowerCase().includes(q) && !s.id.toLowerCase().includes(q)) return false;
-  }
-  if (filter === 'running') return s.status === 'running' && !s.is_suspended;
-  if (filter === 'stopped') return s.status !== 'running' && !s.is_suspended;
-  if (filter === 'suspended') return s.is_suspended;
-  return true;
-};
-
 export default function ServersPage() {
   const navigate = useNavigate();
-  const filterFn = useCallback(filterServer, []);
   const table = useTable<Server, Filter>({
-    mode: 'client',
-    fetchFn: async () => {
-      const res = await adminGetServers();
-      return { success: res.success, data: res.data, error: res.error };
+    mode: 'server',
+    fetchFn: async (page, perPage, search, filter) => {
+      const res = await adminGetServers(page, perPage, search, filter);
+      return { ...res, data: res.data ? { ...res.data, items: res.data.servers } : undefined };
     },
-    filterFn,
     defaultFilter: 'all',
+    itemsKey: 'items',
   });
 
   const [editServer, setEditServer] = useState<Server | null>(null);
@@ -218,7 +206,17 @@ export default function ServersPage() {
               />
             </div>
           </div>
-          <Pagination page={table.page} totalPages={table.totalPages} total={table.total} perPage={table.perPage} onPageChange={table.setPage} onPerPageChange={table.handlePerPageChange} loading={table.loading} />
+          <Pagination page={table.page} totalPages={table.totalPages} total={table.total} perPage={table.perPage} perPageOptions={(() => {
+            const options = [10, 20, 50, 100];
+            const steps = [250, 500, 1000, 2500, 5000, 10000];
+            for (const step of steps) {
+              if (table.total > step) options.push(step);
+            }
+            if (table.total > 100 && !options.includes(table.total)) {
+              options.push(table.total);
+            }
+            return options;
+          })()} onPageChange={table.setPage} onPerPageChange={table.handlePerPageChange} loading={table.loading} />
         </div>
 
         <BulkActionBar count={table.selected.size} onClear={table.clearSelection}>
