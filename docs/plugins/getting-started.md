@@ -83,7 +83,7 @@ Create a Maven project with this `pom.xml`:
         <dependency>
             <groupId>io.birdactyl</groupId>
             <artifactId>birdactyl-sdk</artifactId>
-            <version>0.2.3</version>
+            <version>0.2.4</version>
         </dependency>
     </dependencies>
 </project>
