@@ -5,7 +5,7 @@ export { register, login, refresh, logout, getMe, getResources, updateProfile, u
 export type { Session, User, Resources, APIKey, APIKeyCreated } from './auth';
 
 export { adminGetUsers, adminCreateUser, adminBanUsers, adminUnbanUsers, adminDeleteUsers, adminSetAdmin, adminRevokeAdmin, adminForcePasswordReset, adminUpdateUser, adminGetNodes, adminRefreshNodes, adminCreateNode, adminGetNode, adminUpdateNode, adminDeleteNode, adminResetNodeToken, adminGetPairingCode, adminPairNode, adminGetServers, adminCreateServer, adminSuspendServers, adminUnsuspendServers, adminDeleteServers, adminUpdateServerResources, adminTransferServer, adminGetTransferStatus, adminGetAllTransfers, adminViewServer, adminGetPackages, adminCreatePackage, adminGetPackage, adminUpdatePackage, adminDeletePackage, adminGetRegistrationStatus, adminSetRegistrationStatus, adminGetServerCreationStatus, adminSetServerCreationStatus, adminGetUserAPIKeys, adminCreateUserAPIKey, adminDeleteUserAPIKey } from './admin';
-export type { PaginatedUsers, Node, NodeToken, TransferStatus } from './admin';
+export type { PaginatedUsers, PaginatedServers, Node, NodeToken, TransferStatus } from './admin';
 
 export { adminGetLogs, getServerLogs } from './logs';
 export type { ActivityLog, PaginatedLogs } from './logs';
