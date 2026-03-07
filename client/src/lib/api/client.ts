@@ -1,13 +1,15 @@
 import { getAccessToken, setAccessToken, setRefreshToken, getRefreshToken, clearTokens } from '../auth';
 import { notify } from '../../components/feedback/Notification';
 
+import { eventBus } from '../eventBus';
+
 export const API_BASE = '/api/v1';
 
 interface Notification { title: string; message: string; type?: 'error' | 'success' | 'info'; }
-interface ApiError { code?: number; message?: string; retry_after?: number; }
-interface ApiResponse<T = unknown> { success: boolean; data?: T & { tokens?: TokenPair }; error?: string | ApiError; tokens?: TokenPair; notifications?: Notification[]; }
+interface ApiError { code?: number | string; message?: string; retry_after?: number; }
+interface ApiResponse<T = unknown> { success: boolean; data?: T & { tokens?: TokenPair }; error?: string | ApiError; code?: string; tokens?: TokenPair; notifications?: Notification[]; }
 interface TokenPair { access_token: string; refresh_token: string; }
-export interface ParsedResponse<T = unknown> { success: boolean; data?: T; error?: string; rateLimited?: boolean; retryAfter?: number; hasNotifications?: boolean; }
+export interface ParsedResponse<T = unknown> { success: boolean; data?: T; error?: string; errorCode?: string; rateLimited?: boolean; retryAfter?: number; hasNotifications?: boolean; }
 
 function parseResponse<T>(data: ApiResponse<T>): ParsedResponse<T> {
   let hasNotifications = false;
@@ -18,6 +20,14 @@ function parseResponse<T>(data: ApiResponse<T>): ParsedResponse<T> {
     }
   }
   const result: ParsedResponse<T> = { success: data.success, data: data.data, hasNotifications };
+  const errorCode = data.code || (typeof data.error !== 'string' ? data.error?.code : undefined);
+  if (errorCode) {
+    result.errorCode = String(errorCode);
+    if (result.errorCode === 'EMAIL_NOT_VERIFIED') {
+      eventBus.emit('email:verification_required', { email: (data as any).data?.email });
+    }
+  }
+
   if (data.error) {
     result.error = typeof data.error === 'string' ? data.error : data.error.message || 'Something went wrong';
     if (typeof data.error !== 'string' && data.error.code === 429) {

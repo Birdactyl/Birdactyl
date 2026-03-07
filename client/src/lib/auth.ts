@@ -2,7 +2,7 @@ import { eventBus } from './eventBus';
 
 let accessToken: string | null = null;
 let refreshPromise: Promise<boolean> | null = null;
-let currentUser: { id: string; username: string; email: string; is_admin: boolean; force_password_reset: boolean; totp_enabled: boolean } | null = null;
+let currentUser: { id: string; username: string; email: string; is_admin: boolean; force_password_reset: boolean; totp_enabled: boolean; email_verified: boolean } | null = null;
 
 export function getAccessToken(): string | null {
   return accessToken;
@@ -37,7 +37,7 @@ export function getUser() {
   return currentUser;
 }
 
-export function setUser(user: { id: string; username: string; email: string; is_admin: boolean; force_password_reset: boolean; totp_enabled: boolean } | null) {
+export function setUser(user: { id: string; username: string; email: string; is_admin: boolean; force_password_reset: boolean; totp_enabled: boolean; email_verified: boolean } | null) {
   const wasNull = currentUser === null;
   currentUser = user;
   if (wasNull && user) {

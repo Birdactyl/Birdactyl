@@ -22,3 +22,4 @@ export { default as ScheduleModal } from './ScheduleModal';
 export { default as DeleteScheduleModal } from './DeleteScheduleModal';
 export { default as UserAPIKeysModal } from './UserAPIKeysModal';
 export { default as DeleteFileModal } from './DeleteFileModal';
+export { EmailVerificationModal } from './EmailVerificationModal';

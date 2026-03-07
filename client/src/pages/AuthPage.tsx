@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Input, Button, notify } from '../components';
-import { login, register, updatePassword, verify2FA } from '../lib/api';
+import { login, register, updatePassword, verify2FA, requestPasswordReset, resetPassword, verifyEmail } from '../lib/api';
 import { isAuthenticated, setUser, clearPasswordResetFlag, setAccessToken, setRefreshToken } from '../lib/auth';
 
 const EmailIcon = (
@@ -131,11 +131,39 @@ export default function AuthPage() {
   const [twoFactorCode, setTwoFactorCode] = useState('');
   const [useBackupCode, setUseBackupCode] = useState(false);
 
+  const [searchParams] = useSearchParams();
+  const [forgotPassword, setForgotPassword] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotSent, setForgotSent] = useState(false);
+  const [resetToken, setResetToken] = useState<string | null>(null);
+  const [resetNewPassword, setResetNewPassword] = useState('');
+  const [resetConfirmPassword, setResetConfirmPassword] = useState('');
+  const [resetDone, setResetDone] = useState(false);
+  const [verifyToken, setVerifyToken] = useState<string | null>(null);
+  const [verifyStatus, setVerifyStatus] = useState<'loading' | 'success' | 'error'>('loading');
+  const [verifyError, setVerifyError] = useState('');
+
   useEffect(() => {
     if (isAuthenticated()) {
       navigate('/console', { replace: true });
     }
-  }, [navigate]);
+    const rToken = searchParams.get('reset');
+    if (rToken) {
+      setResetToken(rToken);
+    }
+    const vToken = searchParams.get('verify');
+    if (vToken) {
+      setVerifyToken(vToken);
+      verifyEmail(vToken).then(res => {
+        if (res.success) {
+          setVerifyStatus('success');
+        } else {
+          setVerifyStatus('error');
+          setVerifyError(res.error || 'Verification failed');
+        }
+      });
+    }
+  }, [navigate, searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -155,7 +183,7 @@ export default function AuthPage() {
       return;
     }
 
-    const data = result.data as { user?: { id: string; username: string; email: string; is_admin: boolean; force_password_reset: boolean; totp_enabled: boolean }; tokens?: { access_token: string; refresh_token: string }; '2fa_required'?: boolean; challenge_token?: string };
+    const data = result.data as { user?: { id: string; username: string; email: string; is_admin: boolean; force_password_reset: boolean; totp_enabled: boolean; email_verified: boolean }; tokens?: { access_token: string; refresh_token: string }; '2fa_required'?: boolean; challenge_token?: string };
 
     if (data?.['2fa_required'] && data?.challenge_token) {
       setTwoFactorChallenge(data.challenge_token);
@@ -195,7 +223,7 @@ export default function AuthPage() {
       return;
     }
 
-    const data = result.data as { user?: { id: string; username: string; email: string; is_admin: boolean; force_password_reset: boolean; totp_enabled: boolean }; tokens?: { access_token: string; refresh_token: string } };
+    const data = result.data as { user?: { id: string; username: string; email: string; is_admin: boolean; force_password_reset: boolean; totp_enabled: boolean; email_verified: boolean }; tokens?: { access_token: string; refresh_token: string } };
 
     if (data?.tokens) {
       setAccessToken(data.tokens.access_token);
@@ -214,6 +242,41 @@ export default function AuthPage() {
 
     notify('Welcome back!', 'Successfully logged in', 'success');
     navigate('/console', { replace: true });
+    setLoading(false);
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!forgotEmail) return;
+    setLoading(true);
+    const res = await requestPasswordReset(forgotEmail);
+    if (res.success) {
+      setForgotSent(true);
+    } else {
+      notify('Error', res.error || 'Something went wrong', 'error');
+    }
+    setLoading(false);
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetToken) return;
+    if (resetNewPassword !== resetConfirmPassword) {
+      notify('Error', 'Passwords do not match', 'error');
+      return;
+    }
+    if (resetNewPassword.length < 8) {
+      notify('Error', 'Password must be at least 8 characters', 'error');
+      return;
+    }
+    setLoading(true);
+    const res = await resetPassword(resetToken, resetNewPassword);
+    if (res.success) {
+      setResetDone(true);
+      notify('Password reset', 'Your password has been updated. You can now log in.', 'success');
+    } else {
+      notify('Error', res.error || 'Failed to reset password', 'error');
+    }
     setLoading(false);
   };
 
@@ -238,6 +301,115 @@ export default function AuthPage() {
     }
     setLoading(false);
   };
+
+  if (verifyToken) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] relative overflow-hidden">
+        <AuthCanvas />
+        <main className="relative z-10 min-h-dvh flex flex-col items-center justify-center p-6">
+          <div className="mx-auto w-full max-w-sm">
+            <div className="mb-8 space-y-4">
+              <h1 className="text-xl font-medium tracking-tight text-neutral-500">
+                Email Verification<br />
+                <span className="text-white">
+                  {verifyStatus === 'loading' ? 'Verifying...' : verifyStatus === 'success' ? 'Verified' : 'Verification failed'}
+                </span>
+              </h1>
+            </div>
+            <div className="rounded-lg bg-neutral-950 p-8 ring-1 ring-neutral-800">
+              {verifyStatus === 'loading' && (
+                <p className="text-sm text-neutral-400">Verifying your email address...</p>
+              )}
+              {verifyStatus === 'success' && (
+                <div className="space-y-5">
+                  <p className="text-sm text-neutral-400">Your email has been verified. You can now use all features of your account.</p>
+                  <Button className="w-full" onClick={() => navigate('/auth', { replace: true })}>Continue to login</Button>
+                </div>
+              )}
+              {verifyStatus === 'error' && (
+                <div className="space-y-5">
+                  <p className="text-sm text-red-400">{verifyError}</p>
+                  <Button className="w-full" onClick={() => navigate('/auth', { replace: true })}>Back to login</Button>
+                </div>
+              )}
+            </div>
+          </div>
+        </main>
+        <p className="fixed bottom-6 left-0 right-0 z-10 text-center text-sm font-semibold text-neutral-500 tracking-tight pointer-events-none">Birdactyl</p>
+      </div>
+    );
+  }
+
+  if (resetToken) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] relative overflow-hidden">
+        <AuthCanvas />
+        <main className="relative z-10 min-h-dvh flex flex-col items-center justify-center p-6">
+          <div className="mx-auto w-full max-w-sm">
+            <div className="mb-8 space-y-4">
+              <h1 className="text-xl font-medium tracking-tight text-neutral-500">
+                Reset your password<br />
+                <span className="text-white">{resetDone ? 'All done' : 'Choose a new password'}</span>
+              </h1>
+            </div>
+            <div className="rounded-lg bg-neutral-950 p-8 ring-1 ring-neutral-800">
+              {resetDone ? (
+                <div className="space-y-5">
+                  <p className="text-sm text-neutral-400">Your password has been updated. You can now log in with your new password.</p>
+                  <Button className="w-full" onClick={() => { setResetToken(null); setResetDone(false); navigate('/auth', { replace: true }); }}>Back to login</Button>
+                </div>
+              ) : (
+                <form className="space-y-5" onSubmit={handleResetPassword}>
+                  <Input label="New Password" icon={LockIcon} placeholder="New password" value={resetNewPassword} onChange={e => setResetNewPassword(e.target.value)} hideable required />
+                  <Input label="Confirm Password" icon={LockIcon} placeholder="Confirm password" value={resetConfirmPassword} onChange={e => setResetConfirmPassword(e.target.value)} hideable required />
+                  <Button className="w-full" loading={loading}>Reset Password</Button>
+                </form>
+              )}
+            </div>
+          </div>
+        </main>
+        <p className="fixed bottom-6 left-0 right-0 z-10 text-center text-sm font-semibold text-neutral-500 tracking-tight pointer-events-none">Birdactyl</p>
+      </div>
+    );
+  }
+
+  if (forgotPassword) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] relative overflow-hidden">
+        <AuthCanvas />
+        <main className="relative z-10 min-h-dvh flex flex-col items-center justify-center p-6">
+          <div className="mx-auto w-full max-w-sm">
+            <div className="mb-8 space-y-4">
+              <h1 className="text-xl font-medium tracking-tight text-neutral-500">
+                Forgot your password?<br />
+                <span className="text-white">{forgotSent ? 'Check your email' : 'Enter your email to reset it'}</span>
+              </h1>
+            </div>
+            <div className="rounded-lg bg-neutral-950 p-8 ring-1 ring-neutral-800">
+              {forgotSent ? (
+                <div className="space-y-5">
+                  <p className="text-sm text-neutral-400">If an account exists with that email, we've sent a password reset link. Check your inbox and spam folder.</p>
+                  <Button className="w-full" onClick={() => { setForgotPassword(false); setForgotSent(false); setForgotEmail(''); }}>Back to login</Button>
+                </div>
+              ) : (
+                <form className="space-y-5" onSubmit={handleForgotPassword}>
+                  <Input label="Email" icon={EmailIcon} type="email" placeholder="you@example.com" value={forgotEmail} onChange={e => setForgotEmail(e.target.value)} required />
+                  <Button className="w-full" loading={loading}>Send Reset Link</Button>
+                </form>
+              )}
+            </div>
+            {!forgotSent && (
+              <p className="mt-16 text-center text-sm text-neutral-500">
+                Remember your password?
+                <button type="button" onClick={() => setForgotPassword(false)} className="ml-1 font-semibold text-white hover:underline cursor-pointer">Sign in</button>
+              </p>
+            )}
+          </div>
+        </main>
+        <p className="fixed bottom-6 left-0 right-0 z-10 text-center text-sm font-semibold text-neutral-500 tracking-tight pointer-events-none">Birdactyl</p>
+      </div>
+    );
+  }
 
   if (twoFactorChallenge) {
     return (
@@ -368,6 +540,13 @@ export default function AuthPage() {
               <Button className="w-full" loading={loading}>
                 {isLogin ? 'Sign in' : 'Create account'}
               </Button>
+              {isLogin && (
+                <div className="text-center">
+                  <button type="button" onClick={() => setForgotPassword(true)} className="text-xs text-neutral-500 hover:text-white transition-colors">
+                    Forgot your password?
+                  </button>
+                </div>
+              )}
             </form>
           </div>
 

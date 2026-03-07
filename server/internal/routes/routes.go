@@ -18,7 +18,7 @@ func SetupRoutes(app *fiber.App) {
 
 	app.Static("/", "./public")
 
-	api := app.Group("/api/v1")
+	api := app.Group("/api/v1", middleware.RequireEmailVerification())
 
 	readLimit := middleware.ThousandTHR(middleware.ThousandTHRConfig{
 		RequestsPerMinute: 60,
@@ -55,6 +55,7 @@ func SetupRoutes(app *fiber.App) {
 	authRoutes.Post("/logout-all", middleware.RequireAuth(), writeLimit, auth.LogoutAll)
 	authRoutes.Get("/me", middleware.RequireAuth(), readLimit, auth.Me)
 	authRoutes.Get("/resources", middleware.RequireAuth(), readLimit, auth.GetResources)
+	authRoutes.Post("/profile/email-change-code", middleware.RequireAuth(), strictLimit, auth.SendEmailChangeCode)
 	authRoutes.Patch("/profile", middleware.RequireAuth(), writeLimit, auth.UpdateProfile)
 	authRoutes.Patch("/password", middleware.RequireAuth(), strictLimit, auth.UpdatePassword)
 	authRoutes.Get("/sessions", middleware.RequireAuth(), readLimit, auth.GetSessions)
@@ -71,6 +72,19 @@ func SetupRoutes(app *fiber.App) {
 		RequestsPerMinute: 10,
 		BurstLimit:        10,
 	}), auth.TwoFactorVerify)
+	authRoutes.Post("/forgot-password", middleware.ThousandTHR(middleware.ThousandTHRConfig{
+		RequestsPerMinute: 5,
+		BurstLimit:        5,
+	}), auth.RequestPasswordReset)
+	authRoutes.Post("/reset-password", middleware.ThousandTHR(middleware.ThousandTHRConfig{
+		RequestsPerMinute: 10,
+		BurstLimit:        10,
+	}), auth.ResetPassword)
+	authRoutes.Post("/email/send-verification", strictLimit, auth.SendVerification)
+	authRoutes.Post("/email/verify", middleware.ThousandTHR(middleware.ThousandTHRConfig{
+		RequestsPerMinute: 10,
+		BurstLimit:        10,
+	}), auth.VerifyEmail)
 
 	adminRoutes := api.Group("/admin", middleware.RequireAuth(), middleware.RequireAdmin())
 	adminRoutes.Get("/users", readLimit, admin.AdminGetUsers)
@@ -124,6 +138,9 @@ func SetupRoutes(app *fiber.App) {
 
 	adminRoutes.Get("/settings/server-creation", readLimit, admin.AdminGetServerCreationStatus)
 	adminRoutes.Patch("/settings/server-creation", strictLimit, admin.AdminSetServerCreationStatus)
+
+	adminRoutes.Get("/settings/email-verification", readLimit, admin.AdminGetEmailVerificationSettings)
+	adminRoutes.Patch("/settings/email-verification", strictLimit, admin.AdminSetEmailVerificationSettings)
 
 	adminRoutes.Get("/database-hosts", readLimit, admin.AdminGetDatabaseHosts)
 	adminRoutes.Post("/database-hosts", strictLimit, admin.AdminCreateDatabaseHost)

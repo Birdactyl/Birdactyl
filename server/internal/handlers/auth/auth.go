@@ -1,8 +1,11 @@
 package auth
 
 import (
+	"fmt"
 	"regexp"
 
+	"birdactyl-panel-backend/internal/config"
+	"birdactyl-panel-backend/internal/database"
 	"birdactyl-panel-backend/internal/handlers"
 	"birdactyl-panel-backend/internal/handlers/admin"
 	"birdactyl-panel-backend/internal/models"
@@ -116,6 +119,33 @@ func Register(c *fiber.Ctx) error {
 	handlers.LogActivity(user.ID, user.Username, handlers.ActionAuthRegister, "User registered", c.IP(), c.Get("User-Agent"), false, nil)
 	plugins.Emit(plugins.EventUserRegistered, map[string]string{"user_id": user.ID.String(), "username": user.Username, "email": user.Email})
 
+	if services.IsEmailVerificationEnabled() {
+		cfg := config.Get()
+		if cfg.SMTPEnabled() {
+			baseURL := cfg.Server.BaseURL
+			if baseURL == "" {
+				proto := "http"
+				if c.Get("X-Forwarded-Proto") == "https" || c.Secure() {
+					proto = "https"
+				}
+				baseURL = fmt.Sprintf("%s://%s", proto, c.Hostname())
+			}
+			go services.SendVerificationEmail(user.ID, baseURL)
+		}
+	}
+
+	if err := services.CheckEmailVerification(user, handlers.ActionAuthLogin); err != nil {
+		database.DB.Where("user_id = ?", user.ID).Delete(&models.Session{})
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"success": false,
+			"error":   "Account created! Please verify your email address to log in.",
+			"code":    "EMAIL_NOT_VERIFIED",
+			"data": fiber.Map{
+				"email": req.Email,
+			},
+		})
+	}
+
 	resp := fiber.Map{
 		"success": true,
 		"data": fiber.Map{
@@ -192,6 +222,16 @@ func Login(c *fiber.Ctx) error {
 		status := fiber.StatusUnauthorized
 		if err == services.ErrUserBanned {
 			status = fiber.StatusForbidden
+		}
+		if err == services.ErrEmailNotVerified {
+			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+				"success": false,
+				"error":   "Please verify your email address before logging in",
+				"code":    "EMAIL_NOT_VERIFIED",
+				"data": fiber.Map{
+					"email": req.Email,
+				},
+			})
 		}
 		return c.Status(status).JSON(fiber.Map{
 			"success": false,

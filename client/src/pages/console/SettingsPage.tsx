@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { getUser, setUser } from '../../lib/auth';
-import { updateProfile, updatePassword, getSessions, revokeSession, revokeAllSessions, getAPIKeys, createAPIKey, deleteAPIKey, setup2FA, enable2FA, disable2FA, regenerateBackupCodes, type APIKey, type APIKeyCreated } from '../../lib/api';
+import { updateProfile, sendEmailChangeCode, updatePassword, getSessions, revokeSession, revokeAllSessions, getAPIKeys, createAPIKey, deleteAPIKey, setup2FA, enable2FA, disable2FA, regenerateBackupCodes, logout, type APIKey, type APIKeyCreated } from '../../lib/api';
 import { formatDate, parseUserAgent } from '../../lib/utils';
 import { notify, Input, Button, Icons, Modal, SlidePanel } from '../../components';
 import { SubNavigation } from '../../components/layout/SubNavigation';
@@ -47,16 +47,55 @@ function SectionCard({ title, description, children, footer }: {
 function AccountTab() {
   const user = getUser();
   const [profile, setProfile] = useState({ username: user?.username || '', email: user?.email || '', loading: false });
+  const [show2FAModal, setShow2FAModal] = useState(false);
+  const [totpCode, setTotpCode] = useState('');
+
+  const executeProfileSave = async (code?: string) => {
+    setProfile(p => ({ ...p, loading: true }));
+    const emailChanged = profile.email !== user?.email;
+    const res = await updateProfile(profile.username, profile.email, code);
+    if (res.success && res.data) {
+      setUser({ ...user!, username: res.data.username, email: res.data.email });
+      setShow2FAModal(false);
+      setTotpCode('');
+
+      if (emailChanged) {
+        notify('Email updated', 'Please verify your new email address to log back in.', 'success');
+        await logout();
+        window.location.href = '/auth';
+      } else {
+        notify('Profile updated', 'Your profile has been saved', 'success');
+      }
+    } else {
+      notify('Error', res.error || 'Failed to update profile', 'error');
+    }
+    setProfile(p => ({ ...p, loading: false }));
+  };
 
   const handleProfileSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    setProfile(p => ({ ...p, loading: true }));
-    const res = await updateProfile(profile.username, profile.email);
-    if (res.success && res.data) {
-      setUser({ ...user!, username: res.data.username, email: res.data.email });
-      notify('Profile updated', 'Your profile has been saved', 'success');
-    } else notify('Error', res.error || 'Failed to update profile', 'error');
-    setProfile(p => ({ ...p, loading: false }));
+    if (profile.email !== user?.email) {
+      if (user?.totp_enabled) {
+        setShow2FAModal(true);
+      } else {
+        setProfile(p => ({ ...p, loading: true }));
+        const res = await sendEmailChangeCode();
+        if (res.success) {
+          setShow2FAModal(true);
+        } else {
+          notify('Error', res.error || 'Failed to send verification code', 'error');
+        }
+        setProfile(p => ({ ...p, loading: false }));
+      }
+      return;
+    }
+    await executeProfileSave();
+  };
+
+  const handle2FASubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!totpCode) return;
+    await executeProfileSave(totpCode);
   };
 
   return (
@@ -71,6 +110,27 @@ function AccountTab() {
           <Input label="Email address" type="email" value={profile.email} onChange={e => setProfile(p => ({ ...p, email: e.target.value }))} />
         </form>
       </SectionCard>
+
+      <Modal open={show2FAModal} onClose={() => setShow2FAModal(false)} title={user?.totp_enabled ? "Two-Factor Authentication" : "Email Verification"}>
+        <form onSubmit={handle2FASubmit} className="space-y-4">
+          <p className="text-sm text-neutral-400">
+            {user?.totp_enabled 
+              ? "You are changing your email address. Please enter your 2FA code to verify this action."
+              : "You are changing your email address. We've sent a 6-digit verification code to your current email. Please enter it to continue."}
+          </p>
+          <Input
+            label={user?.totp_enabled ? "Authentication Code" : "Verification Code"}
+            value={totpCode}
+            onChange={(e) => setTotpCode(e.target.value)}
+            placeholder="000000"
+            autoFocus
+          />
+          <div className="flex justify-end gap-3 mt-6">
+            <Button variant="secondary" onClick={() => setShow2FAModal(false)}>Cancel</Button>
+            <Button type="submit" loading={profile.loading}>Verify & Save</Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

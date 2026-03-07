@@ -26,6 +26,9 @@ const (
 	Action2FADisable     = "profile.2fa_disable"
 	Action2FABackupCodes = "profile.2fa_backup_codes"
 
+	ActionPasswordResetRequest = "auth.password_reset_request"
+	ActionPasswordReset        = "auth.password_reset"
+
 	ActionServerCreate    = "server.create"
 	ActionServerDelete    = "server.delete"
 	ActionServerStart     = "server.start"
