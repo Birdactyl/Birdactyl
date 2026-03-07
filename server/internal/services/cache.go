@@ -19,6 +19,12 @@ var Cache = &MemoryCache{
 	items: make(map[string]cacheItem),
 }
 
+func NewMemoryCache() *MemoryCache {
+	return &MemoryCache{
+		items: make(map[string]cacheItem),
+	}
+}
+
 func init() {
 	go func() {
 		for {
