@@ -1,0 +1,120 @@
+name: Benchmarks
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "server/**"
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "server/**"
+  workflow_dispatch:
+
+jobs:
+  benchmarks:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: bench
+          POSTGRES_PASSWORD: bench
+          POSTGRES_DB: birdactyl_bench
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U bench"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: server/go.mod
+          cache-dependency-path: server/go.sum
+
+      - name: Write benchmark config
+        working-directory: server
+        run: |
+          cat > config.yaml << 'EOF'
+          server:
+            host: "0.0.0.0"
+            port: 3000
+
+          database:
+            driver: "postgres"
+            host: "localhost"
+            port: 5432
+            user: "bench"
+            password: "bench"
+            name: "birdactyl_bench"
+            sslmode: "disable"
+            max_open_conns: 25
+            max_idle_conns: 5
+            conn_max_lifetime: 300
+
+          auth:
+            accounts_per_ip: 3
+            access_token_expiry: 15
+            refresh_token_expiry: 43200
+            token_refresh_threshold: 1
+            max_sessions_per_user: 5
+            bcrypt_cost: 12
+          EOF
+
+      - name: Run benchmarks
+        working-directory: server
+        run: go test -bench="." -benchmem -run="^$" -count=3 -timeout=30m ./benchmarks | tee benchmark_results.txt
+
+      - name: Upload benchmark results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results-${{ github.sha }}
+          path: server/benchmark_results.txt
+          retention-days: 90
+
+      - name: Install benchstat
+        if: github.event_name == 'pull_request'
+        run: go install golang.org/x/perf/cmd/benchstat@latest
+
+      - name: Download baseline results
+        if: github.event_name == 'pull_request'
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          branch: main
+          workflow: benchmarks.yml
+          name: benchmark-results-.*
+          name_is_regexp: true
+          path: baseline
+          if_no_artifact_found: warn
+          search_artifacts: true
+
+      - name: Compare with baseline
+        if: github.event_name == 'pull_request'
+        run: |
+          BASELINE=$(find baseline -name "benchmark_results.txt" -type f | head -1)
+          if [ -n "$BASELINE" ]; then
+            echo "## Benchmark Comparison" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            benchstat "$BASELINE" server/benchmark_results.txt >> $GITHUB_STEP_SUMMARY 2>&1 || true
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## Benchmark Results (no baseline to compare)" >> $GITHUB_STEP_SUMMARY
+            echo "First run on main will establish the baseline." >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Benchmark Results" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          grep -E "^Benchmark|^ok|^PASS|^FAIL" server/benchmark_results.txt >> $GITHUB_STEP_SUMMARY || true
+          echo '```' >> $GITHUB_STEP_SUMMARY
