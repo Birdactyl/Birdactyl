@@ -27,3 +27,10 @@ export interface APIKeyCreated extends APIKey { key: string; }
 export const getAPIKeys = () => api.get<APIKey[]>('/auth/api-keys');
 export const createAPIKey = (name: string, expiresIn?: number) => api.post<APIKeyCreated>('/auth/api-keys', { name, expires_in: expiresIn });
 export const deleteAPIKey = (id: string) => api.delete(`/auth/api-keys/${id}`);
+
+export interface TwoFactorSetupData { secret: string; url: string; }
+export const setup2FA = () => api.post<TwoFactorSetupData>('/auth/2fa/setup');
+export const enable2FA = (code: string) => api.post<{ backup_codes: string[] }>('/auth/2fa/enable', { code });
+export const disable2FA = (password: string) => api.post('/auth/2fa/disable', { password });
+export const regenerateBackupCodes = (password: string) => api.post<{ backup_codes: string[] }>('/auth/2fa/backup-codes', { password });
+export const verify2FA = (challengeToken: string, code: string) => api.post('/auth/2fa/verify', { challenge_token: challengeToken, code });

@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input, Button, notify } from '../components';
-import { login, register, updatePassword } from '../lib/api';
-import { isAuthenticated, setUser, clearPasswordResetFlag } from '../lib/auth';
+import { login, register, updatePassword, verify2FA } from '../lib/api';
+import { isAuthenticated, setUser, clearPasswordResetFlag, setAccessToken, setRefreshToken } from '../lib/auth';
 
 const EmailIcon = (
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -127,6 +127,10 @@ export default function AuthPage() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  const [twoFactorChallenge, setTwoFactorChallenge] = useState<string | null>(null);
+  const [twoFactorCode, setTwoFactorCode] = useState('');
+  const [useBackupCode, setUseBackupCode] = useState(false);
+
   useEffect(() => {
     if (isAuthenticated()) {
       navigate('/console', { replace: true });
@@ -151,10 +155,22 @@ export default function AuthPage() {
       return;
     }
 
-    const userData = (result.data as { user?: { id: string; username: string; email: string; is_admin: boolean; force_password_reset: boolean } })?.user;
-    if (userData) {
-      setUser(userData);
-      if (userData.force_password_reset) {
+    const data = result.data as { user?: { id: string; username: string; email: string; is_admin: boolean; force_password_reset: boolean; totp_enabled: boolean }; tokens?: { access_token: string; refresh_token: string }; '2fa_required'?: boolean; challenge_token?: string };
+
+    if (data?.['2fa_required'] && data?.challenge_token) {
+      setTwoFactorChallenge(data.challenge_token);
+      setLoading(false);
+      return;
+    }
+
+    if (data?.tokens) {
+      setAccessToken(data.tokens.access_token);
+      setRefreshToken(data.tokens.refresh_token);
+    }
+
+    if (data?.user) {
+      setUser(data.user);
+      if (data.user.force_password_reset) {
         setForceReset(true);
         setLoading(false);
         return;
@@ -162,6 +178,41 @@ export default function AuthPage() {
     }
 
     notify(isLogin ? 'Welcome back!' : 'Account created', isLogin ? 'Successfully logged in' : 'You can now use your account', 'success');
+    navigate('/console', { replace: true });
+    setLoading(false);
+  };
+
+  const handleTwoFactorVerify = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!twoFactorChallenge || !twoFactorCode) return;
+    setLoading(true);
+
+    const result = await verify2FA(twoFactorChallenge, twoFactorCode);
+
+    if (!result.success) {
+      notify('Verification failed', result.error || 'Invalid code', 'error');
+      setLoading(false);
+      return;
+    }
+
+    const data = result.data as { user?: { id: string; username: string; email: string; is_admin: boolean; force_password_reset: boolean; totp_enabled: boolean }; tokens?: { access_token: string; refresh_token: string } };
+
+    if (data?.tokens) {
+      setAccessToken(data.tokens.access_token);
+      setRefreshToken(data.tokens.refresh_token);
+    }
+
+    if (data?.user) {
+      setUser(data.user);
+      if (data.user.force_password_reset) {
+        setForceReset(true);
+        setTwoFactorChallenge(null);
+        setLoading(false);
+        return;
+      }
+    }
+
+    notify('Welcome back!', 'Successfully logged in', 'success');
     navigate('/console', { replace: true });
     setLoading(false);
   };
@@ -187,6 +238,55 @@ export default function AuthPage() {
     }
     setLoading(false);
   };
+
+  if (twoFactorChallenge) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] relative overflow-hidden">
+        <AuthCanvas />
+        <main className="relative z-10 min-h-dvh flex flex-col items-center justify-center p-6">
+          <div className="mx-auto w-full max-w-sm">
+            <div className="mb-8 space-y-4">
+              <h1 className="text-xl font-medium tracking-tight text-neutral-500">
+                Two-factor authentication<br />
+                <span className="text-white">{useBackupCode ? 'Enter a backup code' : 'Enter your authentication code'}</span>
+              </h1>
+            </div>
+            <div className="rounded-lg bg-neutral-950 p-8 ring-1 ring-neutral-800">
+              <form className="space-y-5" onSubmit={handleTwoFactorVerify}>
+                <Input
+                  label={useBackupCode ? 'Backup Code' : 'Authentication Code'}
+                  icon={LockIcon}
+                  placeholder={useBackupCode ? '00000000' : '000000'}
+                  value={twoFactorCode}
+                  onChange={e => setTwoFactorCode(e.target.value)}
+                  autoComplete="one-time-code"
+                  required
+                />
+                <Button className="w-full" loading={loading}>Verify</Button>
+              </form>
+              <div className="mt-4 flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => { setUseBackupCode(!useBackupCode); setTwoFactorCode(''); }}
+                  className="text-xs text-neutral-500 hover:text-white transition-colors"
+                >
+                  {useBackupCode ? 'Use authenticator app' : 'Use a backup code'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setTwoFactorChallenge(null); setTwoFactorCode(''); setUseBackupCode(false); }}
+                  className="text-xs text-neutral-500 hover:text-white transition-colors"
+                >
+                  Back to login
+                </button>
+              </div>
+            </div>
+          </div>
+        </main>
+        <p className="fixed bottom-6 left-0 right-0 z-10 text-center text-sm font-semibold text-neutral-500 tracking-tight pointer-events-none">Birdactyl</p>
+      </div>
+    );
+  }
 
   if (forceReset) {
     return (

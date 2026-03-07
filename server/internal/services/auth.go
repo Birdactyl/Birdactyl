@@ -121,6 +121,10 @@ func Login(email, password, ip, userAgent string) (*models.User, *TokenPair, err
 		return nil, nil, ErrInvalidCredentials
 	}
 
+	if user.TOTPEnabled {
+		return &user, nil, Err2FARequired
+	}
+
 	tokens, err := createSession(user.ID, ip, userAgent)
 	if err != nil {
 		return nil, nil, err
