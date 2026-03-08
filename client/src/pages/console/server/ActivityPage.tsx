@@ -38,6 +38,8 @@ const actionLabels: Record<string, string> = {
   'server.database.create': 'Create Database',
   'server.database.delete': 'Delete Database',
   'server.database.rotate_password': 'Rotate DB Password',
+  'server.mount.add': 'Attach Mount',
+  'server.mount.remove': 'Detach Mount',
   'server.schedule.create': 'Create Schedule',
   'server.schedule.update': 'Update Schedule',
   'server.schedule.delete': 'Delete Schedule',

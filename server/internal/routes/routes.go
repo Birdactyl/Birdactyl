@@ -135,6 +135,13 @@ func SetupRoutes(app *fiber.App) {
 	adminRoutes.Post("/ip-bans", strictLimit, admin.AdminCreateIPBan)
 	adminRoutes.Delete("/ip-bans/:id", strictLimit, admin.AdminDeleteIPBan)
 
+	adminRoutes.Get("/mounts", readLimit, admin.AdminGetMounts)
+	adminRoutes.Post("/mounts", strictLimit, admin.AdminCreateMount)
+	adminRoutes.Patch("/mounts/:id", writeLimit, admin.AdminUpdateMount)
+	adminRoutes.Delete("/mounts/:id", strictLimit, admin.AdminDeleteMount)
+	adminRoutes.Post("/mounts/:id/servers/:serverId", writeLimit, admin.AdminAttachMount)
+	adminRoutes.Delete("/mounts/:id/servers/:serverId", writeLimit, admin.AdminDetachMount)
+
 	adminRoutes.Get("/settings/registration", readLimit, admin.AdminGetRegistrationStatus)
 	adminRoutes.Patch("/settings/registration", strictLimit, admin.AdminSetRegistrationStatus)
 
@@ -240,6 +247,9 @@ func SetupRoutes(app *fiber.App) {
 	servers.Get("/:id/activity", readLimit, server.GetServerActivity)
 	servers.Get("/:id/sftp", readLimit, server.GetSFTPDetails)
 	servers.Post("/:id/sftp/password", writeLimit, server.ResetSFTPPassword)
+	servers.Get("/:id/mounts", readLimit, server.GetServerMounts)
+	servers.Post("/:id/mounts/:mountId/mount", writeLimit, server.MountServerMount)
+	servers.Post("/:id/mounts/:mountId/unmount", writeLimit, server.UnmountServerMount)
 
 	internal := api.Group("/internal")
 	nodes := internal.Group("/nodes", middleware.RequireNodeAuth())

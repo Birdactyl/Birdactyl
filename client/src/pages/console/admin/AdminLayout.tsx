@@ -9,6 +9,7 @@ const adminTabs = [
     { name: 'Nodes', path: '/nodes', icon: 'globe' },
     { name: 'Packages', path: '/packages', icon: 'cube' },
     { name: 'IP Bans', path: '/ip-bans', icon: 'shield' },
+    { name: 'Mounts', path: '/mounts', icon: 'folder' },
     { name: 'Activity', path: '/logs', icon: 'activity' },
     { name: 'DB Hosts', path: '/database-hosts', icon: 'database' },
     { name: 'Marketplace', path: '/marketplace', icon: 'pieChart' },

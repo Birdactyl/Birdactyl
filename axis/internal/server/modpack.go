@@ -6,20 +6,19 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"path/filepath"
 	"strings"
 	"sync"
 )
 
 type ModpackIndex struct {
-	FormatVersion int                    `json:"formatVersion"`
-	Game          string                 `json:"game"`
-	VersionID     string                 `json:"versionId"`
-	Name          string                 `json:"name"`
-	Summary       string                 `json:"summary"`
-	Files         []ModpackFile          `json:"files"`
-	Dependencies  map[string]string      `json:"dependencies"`
+	FormatVersion int               `json:"formatVersion"`
+	Game          string            `json:"game"`
+	VersionID     string            `json:"versionId"`
+	Name          string            `json:"name"`
+	Summary       string            `json:"summary"`
+	Files         []ModpackFile     `json:"files"`
+	Dependencies  map[string]string `json:"dependencies"`
 }
 
 type ModpackFile struct {
@@ -63,9 +62,9 @@ type CFFile struct {
 }
 
 type ModpackInstallResult struct {
-	Name          string   `json:"name"`
-	FilesInstalled int     `json:"files_installed"`
-	FilesFailed    int     `json:"files_failed"`
+	Name           string   `json:"name"`
+	FilesInstalled int      `json:"files_installed"`
+	FilesFailed    int      `json:"files_failed"`
 	FailedFiles    []string `json:"failed_files,omitempty"`
 }
 
@@ -80,35 +79,34 @@ func InstallModpack(serverID string, req ModpackInstallRequest) (*ModpackInstall
 		return nil, err
 	}
 
-	base := serverDataDir(serverID)
-	tempDir := filepath.Join(base, ".modpack_temp")
+	fs := GetVFS(serverID)
+	tempDir := "/.modpack_temp"
 	packPath := filepath.Join(tempDir, "modpack.zip")
 
-	os.RemoveAll(tempDir)
-	if err := os.MkdirAll(tempDir, 0755); err != nil {
+	fs.RemoveAll(tempDir)
+	if err := fs.MkdirAll(tempDir, 0755); err != nil {
 		return nil, fmt.Errorf("failed to create temp dir: %w", err)
 	}
-	defer os.RemoveAll(tempDir)
+	defer fs.RemoveAll(tempDir)
 
-	if err := downloadFile(req.URL, packPath); err != nil {
+	if err := DownloadURL(serverID, req.URL, packPath); err != nil {
 		return nil, fmt.Errorf("failed to download modpack: %w", err)
 	}
 
 	if req.Type == "curseforge" {
-		return installCurseForgeModpack(packPath, tempDir, base, req.APIKey)
+		return installCurseForgeModpack(serverID, packPath, tempDir, req.APIKey)
 	}
 
-	return installModrinthModpack(packPath, tempDir, base)
+	return installModrinthModpack(serverID, packPath, tempDir)
 }
 
-func installModrinthModpack(packPath, tempDir, base string) (*ModpackInstallResult, error) {
-	index, err := extractAndParseModrinth(packPath, tempDir)
+func installModrinthModpack(serverID, packPath, tempDir string) (*ModpackInstallResult, error) {
+	index, err := extractAndParseModrinth(serverID, packPath, tempDir)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse modpack: %w", err)
 	}
 
 	result := &ModpackInstallResult{Name: index.Name}
-
 	var serverFiles []ModpackFile
 	for _, f := range index.Files {
 		if f.Env != nil && f.Env.Server == "unsupported" {
@@ -121,6 +119,8 @@ func installModrinthModpack(packPath, tempDir, base string) (*ModpackInstallResu
 	var mu sync.Mutex
 	semaphore := make(chan struct{}, 5)
 
+	vfs := GetVFS(serverID)
+
 	for _, f := range serverFiles {
 		wg.Add(1)
 		go func(file ModpackFile) {
@@ -128,16 +128,9 @@ func installModrinthModpack(packPath, tempDir, base string) (*ModpackInstallResu
 			semaphore <- struct{}{}
 			defer func() { <-semaphore }()
 
-			destPath := filepath.Join(base, filepath.Clean("/"+file.Path))
-			if !strings.HasPrefix(destPath, base) {
-				mu.Lock()
-				result.FilesFailed++
-				result.FailedFiles = append(result.FailedFiles, file.Path)
-				mu.Unlock()
-				return
-			}
+			destPath := filepath.Clean("/" + file.Path)
 
-			if err := os.MkdirAll(filepath.Dir(destPath), 0755); err != nil {
+			if err := vfs.MkdirAll(filepath.Dir(destPath), 0755); err != nil {
 				mu.Lock()
 				result.FilesFailed++
 				result.FailedFiles = append(result.FailedFiles, file.Path)
@@ -146,9 +139,9 @@ func installModrinthModpack(packPath, tempDir, base string) (*ModpackInstallResu
 			}
 
 			var downloaded bool
-			for _, url := range file.Downloads {
-				if isBlockedURL(url) == nil {
-					if err := downloadFile(url, destPath); err == nil {
+			for _, dUrl := range file.Downloads {
+				if isBlockedURL(dUrl) == nil {
+					if err := DownloadURL(serverID, dUrl, destPath); err == nil {
 						downloaded = true
 						break
 					}
@@ -169,28 +162,29 @@ func installModrinthModpack(packPath, tempDir, base string) (*ModpackInstallResu
 	wg.Wait()
 
 	overridesDir := filepath.Join(tempDir, "overrides")
-	if _, err := os.Stat(overridesDir); err == nil {
-		copyDir(overridesDir, base)
+	if info, err := vfs.Stat(overridesDir); err == nil && info.IsDir() {
+		copyDirVFS(vfs, overridesDir, "/")
 	}
 
 	serverOverridesDir := filepath.Join(tempDir, "server-overrides")
-	if _, err := os.Stat(serverOverridesDir); err == nil {
-		copyDir(serverOverridesDir, base)
+	if info, err := vfs.Stat(serverOverridesDir); err == nil && info.IsDir() {
+		copyDirVFS(vfs, serverOverridesDir, "/")
 	}
 
 	return result, nil
 }
 
-func installCurseForgeModpack(packPath, tempDir, base, apiKey string) (*ModpackInstallResult, error) {
-	manifest, err := extractAndParseCurseForge(packPath, tempDir)
+func installCurseForgeModpack(serverID, packPath, tempDir, apiKey string) (*ModpackInstallResult, error) {
+	manifest, err := extractAndParseCurseForge(serverID, packPath, tempDir)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse modpack: %w", err)
 	}
 
 	result := &ModpackInstallResult{Name: manifest.Name}
+	vfs := GetVFS(serverID)
+	modsDir := "/mods"
 
-	modsDir := filepath.Join(base, "mods")
-	if err := os.MkdirAll(modsDir, 0755); err != nil {
+	if err := vfs.MkdirAll(modsDir, 0755); err != nil {
 		return nil, fmt.Errorf("failed to create mods dir: %w", err)
 	}
 
@@ -215,7 +209,7 @@ func installCurseForgeModpack(packPath, tempDir, base, apiKey string) (*ModpackI
 			}
 
 			destPath := filepath.Join(modsDir, fileName)
-			if err := downloadFile(downloadURL, destPath); err != nil {
+			if err := DownloadURL(serverID, downloadURL, destPath); err != nil {
 				mu.Lock()
 				result.FilesFailed++
 				result.FailedFiles = append(result.FailedFiles, fileName)
@@ -236,8 +230,8 @@ func installCurseForgeModpack(packPath, tempDir, base, apiKey string) (*ModpackI
 		overridesName = "overrides"
 	}
 	overridesDir := filepath.Join(tempDir, overridesName)
-	if _, err := os.Stat(overridesDir); err == nil {
-		copyDir(overridesDir, base)
+	if info, err := vfs.Stat(overridesDir); err == nil && info.IsDir() {
+		copyDirVFS(vfs, overridesDir, "/")
 	}
 
 	return result, nil
@@ -278,54 +272,37 @@ func getCurseForgeDownloadURL(projectID, fileID int, apiKey string) (string, str
 	return result.Data.DownloadURL, result.Data.FileName, nil
 }
 
-func downloadFile(url, destPath string) error {
-	resp, err := downloadClient.Get(url)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("status %d", resp.StatusCode)
-	}
-
-	f, err := os.Create(destPath)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	_, err = io.Copy(f, resp.Body)
-	return err
-}
-
-func extractAndParseModrinth(packPath, tempDir string) (*ModpackIndex, error) {
-	r, err := zip.OpenReader(packPath)
+func extractAndParseModrinth(serverID, packPath, tempDir string) (*ModpackIndex, error) {
+	vfs := GetVFS(serverID)
+	f, err := vfs.Open(packPath)
 	if err != nil {
 		return nil, err
 	}
-	defer r.Close()
+	defer f.Close()
+
+	info, _ := f.Stat()
+	r, err := zip.NewReader(f, info.Size())
+	if err != nil {
+		return nil, err
+	}
 
 	var index *ModpackIndex
 
-	for _, f := range r.File {
-		destPath := filepath.Join(tempDir, f.Name)
+	for _, zf := range r.File {
+		cleanName := filepath.Clean("/" + zf.Name)
+		destPath := filepath.Join(tempDir, cleanName)
 
-		if !strings.HasPrefix(destPath, tempDir) {
+		if zf.FileInfo().IsDir() {
+			vfs.MkdirAll(destPath, 0755)
 			continue
 		}
 
-		if f.FileInfo().IsDir() {
-			os.MkdirAll(destPath, 0755)
+		if err := vfs.MkdirAll(filepath.Dir(destPath), 0755); err != nil {
 			continue
 		}
 
-		if err := os.MkdirAll(filepath.Dir(destPath), 0755); err != nil {
-			continue
-		}
-
-		if f.Name == "modrinth.index.json" {
-			rc, err := f.Open()
+		if cleanName == "/modrinth.index.json" {
+			rc, err := zf.Open()
 			if err != nil {
 				return nil, err
 			}
@@ -342,12 +319,12 @@ func extractAndParseModrinth(packPath, tempDir string) (*ModpackIndex, error) {
 			continue
 		}
 
-		if strings.HasPrefix(f.Name, "overrides/") || strings.HasPrefix(f.Name, "server-overrides/") {
-			rc, err := f.Open()
+		if strings.HasPrefix(cleanName, "/overrides/") || strings.HasPrefix(cleanName, "/server-overrides/") {
+			rc, err := zf.Open()
 			if err != nil {
 				continue
 			}
-			outFile, err := os.Create(destPath)
+			outFile, err := vfs.Create(destPath)
 			if err != nil {
 				rc.Close()
 				continue
@@ -365,33 +342,37 @@ func extractAndParseModrinth(packPath, tempDir string) (*ModpackIndex, error) {
 	return index, nil
 }
 
-func extractAndParseCurseForge(packPath, tempDir string) (*CurseForgeManifest, error) {
-	r, err := zip.OpenReader(packPath)
+func extractAndParseCurseForge(serverID, packPath, tempDir string) (*CurseForgeManifest, error) {
+	vfs := GetVFS(serverID)
+	f, err := vfs.Open(packPath)
 	if err != nil {
 		return nil, err
 	}
-	defer r.Close()
+	defer f.Close()
+
+	info, _ := f.Stat()
+	r, err := zip.NewReader(f, info.Size())
+	if err != nil {
+		return nil, err
+	}
 
 	var manifest *CurseForgeManifest
 
-	for _, f := range r.File {
-		destPath := filepath.Join(tempDir, f.Name)
+	for _, zf := range r.File {
+		cleanName := filepath.Clean("/" + zf.Name)
+		destPath := filepath.Join(tempDir, cleanName)
 
-		if !strings.HasPrefix(destPath, tempDir) {
+		if zf.FileInfo().IsDir() {
+			vfs.MkdirAll(destPath, 0755)
 			continue
 		}
 
-		if f.FileInfo().IsDir() {
-			os.MkdirAll(destPath, 0755)
+		if err := vfs.MkdirAll(filepath.Dir(destPath), 0755); err != nil {
 			continue
 		}
 
-		if err := os.MkdirAll(filepath.Dir(destPath), 0755); err != nil {
-			continue
-		}
-
-		if f.Name == "manifest.json" {
-			rc, err := f.Open()
+		if cleanName == "/manifest.json" {
+			rc, err := zf.Open()
 			if err != nil {
 				return nil, err
 			}
@@ -408,12 +389,12 @@ func extractAndParseCurseForge(packPath, tempDir string) (*CurseForgeManifest, e
 			continue
 		}
 
-		if strings.HasPrefix(f.Name, "overrides/") {
-			rc, err := f.Open()
+		if strings.HasPrefix(cleanName, "/overrides/") {
+			rc, err := zf.Open()
 			if err != nil {
 				continue
 			}
-			outFile, err := os.Create(destPath)
+			outFile, err := vfs.Create(destPath)
 			if err != nil {
 				rc.Close()
 				continue

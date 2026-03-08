@@ -14,11 +14,13 @@ server/server
 server/logs/
 server/plugins/
 server/*.db
+server/birdactyl
 
 axis/config.yaml
 axis/axis
 axis/cauthon-axis
 axis/logs/
+axis/sftp_host_key
 
 client/node_modules/
 client/dist/

@@ -52,7 +52,7 @@ export default function Table<T>({ columns, data, keyField, loading, emptyText =
   const virtualizer = useVirtualizer({
     count: data.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 56, // default row height estimate
+    estimateSize: () => 56,
     overscan: 10,
   });
 

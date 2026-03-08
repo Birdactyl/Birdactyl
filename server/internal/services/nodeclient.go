@@ -32,6 +32,14 @@ type NodeServerConfig struct {
 	StopSignal    string            `json:"stop_signal"`
 	StopCommand   string            `json:"stop_command"`
 	StopTimeout   int               `json:"stop_timeout"`
+	Mounts        []NodeMountConfig `json:"mounts"`
+}
+
+type NodeMountConfig struct {
+	Source    string `json:"source"`
+	Target    string `json:"target"`
+	ReadOnly  bool   `json:"read_only"`
+	Navigable bool   `json:"navigable"`
 }
 
 type NodePortConfig struct {
@@ -99,6 +107,18 @@ func SendCreateServer(server *models.Server) error {
 	}
 	finalVars["SERVER_MEMORY"] = fmt.Sprintf("%d", server.Memory)
 
+	var mounts []models.Mount
+	database.DB.Model(server).Association("Mounts").Find(&mounts)
+	nodeMounts := make([]NodeMountConfig, len(mounts))
+	for i, m := range mounts {
+		nodeMounts[i] = NodeMountConfig{
+			Source:    m.Source,
+			Target:    m.Target,
+			ReadOnly:  m.ReadOnly,
+			Navigable: m.Navigable,
+		}
+	}
+
 	cfg := NodeServerConfig{
 		ID:            server.ID.String(),
 		Name:          server.Name,
@@ -114,6 +134,7 @@ func SendCreateServer(server *models.Server) error {
 		StopSignal:    pkg.StopSignal,
 		StopCommand:   pkg.StopCommand,
 		StopTimeout:   pkg.StopTimeout,
+		Mounts:        nodeMounts,
 	}
 
 	return sendToNode(&node, "POST", "/api/servers", cfg)
@@ -173,6 +194,18 @@ func SendStartServer(serverID uuid.UUID) error {
 	}
 	finalVars["SERVER_MEMORY"] = fmt.Sprintf("%d", server.Memory)
 
+	var mounts []models.Mount
+	database.DB.Model(server).Association("Mounts").Find(&mounts)
+	nodeMounts := make([]NodeMountConfig, len(mounts))
+	for i, m := range mounts {
+		nodeMounts[i] = NodeMountConfig{
+			Source:    m.Source,
+			Target:    m.Target,
+			ReadOnly:  m.ReadOnly,
+			Navigable: m.Navigable,
+		}
+	}
+
 	cfg := NodeServerConfig{
 		ID:            server.ID.String(),
 		Name:          server.Name,
@@ -188,6 +221,7 @@ func SendStartServer(serverID uuid.UUID) error {
 		StopSignal:    pkg.StopSignal,
 		StopCommand:   pkg.StopCommand,
 		StopTimeout:   pkg.StopTimeout,
+		Mounts:        nodeMounts,
 	}
 
 	return sendToNode(node, "POST", fmt.Sprintf("/api/servers/%s/start", server.ID), cfg)
@@ -293,6 +327,18 @@ func SendReinstallServer(server *models.Server) error {
 	}
 	finalVars["SERVER_MEMORY"] = fmt.Sprintf("%d", server.Memory)
 
+	var mounts []models.Mount
+	database.DB.Model(server).Association("Mounts").Find(&mounts)
+	nodeMounts := make([]NodeMountConfig, len(mounts))
+	for i, m := range mounts {
+		nodeMounts[i] = NodeMountConfig{
+			Source:    m.Source,
+			Target:    m.Target,
+			ReadOnly:  m.ReadOnly,
+			Navigable: m.Navigable,
+		}
+	}
+
 	cfg := NodeServerConfig{
 		ID:            server.ID.String(),
 		Name:          server.Name,
@@ -308,6 +354,7 @@ func SendReinstallServer(server *models.Server) error {
 		StopSignal:    pkg.StopSignal,
 		StopCommand:   pkg.StopCommand,
 		StopTimeout:   pkg.StopTimeout,
+		Mounts:        nodeMounts,
 	}
 
 	return sendToNode(&node, "POST", fmt.Sprintf("/api/servers/%s/reinstall", server.ID), cfg)

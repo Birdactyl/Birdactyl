@@ -45,6 +45,7 @@ node:
   sftp_port: 2022
   container_engine: "docker"
   docker_socket: ""
+  ignore_wsl: false
 
 logging:
   file: "logs/axis.log"
@@ -61,6 +62,7 @@ logging:
 | `node.sftp_port` | Port for the SFTP server |
 | `node.container_engine` | Container engine to use (`docker` or `podman`) |
 | `node.docker_socket` | Path to container socket (leave empty for default) |
+| `node.ignore_wsl` | Disable WSL checks and treat the host as native Linux |
 
 ## Pairing with Panel
 

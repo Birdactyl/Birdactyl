@@ -8,6 +8,8 @@ import (
 	"strings"
 	"syscall"
 	"time"
+
+	"cauthon-axis/internal/config"
 )
 
 type SystemInfo struct {
@@ -234,6 +236,11 @@ func getKernelVersion() string {
 }
 
 func IsWSL() bool {
+	cfg := config.Get()
+	if cfg != nil && cfg.Node.IgnoreWSL {
+		return false
+	}
+
 	data, err := os.ReadFile("/proc/version")
 	if err != nil {
 		return false

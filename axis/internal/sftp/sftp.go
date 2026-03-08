@@ -9,11 +9,9 @@ import (
 	"io"
 	"net"
 	"os"
-	"path/filepath"
 	"strings"
 	"sync"
 
-	"cauthon-axis/internal/config"
 	"cauthon-axis/internal/logger"
 	"cauthon-axis/internal/panel"
 
@@ -22,15 +20,15 @@ import (
 )
 
 var (
-	server   net.Listener
-	serverMu sync.Mutex
+	sftpListener net.Listener
+	serverMu     sync.Mutex
 )
 
 func Start(port int) error {
 	serverMu.Lock()
 	defer serverMu.Unlock()
 
-	if server != nil {
+	if sftpListener != nil {
 		return nil
 	}
 
@@ -50,7 +48,7 @@ func Start(port int) error {
 		return fmt.Errorf("failed to listen on %s: %w", addr, err)
 	}
 
-	server = listener
+	sftpListener = listener
 	logger.Success("SFTP server listening on %s", addr)
 
 	go acceptConnections(listener, sshConfig)
@@ -62,9 +60,9 @@ func Stop() {
 	serverMu.Lock()
 	defer serverMu.Unlock()
 
-	if server != nil {
-		server.Close()
-		server = nil
+	if sftpListener != nil {
+		sftpListener.Close()
+		sftpListener = nil
 	}
 }
 
@@ -132,20 +130,8 @@ func handleSFTP(channel ssh.Channel, username string) {
 	}
 	serverID := parts[len(parts)-1]
 
-	cfg := config.Get()
-	rootPath := filepath.Join(cfg.Node.DataDir, serverID)
-
-	if _, err := os.Stat(rootPath); os.IsNotExist(err) {
-		return
-	}
-
-	sftpServer, err := sftp.NewServer(
-		channel,
-		sftp.WithServerWorkingDirectory(rootPath),
-	)
-	if err != nil {
-		return
-	}
+	handlers := newVFSHandlers(serverID)
+	sftpServer := sftp.NewRequestServer(channel, handlers)
 
 	if err := sftpServer.Serve(); err != nil && err != io.EOF {
 		logger.Warn("SFTP session error for %s: %v", serverID, err)

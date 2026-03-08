@@ -204,6 +204,7 @@ node:
   display_ip: ""
   sftp_port: 2022
   docker_socket: ""
+  ignore_wsl: false
 ```
 
 | Option | Type | Default | Description |
@@ -215,6 +216,7 @@ node:
 | `sftp_port` | int | `2022` | Port for the SFTP server |
 | `container_engine` | string | `docker` | `docker` or `podman` |
 | `docker_socket` | string | - | Custom Docker socket path |
+| `ignore_wsl` | bool | `false` | Disable WSL checks and treat the host as native Linux |
 
 
 ### Logging

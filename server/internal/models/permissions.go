@@ -57,6 +57,9 @@ const (
 	PermSFTPView          = "sftp.view"
 	PermSFTPResetPassword = "sftp.reset_password"
 
+	PermMountRead   = "mount.read"
+	PermMountUpdate = "mount.update"
+
 	PermAdmin = "*"
 )
 
@@ -75,6 +78,7 @@ var AllPermissions = []string{
 	PermReinstall,
 	PermActivityView,
 	PermSFTPView, PermSFTPResetPassword,
+	PermMountRead, PermMountUpdate,
 }
 
 var PermissionGroups = map[string][]string{
@@ -90,6 +94,7 @@ var PermissionGroups = map[string][]string{
 	"server":     {PermReinstall},
 	"activity":   {PermActivityView},
 	"sftp":       {PermSFTPView, PermSFTPResetPassword},
+	"mount":      {PermMountRead, PermMountUpdate},
 }
 
 func HasPermission(permissions []string, required string) bool {

@@ -80,6 +80,7 @@ func Connect(cfg *config.DatabaseConfig) error {
 		&models.IPRegistration{},
 		&models.Node{},
 		&models.Package{},
+		&models.Mount{},
 		&models.Server{},
 		&models.ActivityLog{},
 		&models.IPBan{},

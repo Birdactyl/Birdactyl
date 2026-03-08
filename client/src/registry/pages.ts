@@ -10,6 +10,7 @@ registry.registerPages([
   { path: '/admin/nodes', component: lazyPage(() => import('../pages/console/admin/NodesPage')), guard: 'admin' },
   { path: '/admin/packages', component: lazyPage(() => import('../pages/console/admin/PackagesPage')), guard: 'admin' },
   { path: '/admin/servers', component: lazyPage(() => import('../pages/console/admin/ServersPage')), guard: 'admin' },
+  { path: '/admin/mounts', component: lazyPage(() => import('../pages/console/admin/MountsPage')), guard: 'admin' },
   { path: '/admin/ip-bans', component: lazyPage(() => import('../pages/console/admin/IPBansPage')), guard: 'admin' },
   { path: '/admin/logs', component: lazyPage(() => import('../pages/console/admin/LogsPage')), guard: 'admin' },
   { path: '/admin/database-hosts', component: lazyPage(() => import('../pages/console/admin/DatabaseHostsPage')), guard: 'admin' },

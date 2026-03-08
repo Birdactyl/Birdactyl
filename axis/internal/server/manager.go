@@ -90,6 +90,14 @@ type ServerConfig struct {
 	StopSignal    string            `json:"stop_signal"`
 	StopCommand   string            `json:"stop_command"`
 	StopTimeout   int               `json:"stop_timeout"`
+	Mounts        []MountConfig     `json:"mounts"`
+}
+
+type MountConfig struct {
+	Source    string `json:"source"`
+	Target    string `json:"target"`
+	ReadOnly  bool   `json:"read_only"`
+	Navigable bool   `json:"navigable"`
 }
 
 type PortConfig struct {
@@ -191,13 +199,23 @@ func Create(cfg ServerConfig) error {
 		AttachStderr: true,
 	}
 
+	dockerMounts := []mount.Mount{{
+		Type:   mount.TypeBind,
+		Source: dataDir,
+		Target: "/home/container",
+	}}
+	for _, m := range cfg.Mounts {
+		dockerMounts = append(dockerMounts, mount.Mount{
+			Type:     mount.TypeBind,
+			Source:   m.Source,
+			Target:   m.Target,
+			ReadOnly: m.ReadOnly,
+		})
+	}
+
 	hostCfg := &container.HostConfig{
 		PortBindings: portBindings,
-		Mounts: []mount.Mount{{
-			Type:   mount.TypeBind,
-			Source: dataDir,
-			Target: "/home/container",
-		}},
+		Mounts:       dockerMounts,
 		Resources: container.Resources{
 			Memory:   int64(cfg.Memory) * 1024 * 1024,
 			NanoCPUs: int64(cfg.CPU) * 10000000,
@@ -354,13 +372,23 @@ func CreateContainer(cfg ServerConfig) error {
 		AttachStderr: true,
 	}
 
+	dockerMounts := []mount.Mount{{
+		Type:   mount.TypeBind,
+		Source: dataDir,
+		Target: "/home/container",
+	}}
+	for _, m := range cfg.Mounts {
+		dockerMounts = append(dockerMounts, mount.Mount{
+			Type:     mount.TypeBind,
+			Source:   m.Source,
+			Target:   m.Target,
+			ReadOnly: m.ReadOnly,
+		})
+	}
+
 	hostCfg := &container.HostConfig{
 		PortBindings: portBindings,
-		Mounts: []mount.Mount{{
-			Type:   mount.TypeBind,
-			Source: dataDir,
-			Target: "/home/container",
-		}},
+		Mounts:       dockerMounts,
 		Resources: container.Resources{
 			Memory:   int64(cfg.Memory) * 1024 * 1024,
 			NanoCPUs: int64(cfg.CPU) * 10000000,
@@ -561,13 +589,23 @@ func Reinstall(cfg ServerConfig) error {
 		AttachStderr: true,
 	}
 
+	dockerMounts := []mount.Mount{{
+		Type:   mount.TypeBind,
+		Source: dataDir,
+		Target: "/home/container",
+	}}
+	for _, m := range cfg.Mounts {
+		dockerMounts = append(dockerMounts, mount.Mount{
+			Type:     mount.TypeBind,
+			Source:   m.Source,
+			Target:   m.Target,
+			ReadOnly: m.ReadOnly,
+		})
+	}
+
 	hostCfg := &container.HostConfig{
 		PortBindings: portBindings,
-		Mounts: []mount.Mount{{
-			Type:   mount.TypeBind,
-			Source: dataDir,
-			Target: "/home/container",
-		}},
+		Mounts:       dockerMounts,
 		Resources: container.Resources{
 			Memory:   int64(cfg.Memory) * 1024 * 1024,
 			NanoCPUs: int64(cfg.CPU) * 10000000,
