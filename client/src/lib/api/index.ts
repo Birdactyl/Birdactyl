@@ -17,8 +17,8 @@ export type { IPBan, PaginatedIPBans } from './ipbans';
 export { getAvailableNodes, getAvailablePackages } from './packages';
 export type { Package, PackagePort, PackageVariable, PackageConfigFile, AddonSource, AddonSourceMapping } from './packages';
 
-export { getServers, getServer, getServerStatus, getServerPermissions, createServer, startServer, stopServer, restartServer, killServer, reinstallServer, deleteServer, addAllocation, setPrimaryAllocation, deleteAllocation, updateServerResources, updateServerName, updateServerVariables, getSFTPDetails, resetSFTPPassword } from './servers';
-export type { Server, ServerStatusResponse, SFTPDetails, SFTPPasswordReset } from './servers';
+export { getServers, getServer, getServerStatus, getServerPermissions, createServer, startServer, stopServer, restartServer, killServer, reinstallServer, deleteServer, addAllocation, setPrimaryAllocation, deleteAllocation, updateServerResources, updateServerName, updateServerVariables, getSFTPDetails, resetSFTPPassword, getServerMounts, mountServerMount, unmountServerMount } from './servers';
+export type { Server, ServerStatusResponse, SFTPDetails, SFTPPasswordReset, ServerMountResponse } from './servers';
 
 export { listFiles, readFile, searchFiles, deleteFile, bulkDeleteFiles, bulkCopyFiles, bulkCompressFiles, moveFile, copyFile, compressFile, decompressFile, createFolder, writeFile, getDownloadUrl, uploadFile, connectServerLogs } from './files';
 export type { FileEntry, SearchResult } from './files';
@@ -37,3 +37,6 @@ export type { ServerDatabase, DatabaseHost } from './databases';
 
 export { getSchedules, getSchedule, createSchedule, updateSchedule, deleteSchedule, runScheduleNow } from './schedules';
 export type { Schedule, ScheduleTask, CreateScheduleRequest } from './schedules';
+
+export { adminGetMounts, adminCreateMount, adminUpdateMount, adminDeleteMount, adminAttachMount, adminDetachMount } from './mounts';
+export type { Mount, PaginatedMounts } from './mounts';

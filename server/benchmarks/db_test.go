@@ -655,3 +655,66 @@ func BenchmarkDBServerUpdate(b *testing.B) {
 	}
 }
 
+func BenchmarkDBMountCreate(b *testing.B) {
+	requireDB(b)
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		uid := uuid.New().String()[:8]
+		mount := &models.Mount{
+			Name:          fmt.Sprintf("bench_mount_%s", uid),
+			Description:   "Benchmark mount",
+			Source:        "/mnt/bench_" + uid,
+			Target:        "/home/container/bench_" + uid,
+			ReadOnly:      true,
+			UserMountable: true,
+			Navigable:     true,
+		}
+		database.DB.Create(mount)
+	}
+}
+
+func BenchmarkDBMountLookup(b *testing.B) {
+	requireDB(b)
+	uid := uuid.New().String()[:8]
+	mount := &models.Mount{
+		Name:          fmt.Sprintf("bench_mlook_%s", uid),
+		Description:   "Benchmark mount lookup",
+		Source:        "/mnt/bench_look_" + uid,
+		Target:        "/home/container/bench_look",
+		ReadOnly:      true,
+		UserMountable: true,
+		Navigable:     true,
+	}
+	database.DB.Create(mount)
+
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		var found models.Mount
+		database.DB.Where("id = ?", mount.ID).First(&found)
+	}
+}
+
+func BenchmarkDBMountsList(b *testing.B) {
+	requireDB(b)
+	for i := 0; i < 20; i++ {
+		uid := uuid.New().String()[:8]
+		database.DB.Create(&models.Mount{
+			Name:          fmt.Sprintf("bench_mlist_%s", uid),
+			Description:   "Benchmark mount list",
+			Source:        "/mnt/bench_list_" + uid,
+			Target:        "/home/container/bench_list_" + uid,
+			ReadOnly:      i%2 == 0,
+			UserMountable: true,
+			Navigable:     true,
+		})
+	}
+
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		var mounts []models.Mount
+		database.DB.Where("user_mountable = ?", true).Limit(20).Find(&mounts)
+	}
+}

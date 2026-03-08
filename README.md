@@ -28,9 +28,3 @@ Configure `config.yaml` in each component after first run.
 - PostgreSQL/MySQL/SQLite
 - Docker (on nodes, if not present axis will install and set it up.)
 - Node.js 18+ or Bun (for client)
-
-#### Logging
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `logging.file` | string | `logs/axis.log` | Path to the log file |

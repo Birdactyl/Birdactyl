@@ -12,7 +12,88 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/spf13/afero"
 )
+
+var osFs = afero.NewOsFs()
+
+func GetVFS(serverID string) afero.Fs {
+	base := serverDataDir(serverID)
+	osFs.MkdirAll(base, 0755)
+	
+	bfs := afero.NewBasePathFs(osFs, base)
+
+	serverConfigsMu.RLock()
+	cfg := serverConfigs[serverID]
+	serverConfigsMu.RUnlock()
+
+	if cfg == nil || len(cfg.Mounts) == 0 {
+		return bfs
+	}
+
+	mountsFs := &mountFs{
+		base:   bfs,
+		mounts: make(map[string]afero.Fs),
+	}
+
+	for _, m := range cfg.Mounts {
+		if !m.Navigable {
+			continue
+		}
+
+		target := filepath.Clean(m.Target)
+		if !strings.HasPrefix(target, "/home/container") {
+			continue
+		}
+		
+		virtualTarget := strings.TrimPrefix(target, "/home/container")
+		if virtualTarget == "" {
+			virtualTarget = "/"
+		}
+
+		bfs.MkdirAll(virtualTarget, 0755)
+		
+		realFs := afero.NewBasePathFs(osFs, m.Source)
+		if m.ReadOnly {
+			realFs = afero.NewReadOnlyFs(realFs)
+		}
+		mountsFs.mounts[virtualTarget] = realFs
+	}
+	
+	return mountsFs
+}
+
+func GetRealPath(serverID, subPath string) (string, error) {
+	base := serverDataDir(serverID)
+	osFs.MkdirAll(base, 0755)
+
+	p := filepath.Clean("/" + subPath)
+	bfs := afero.NewBasePathFs(osFs, base).(*afero.BasePathFs)
+
+	realPath, err := bfs.RealPath(p)
+	if err != nil {
+		return "", err
+	}
+
+	checkPath := realPath
+	for {
+		eval, err := filepath.EvalSymlinks(checkPath)
+		if err == nil {
+			if !strings.HasPrefix(eval, base) && eval != base {
+				return "", fmt.Errorf("security violation: path escapes the server sandbox")
+			}
+			break // we are good
+		}
+		parent := filepath.Dir(checkPath)
+		if parent == checkPath || parent == base || parent == "/" || parent == "." {
+			break
+		}
+		checkPath = parent
+	}
+
+	return realPath, nil
+}
 
 type FileEntry struct {
 	Name    string `json:"name"`
@@ -32,28 +113,20 @@ type SearchResult struct {
 }
 
 func ListFiles(serverID, subPath string) ([]FileEntry, error) {
-	base := serverDataDir(serverID)
-	target := filepath.Join(base, filepath.Clean("/"+subPath))
+	fs := GetVFS(serverID)
+	target := filepath.Clean("/" + subPath)
 
-	if !strings.HasPrefix(target, base) {
-		return nil, fmt.Errorf("invalid path")
-	}
-
-	entries, err := os.ReadDir(target)
+	entries, err := afero.ReadDir(fs, target)
 	if err != nil {
 		return nil, err
 	}
 
 	files := make([]FileEntry, 0, len(entries))
-	for _, e := range entries {
-		info, err := e.Info()
-		if err != nil {
-			continue
-		}
+	for _, info := range entries {
 		files = append(files, FileEntry{
-			Name:    e.Name(),
+			Name:    info.Name(),
 			Size:    info.Size(),
-			IsDir:   e.IsDir(),
+			IsDir:   info.IsDir(),
 			ModTime: info.ModTime().Unix(),
 			Mode:    info.Mode().String(),
 		})
@@ -62,36 +135,27 @@ func ListFiles(serverID, subPath string) ([]FileEntry, error) {
 }
 
 func ListFilesWithHashes(serverID, subPath string) ([]FileEntry, error) {
-	base := serverDataDir(serverID)
-	target := filepath.Join(base, filepath.Clean("/"+subPath))
+	fs := GetVFS(serverID)
+	target := filepath.Clean("/" + subPath)
 
-	if !strings.HasPrefix(target, base) {
-		return nil, fmt.Errorf("invalid path")
-	}
-
-	entries, err := os.ReadDir(target)
+	entries, err := afero.ReadDir(fs, target)
 	if err != nil {
 		return nil, err
 	}
 
 	files := make([]FileEntry, 0, len(entries))
-	for _, e := range entries {
-		info, err := e.Info()
-		if err != nil {
-			continue
-		}
-
+	for _, info := range entries {
 		entry := FileEntry{
-			Name:    e.Name(),
+			Name:    info.Name(),
 			Size:    info.Size(),
-			IsDir:   e.IsDir(),
+			IsDir:   info.IsDir(),
 			ModTime: info.ModTime().Unix(),
 			Mode:    info.Mode().String(),
 		}
 
-		if !e.IsDir() && info.Size() < 500*1024*1024 {
-			filePath := filepath.Join(target, e.Name())
-			if hash, err := computeSHA512(filePath); err == nil {
+		if !info.IsDir() && info.Size() < 500*1024*1024 {
+			filePath := filepath.Join(target, info.Name())
+			if hash, err := computeSHA512(fs, filePath); err == nil {
 				entry.SHA512 = hash
 			}
 		}
@@ -101,8 +165,8 @@ func ListFilesWithHashes(serverID, subPath string) ([]FileEntry, error) {
 	return files, nil
 }
 
-func computeSHA512(filePath string) (string, error) {
-	f, err := os.Open(filePath)
+func computeSHA512(fs afero.Fs, filePath string) (string, error) {
+	f, err := fs.Open(filePath)
 	if err != nil {
 		return "", err
 	}
@@ -117,14 +181,10 @@ func computeSHA512(filePath string) (string, error) {
 }
 
 func ReadFile(serverID, subPath string) ([]byte, error) {
-	base := serverDataDir(serverID)
-	target := filepath.Join(base, filepath.Clean("/"+subPath))
+	fs := GetVFS(serverID)
+	target := filepath.Clean("/" + subPath)
 
-	if !strings.HasPrefix(target, base) {
-		return nil, fmt.Errorf("invalid path")
-	}
-
-	info, err := os.Stat(target)
+	info, err := fs.Stat(target)
 	if err != nil {
 		return nil, err
 	}
@@ -135,40 +195,26 @@ func ReadFile(serverID, subPath string) ([]byte, error) {
 		return nil, fmt.Errorf("file too large")
 	}
 
-	return os.ReadFile(target)
+	return afero.ReadFile(fs, target)
 }
 
 func CreateFolder(serverID, subPath string) error {
-	base := serverDataDir(serverID)
-	target := filepath.Join(base, filepath.Clean("/"+subPath))
-
-	if !strings.HasPrefix(target, base) {
-		return fmt.Errorf("invalid path")
-	}
-
-	return os.MkdirAll(target, 0755)
+	fs := GetVFS(serverID)
+	target := filepath.Clean("/" + subPath)
+	return fs.MkdirAll(target, 0755)
 }
 
 func WriteFile(serverID, subPath string, content []byte) error {
-	base := serverDataDir(serverID)
-	target := filepath.Join(base, filepath.Clean("/"+subPath))
-
-	if !strings.HasPrefix(target, base) {
-		return fmt.Errorf("invalid path")
-	}
-
-	return os.WriteFile(target, content, 0644)
+	fs := GetVFS(serverID)
+	target := filepath.Clean("/" + subPath)
+	return afero.WriteFile(fs, target, content, 0644)
 }
 
 func WriteFileStream(serverID, subPath string, r io.Reader) error {
-	base := serverDataDir(serverID)
-	target := filepath.Join(base, filepath.Clean("/"+subPath))
+	fs := GetVFS(serverID)
+	target := filepath.Clean("/" + subPath)
 
-	if !strings.HasPrefix(target, base) {
-		return fmt.Errorf("invalid path")
-	}
-
-	f, err := os.Create(target)
+	f, err := fs.Create(target)
 	if err != nil {
 		return err
 	}
@@ -179,17 +225,17 @@ func WriteFileStream(serverID, subPath string, r io.Reader) error {
 }
 
 func SearchFiles(serverID, query string) ([]SearchResult, error) {
-	base := serverDataDir(serverID)
+	fs := GetVFS(serverID)
 	query = strings.ToLower(query)
 	var results []SearchResult
 
-	filepath.Walk(base, func(path string, info os.FileInfo, err error) error {
+	afero.Walk(fs, "/", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return nil
 		}
 		if strings.Contains(strings.ToLower(info.Name()), query) {
-			relPath := strings.TrimPrefix(path, base)
-			if relPath == "" {
+			relPath := path
+			if relPath == "" || relPath == "." {
 				relPath = "/"
 			}
 			results = append(results, SearchResult{
@@ -206,74 +252,62 @@ func SearchFiles(serverID, query string) ([]SearchResult, error) {
 }
 
 func DeletePath(serverID, subPath string) error {
-	base := serverDataDir(serverID)
-	target := filepath.Join(base, filepath.Clean("/"+subPath))
-
-	if !strings.HasPrefix(target, base) || target == base {
-		return fmt.Errorf("invalid path")
+	fs := GetVFS(serverID)
+	target := filepath.Clean("/" + subPath)
+	if target == "/" || target == "." {
+		return fmt.Errorf("cannot delete root workspace")
 	}
-
-	return os.RemoveAll(target)
+	return fs.RemoveAll(target)
 }
 
 func MovePath(serverID, srcPath, destPath string) error {
-	base := serverDataDir(serverID)
-	src := filepath.Join(base, filepath.Clean("/"+srcPath))
-	dest := filepath.Join(base, filepath.Clean("/"+destPath))
+	fs := GetVFS(serverID)
+	src := filepath.Clean("/" + srcPath)
+	dest := filepath.Clean("/" + destPath)
 
-	if !strings.HasPrefix(src, base) || !strings.HasPrefix(dest, base) || src == base {
-		return fmt.Errorf("invalid path")
+	if src == "/" || src == "." {
+		return fmt.Errorf("cannot move root workspace")
 	}
 
-	if err := os.MkdirAll(filepath.Dir(dest), 0755); err != nil {
-		return err
-	}
-
-	return os.Rename(src, dest)
+	fs.MkdirAll(filepath.Dir(dest), 0755)
+	return fs.Rename(src, dest)
 }
 
 func CopyPath(serverID, srcPath, destPath string) error {
-	base := serverDataDir(serverID)
-	src := filepath.Join(base, filepath.Clean("/"+srcPath))
-	dest := filepath.Join(base, filepath.Clean("/"+destPath))
+	fs := GetVFS(serverID)
+	src := filepath.Clean("/" + srcPath)
+	dest := filepath.Clean("/" + destPath)
 
-	if !strings.HasPrefix(src, base) || !strings.HasPrefix(dest, base) || src == base {
-		return fmt.Errorf("invalid path")
+	if src == "/" || src == "." {
+		return fmt.Errorf("cannot copy root workspace")
 	}
 
-	info, err := os.Stat(src)
+	info, err := fs.Stat(src)
 	if err != nil {
 		return err
 	}
 
-	if err := os.MkdirAll(filepath.Dir(dest), 0755); err != nil {
-		return err
-	}
+	fs.MkdirAll(filepath.Dir(dest), 0755)
 
 	if info.IsDir() {
-		return copyDir(src, dest)
+		return copyDirVFS(fs, src, dest)
 	}
-	return copyFile(src, dest)
+	return copyFileVFS(fs, src, dest)
 }
 
 func GetFilePath(serverID, subPath string) (string, error) {
-	base := serverDataDir(serverID)
-	target := filepath.Join(base, filepath.Clean("/"+subPath))
-	if !strings.HasPrefix(target, base) {
-		return "", fmt.Errorf("invalid path")
-	}
-	return target, nil
+	return GetRealPath(serverID, subPath)
 }
 
 func BulkDelete(serverID string, paths []string) (int, error) {
-	base := serverDataDir(serverID)
+	fs := GetVFS(serverID)
 	deleted := 0
 	for _, p := range paths {
-		target := filepath.Join(base, filepath.Clean("/"+p))
-		if !strings.HasPrefix(target, base) || target == base {
+		target := filepath.Clean("/" + p)
+		if target == "/" || target == "." {
 			continue
 		}
-		if err := os.RemoveAll(target); err == nil {
+		if err := fs.RemoveAll(target); err == nil {
 			deleted++
 		}
 	}
@@ -281,32 +315,29 @@ func BulkDelete(serverID string, paths []string) (int, error) {
 }
 
 func BulkCopy(serverID string, paths []string, destDir string) (int, error) {
-	base := serverDataDir(serverID)
-	dest := filepath.Join(base, filepath.Clean("/"+destDir))
-	if !strings.HasPrefix(dest, base) {
-		return 0, fmt.Errorf("invalid destination")
-	}
-	if err := os.MkdirAll(dest, 0755); err != nil {
-		return 0, err
-	}
+	fs := GetVFS(serverID)
+	dest := filepath.Clean("/" + destDir)
+	fs.MkdirAll(dest, 0755)
+
 	copied := 0
 	for _, p := range paths {
-		src := filepath.Join(base, filepath.Clean("/"+p))
-		if !strings.HasPrefix(src, base) || src == base {
+		src := filepath.Clean("/" + p)
+		if src == "/" || src == "." {
 			continue
 		}
 		name := filepath.Base(src)
 		target := filepath.Join(dest, name)
-		info, err := os.Stat(src)
+
+		info, err := fs.Stat(src)
 		if err != nil {
 			continue
 		}
 		if info.IsDir() {
-			if copyDir(src, target) == nil {
+			if copyDirVFS(fs, src, target) == nil {
 				copied++
 			}
 		} else {
-			if copyFile(src, target) == nil {
+			if copyFileVFS(fs, src, target) == nil {
 				copied++
 			}
 		}
@@ -314,14 +345,14 @@ func BulkCopy(serverID string, paths []string, destDir string) (int, error) {
 	return copied, nil
 }
 
-func copyFile(src, dest string) error {
-	in, err := os.Open(src)
+func copyFileVFS(fs afero.Fs, src, dest string) error {
+	in, err := fs.Open(src)
 	if err != nil {
 		return err
 	}
 	defer in.Close()
 
-	out, err := os.Create(dest)
+	out, err := fs.Create(dest)
 	if err != nil {
 		return err
 	}
@@ -331,11 +362,10 @@ func copyFile(src, dest string) error {
 	return err
 }
 
-func copyDir(src, dest string) error {
-	if err := os.MkdirAll(dest, 0755); err != nil {
-		return err
-	}
-	entries, err := os.ReadDir(src)
+func copyDirVFS(fs afero.Fs, src, dest string) error {
+	fs.MkdirAll(dest, 0755)
+
+	entries, err := afero.ReadDir(fs, src)
 	if err != nil {
 		return err
 	}
@@ -343,11 +373,11 @@ func copyDir(src, dest string) error {
 		srcPath := filepath.Join(src, e.Name())
 		destPath := filepath.Join(dest, e.Name())
 		if e.IsDir() {
-			if err := copyDir(srcPath, destPath); err != nil {
+			if err := copyDirVFS(fs, srcPath, destPath); err != nil {
 				return err
 			}
 		} else {
-			if err := copyFile(srcPath, destPath); err != nil {
+			if err := copyFileVFS(fs, srcPath, destPath); err != nil {
 				return err
 			}
 		}
@@ -413,16 +443,9 @@ func DownloadURL(serverID, rawURL, destPath string) error {
 		return err
 	}
 
-	base := serverDataDir(serverID)
-	target := filepath.Join(base, filepath.Clean("/"+destPath))
-
-	if !strings.HasPrefix(target, base) {
-		return fmt.Errorf("invalid path")
-	}
-
-	if err := os.MkdirAll(filepath.Dir(target), 0755); err != nil {
-		return err
-	}
+	fs := GetVFS(serverID)
+	target := filepath.Clean("/" + destPath)
+	fs.MkdirAll(filepath.Dir(target), 0755)
 
 	resp, err := downloadClient.Get(rawURL)
 	if err != nil {
@@ -434,7 +457,7 @@ func DownloadURL(serverID, rawURL, destPath string) error {
 		return fmt.Errorf("download failed: status %d", resp.StatusCode)
 	}
 
-	f, err := os.Create(target)
+	f, err := fs.Create(target)
 	if err != nil {
 		return err
 	}

@@ -47,6 +47,8 @@ const actionLabels: Record<string, string> = {
   'server.database.create': 'Create Database',
   'server.database.delete': 'Delete Database',
   'server.database.rotate_password': 'Rotate DB Password',
+  'server.mount.add': 'Attach Mount to Server',
+  'server.mount.remove': 'Detach Mount from Server',
   'server.schedule.create': 'Create Schedule',
   'server.schedule.update': 'Update Schedule',
   'server.schedule.delete': 'Delete Schedule',
@@ -83,6 +85,13 @@ const actionLabels: Record<string, string> = {
   'admin.database_host.update': 'Update Database Host',
   'admin.database_host.delete': 'Delete Database Host',
   'admin.database.delete': 'Delete Database (Admin)',
+  'admin.mount.create': 'Create Mount',
+  'admin.mount.update': 'Update Mount',
+  'admin.mount.delete': 'Delete Mount',
+  'admin.mount.attach': 'Attach Mount (Admin)',
+  'admin.mount.detach': 'Detach Mount (Admin)',
+  'admin.node.update': 'Update Node',
+  'server.sftp.password_reset': 'Reset SFTP Password',
 };
 
 const getActionIcon = (action: string) => {
@@ -107,6 +116,8 @@ const getActionIcon = (action: string) => {
   if (action.includes('resources')) return <Icons.pieChart className="w-4 h-4 text-emerald-400" />;
   if (action.includes('node')) return <Icons.server className="w-4 h-4 text-sky-400" />;
   if (action.includes('package')) return <Icons.cube className="w-4 h-4 text-amber-400" />;
+  if (action.includes('mount')) return <Icons.folder className="w-4 h-4 text-amber-500" />;
+  if (action.includes('sftp')) return <Icons.folder className="w-4 h-4 text-amber-500" />;
   if (action.includes('ipban')) return <Icons.noAccess className="w-4 h-4 text-red-400" />;
   if (action.includes('user') && action.includes('ban')) return <Icons.noAccess className="w-4 h-4 text-red-400" />;
   if (action.includes('user') && action.includes('unban')) return <Icons.check className="w-4 h-4 text-emerald-400" />;

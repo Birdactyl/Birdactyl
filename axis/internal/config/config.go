@@ -32,6 +32,7 @@ type NodeConfig struct {
 	SFTPPort        int    `yaml:"sftp_port"`
 	ContainerEngine string `yaml:"container_engine"`
 	DockerSocket    string `yaml:"docker_socket"`
+	IgnoreWSL       bool   `yaml:"ignore_wsl"`
 }
 
 var cfg *Config
@@ -106,6 +107,7 @@ node:
   sftp_port: 2022
   container_engine: "docker"
   docker_socket: ""
+  ignore_wsl: false
 
 logging:
   file: "logs/axis.log"

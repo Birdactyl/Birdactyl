@@ -78,3 +78,18 @@ export interface SFTPPasswordReset {
 
 export const getSFTPDetails = (serverId: string) => api.get<SFTPDetails>(`/servers/${serverId}/sftp`);
 export const resetSFTPPassword = (serverId: string) => api.post<SFTPPasswordReset>(`/servers/${serverId}/sftp/password`);
+
+export interface ServerMountResponse {
+  id: string;
+  name: string;
+  description: string;
+  source: string;
+  target: string;
+  read_only: boolean;
+  is_mounted: boolean;
+  navigable: boolean;
+}
+
+export const getServerMounts = (serverId: string) => api.get<ServerMountResponse[]>(`/servers/${serverId}/mounts`);
+export const mountServerMount = (serverId: string, mountId: string) => api.post<{ message: string }>(`/servers/${serverId}/mounts/${mountId}/mount`);
+export const unmountServerMount = (serverId: string, mountId: string) => api.post<{ message: string }>(`/servers/${serverId}/mounts/${mountId}/unmount`);

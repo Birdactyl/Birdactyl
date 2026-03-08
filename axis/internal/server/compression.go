@@ -9,12 +9,13 @@ import (
 )
 
 func CompressPath(serverID, srcPath, destPath, format string) error {
-	base := serverDataDir(serverID)
-	src := filepath.Join(base, filepath.Clean("/"+srcPath))
-	dest := filepath.Join(base, filepath.Clean("/"+destPath))
-
-	if !strings.HasPrefix(src, base) || !strings.HasPrefix(dest, base) {
-		return fmt.Errorf("invalid path")
+	src, err := GetRealPath(serverID, srcPath)
+	if err != nil {
+		return err
+	}
+	dest, err := GetRealPath(serverID, destPath)
+	if err != nil {
+		return err
 	}
 
 	dest = uniquePath(dest)
@@ -36,12 +37,13 @@ func CompressPath(serverID, srcPath, destPath, format string) error {
 }
 
 func DecompressPath(serverID, srcPath, destPath string) error {
-	base := serverDataDir(serverID)
-	src := filepath.Join(base, filepath.Clean("/"+srcPath))
-	dest := filepath.Join(base, filepath.Clean("/"+destPath))
-
-	if !strings.HasPrefix(src, base) || !strings.HasPrefix(dest, base) {
-		return fmt.Errorf("invalid path")
+	src, err := GetRealPath(serverID, srcPath)
+	if err != nil {
+		return err
+	}
+	dest, err := GetRealPath(serverID, destPath)
+	if err != nil {
+		return err
 	}
 
 	if err := os.MkdirAll(dest, 0755); err != nil {
@@ -66,17 +68,17 @@ func DecompressPath(serverID, srcPath, destPath string) error {
 
 func BulkCompress(serverID string, paths []string, destPath, format string) error {
 	base := serverDataDir(serverID)
-	dest := filepath.Join(base, filepath.Clean("/"+destPath))
-	if !strings.HasPrefix(dest, base) {
-		return fmt.Errorf("invalid destination")
+	dest, err := GetRealPath(serverID, destPath)
+	if err != nil {
+		return err
 	}
 
 	dest = uniquePath(dest)
 
 	var srcPaths []string
 	for _, p := range paths {
-		src := filepath.Join(base, filepath.Clean("/"+p))
-		if !strings.HasPrefix(src, base) || src == base {
+		src, err := GetRealPath(serverID, p)
+		if err != nil || src == base {
 			continue
 		}
 		if _, err := os.Stat(src); err == nil {

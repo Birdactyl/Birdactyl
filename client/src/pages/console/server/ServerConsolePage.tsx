@@ -22,6 +22,8 @@ import AddonsPage from './AddonsPage';
 import DatabasesPage from './DatabasesPage';
 import ActivityPage from './ActivityPage';
 import SFTPPage from './SFTPPage';
+import ServerMountsPage from './ServerMountsPage';
+import { getServerMounts } from '../../../lib/api/servers';
 
 const tabs = [
   { name: 'Console', path: '', icon: 'console' },
@@ -33,6 +35,7 @@ const tabs = [
   { name: 'Startup', path: '/startup', icon: 'sliders' },
   { name: 'Network', path: '/network', icon: 'globe' },
   { name: 'SFTP', path: '/sftp', icon: 'key' },
+  { name: 'Mounts', path: '/mounts', icon: 'folder' },
   { name: 'Resources', path: '/resources', icon: 'pieChart' },
   { name: 'Activity', path: '/activity', icon: 'activity' },
   { name: 'Subusers', path: '/subusers', icon: 'users' },
@@ -55,6 +58,16 @@ export default function ServerConsolePage() {
   const [ui, setUi] = useState({ command: '', loading: null as string | null, stopping: false });
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
+  const [hasMounts, setHasMounts] = useState(false);
+
+  useEffect(() => {
+    if (!id || !can('mount.read')) return;
+    getServerMounts(id).then(res => {
+      if (res.success && res.data && res.data.length > 0) {
+        setHasMounts(true);
+      }
+    });
+  }, [id, can]);
 
   const basePath = `/console/server/${id}`;
 
@@ -74,6 +87,7 @@ export default function ServerConsolePage() {
     const filtered = tabs.filter(tab => {
       if (tab.path === '/subusers') return can('*');
       if (tab.path === '/addons') return hasAddonSources;
+      if (tab.path === '/mounts') return hasMounts && can('mount.read');
       return true;
     });
     const allTabs = [
@@ -162,6 +176,7 @@ export default function ServerConsolePage() {
         <Route path="startup" element={<StartupPage />} />
         <Route path="network" element={<NetworkPage />} />
         <Route path="sftp" element={<SFTPPage />} />
+        <Route path="mounts" element={<ServerMountsPage />} />
         <Route path="resources" element={<ResourcesPage />} />
         <Route path="activity" element={<ActivityPage />} />
         <Route path="settings" element={<ServerSettingsPage />} />

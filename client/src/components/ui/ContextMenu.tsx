@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useState, useRef, useEffect, useLayoutEffect, useCallback, useId } from 'react';
 import { createPortal } from 'react-dom';
 
-interface ContextMenuItem {
+import Checkbox from './Checkbox';
+
+export interface ContextMenuItem {
     label: React.ReactNode;
     icon?: React.ReactNode;
     onClick?: () => void;
@@ -9,7 +11,17 @@ interface ContextMenuItem {
     disabled?: boolean;
 }
 
-type ContextMenuItems = (ContextMenuItem | 'separator')[];
+export interface ContextMenuCheckboxItem {
+    type: 'checkbox';
+    label: React.ReactNode;
+    checked: boolean;
+    onChange: (checked: boolean) => void;
+    disabled?: boolean;
+}
+
+export type ContextMenuAnyItem = ContextMenuItem | ContextMenuCheckboxItem;
+
+export type ContextMenuItems = (ContextMenuAnyItem | 'separator')[];
 
 const HIDDEN_STYLE: React.CSSProperties = {
     position: 'fixed',
@@ -44,7 +56,7 @@ const MenuPanel = ({
     isClosing: boolean;
     focusedIndex: number;
     setFocusedIndex: (i: number) => void;
-    onItemClick: (item: ContextMenuItem) => void;
+    onItemClick: (item: ContextMenuAnyItem) => void;
     onKeyDown: (e: React.KeyboardEvent) => void;
 }) => {
     return createPortal(
@@ -74,7 +86,39 @@ const MenuPanel = ({
                     );
                 }
 
-                const isDanger = item.variant === 'danger';
+                if ('type' in item && item.type === 'checkbox') {
+                    const isFocused = focusedIndex === index;
+                    return (
+                        <div
+                            key={index}
+                            role="menuitemcheckbox"
+                            aria-checked={item.checked}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                onItemClick(item);
+                            }}
+                            onMouseEnter={() => setFocusedIndex(index)}
+                            onMouseLeave={() => setFocusedIndex(-1)}
+                            className={`
+                                w-full flex items-center gap-3 px-2.5 py-1.5 text-sm
+                                rounded-md transition-colors duration-100 ease-out
+                                cursor-pointer select-none tracking-tight
+                                text-neutral-600 dark:text-neutral-400
+                                ${isFocused ? 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100' : ''}
+                                ${item.disabled ? 'opacity-40 cursor-not-allowed pointer-events-none' : ''}
+                            `}
+                        >
+                            <div className="shrink-0 pointer-events-none">
+                                <Checkbox checked={item.checked} onChange={() => {}} />
+                            </div>
+                            <span className="font-semibold flex-1 truncate">{item.label}</span>
+                        </div>
+                    );
+                }
+
+                const menuItem = item as ContextMenuItem;
+                const isDanger = menuItem.variant === 'danger';
                 const isFocused = focusedIndex === index;
 
                 return (
@@ -82,7 +126,7 @@ const MenuPanel = ({
                         key={index}
                         type="button"
                         role="menuitem"
-                        disabled={item.disabled}
+                        disabled={menuItem.disabled}
                         onClick={() => onItemClick(item)}
                         onMouseEnter={() => setFocusedIndex(index)}
                         onMouseLeave={() => setFocusedIndex(-1)}
@@ -98,8 +142,8 @@ const MenuPanel = ({
                             }
             `}
                     >
-                        {item.icon && <span className="h-4 w-4 shrink-0 flex items-center">{item.icon}</span>}
-                        <span className="font-semibold">{item.label}</span>
+                        {menuItem.icon && <span className="h-4 w-4 shrink-0 flex items-center">{menuItem.icon}</span>}
+                        <span className="font-semibold">{menuItem.label}</span>
                     </button>
                 );
             })}
@@ -108,7 +152,7 @@ const MenuPanel = ({
     );
 };
 
-function useMenuKeyboard(items: ContextMenuItems, focusedIndex: number, setFocusedIndex: (i: number) => void, onSelect: (item: ContextMenuItem) => void) {
+function useMenuKeyboard(items: ContextMenuItems, focusedIndex: number, setFocusedIndex: (i: number) => void, onSelect: (item: ContextMenuAnyItem) => void) {
     const actionableIndices = items
         .map((item, i) => (item !== 'separator' && !item.disabled ? i : -1))
         .filter(i => i !== -1);
@@ -253,9 +297,13 @@ export const ContextMenuProvider = ({ children }: { children: React.ReactNode })
         return () => document.removeEventListener('keydown', handler);
     }, [isOpen, close]);
 
-    const handleItemClick = useCallback((item: ContextMenuItem) => {
-        item.onClick?.();
-        close();
+    const handleItemClick = useCallback((item: ContextMenuAnyItem) => {
+        if ('type' in item && item.type === 'checkbox') {
+            item.onChange(!item.checked);
+        } else {
+            (item as ContextMenuItem).onClick?.();
+            close();
+        }
     }, [close]);
 
     const handleKeyDown = useMenuKeyboard(activeItems, focusedIndex, setFocusedIndex, handleItemClick);
@@ -423,9 +471,13 @@ export const ContextMenu = ({
         return () => document.removeEventListener('keydown', handler);
     }, [isOpen, close]);
 
-    const handleItemClick = useCallback((item: ContextMenuItem) => {
-        item.onClick?.();
-        close();
+    const handleItemClick = useCallback((item: ContextMenuAnyItem) => {
+        if ('type' in item && item.type === 'checkbox') {
+            item.onChange(!item.checked);
+        } else {
+            (item as ContextMenuItem).onClick?.();
+            close();
+        }
     }, [close]);
 
     const handleKeyDown = useMenuKeyboard(items, focusedIndex, setFocusedIndex, handleItemClick);

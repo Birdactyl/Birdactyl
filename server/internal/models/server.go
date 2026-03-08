@@ -42,6 +42,7 @@ type Server struct {
 	User    *User    `json:"user,omitempty" gorm:"foreignKey:UserID"`
 	Node    *Node    `json:"node,omitempty" gorm:"foreignKey:NodeID"`
 	Package *Package `json:"package,omitempty" gorm:"foreignKey:PackageID"`
+	Mounts  []Mount  `json:"mounts,omitempty" gorm:"many2many:server_mounts;"`
 }
 
 type ServerPort struct {
