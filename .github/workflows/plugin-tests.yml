@@ -1,22 +1,18 @@
-name: Backend Tests
+name: Plugin SDK Tests
 
 on:
   push:
     branches: ["main"]
-    paths:
-      - "server/**"
   pull_request:
     branches: ["main"]
-    paths:
-      - "server/**"
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: plugins-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  test:
+  plugin-tests:
     runs-on: ubuntu-latest
 
     services:
@@ -35,8 +31,14 @@ jobs:
           --health-retries=5
 
     steps:
-      - name: Checkout repository
+      - name: Checkout main repository
         uses: actions/checkout@v4
+        
+      - name: Checkout Go SDK
+        uses: actions/checkout@v4
+        with:
+          repository: Birdactyl/Birdactyl-Go-SDK
+          path: Birdactyl-Go-SDK
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -70,26 +72,27 @@ jobs:
             refresh_token_expiry: 43200
             token_refresh_threshold: 1
             max_sessions_per_user: 5
-            bcrypt_cost: 12
+            bcrypt_cost: 4
           EOF
 
-      - name: Run Backend Tests
+      - name: Run Plugin SDK Integration Tests
         working-directory: server
-        run: |
-          go test -v -timeout=15m $(go list ./tests/... | grep -v /tests/plugins) | tee test_results.txt
+        env:
+          GOLANG_PROTOBUF_REGISTRATION_CONFLICT: warn
+        run: go test -v -timeout=15m ./tests/plugins/... | tee plugin_test_results.txt
 
       - name: Upload Test Results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results-${{ github.sha }}
-          path: server/test_results.txt
+          name: plugin-test-results-${{ github.sha }}
+          path: server/plugin_test_results.txt
           retention-days: 14
 
       - name: Summary
         if: always()
         run: |
-          echo "## Backend Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "## Plugin SDK Integration Test Results" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          grep -E "^=== RUN|^--- PASS|^--- FAIL|^FAIL" server/test_results.txt >> $GITHUB_STEP_SUMMARY || true
+          grep -E "^=== RUN|^--- PASS|^--- FAIL|^FAIL" server/plugin_test_results.txt >> $GITHUB_STEP_SUMMARY || true
           echo '```' >> $GITHUB_STEP_SUMMARY
