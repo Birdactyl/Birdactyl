@@ -1,0 +1,94 @@
+name: Backend Tests
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "server/**"
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "server/**"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpassword
+          POSTGRES_DB: birdactyl_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U testuser"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: server/go.mod
+          cache-dependency-path: server/go.sum
+
+      - name: Write test config
+        working-directory: server
+        run: |
+          cat > config.yaml << 'EOF'
+          server:
+            host: "0.0.0.0"
+            port: 3000
+
+          database:
+            driver: "postgres"
+            host: "localhost"
+            port: 5432
+            user: "testuser"
+            password: "testpassword"
+            name: "birdactyl_test"
+            sslmode: "disable"
+            max_open_conns: 25
+            max_idle_conns: 5
+            conn_max_lifetime: 300
+
+          auth:
+            accounts_per_ip: 3
+            access_token_expiry: 15
+            refresh_token_expiry: 43200
+            token_refresh_threshold: 1
+            max_sessions_per_user: 5
+            bcrypt_cost: 12
+          EOF
+
+      - name: Run Backend Tests
+        working-directory: server
+        run: go test -v -timeout=15m ./tests/... | tee test_results.txt
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ github.sha }}
+          path: server/test_results.txt
+          retention-days: 14
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Backend Test Results" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          grep -E "^=== RUN|^--- PASS|^--- FAIL|^FAIL" server/test_results.txt >> $GITHUB_STEP_SUMMARY || true
+          echo '```' >> $GITHUB_STEP_SUMMARY
