@@ -10,6 +10,7 @@ RUN npm run build
 FROM --platform=$BUILDPLATFORM golang:1.24-alpine AS backend-builder
 WORKDIR /app/server
 COPY server/go.mod server/go.sum ./
+RUN go mod edit -dropreplace github.com/Birdactyl/Birdactyl-Go-SDK
 RUN go mod download
 COPY server/ ./
 ARG TARGETOS TARGETARCH
