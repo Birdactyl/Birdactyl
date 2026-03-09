@@ -4,8 +4,8 @@
 explugins/
 sdk/
 
-Birdactyl-Go-SDK-main/
-Birdactyl-Java-SDK-main/
+Birdactyl-Go-SDK
+Birdactyl-Java-SDK
 plugin-ui-sdk/
 examples/
 

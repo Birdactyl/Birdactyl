@@ -431,6 +431,16 @@ const (
 	PanelService_ListIPBans_FullMethodName               = "/plugins.PanelService/ListIPBans"
 	PanelService_CreateIPBan_FullMethodName              = "/plugins.PanelService/CreateIPBan"
 	PanelService_DeleteIPBan_FullMethodName              = "/plugins.PanelService/DeleteIPBan"
+	PanelService_ListMounts_FullMethodName               = "/plugins.PanelService/ListMounts"
+	PanelService_GetMount_FullMethodName                 = "/plugins.PanelService/GetMount"
+	PanelService_CreateMount_FullMethodName              = "/plugins.PanelService/CreateMount"
+	PanelService_UpdateMount_FullMethodName              = "/plugins.PanelService/UpdateMount"
+	PanelService_DeleteMount_FullMethodName              = "/plugins.PanelService/DeleteMount"
+	PanelService_AddMountToServer_FullMethodName         = "/plugins.PanelService/AddMountToServer"
+	PanelService_RemoveMountFromServer_FullMethodName    = "/plugins.PanelService/RemoveMountFromServer"
+	PanelService_GetServerMounts_FullMethodName          = "/plugins.PanelService/GetServerMounts"
+	PanelService_MountServerMount_FullMethodName         = "/plugins.PanelService/MountServerMount"
+	PanelService_UnmountServerMount_FullMethodName       = "/plugins.PanelService/UnmountServerMount"
 	PanelService_GetSettings_FullMethodName              = "/plugins.PanelService/GetSettings"
 	PanelService_SetRegistrationEnabled_FullMethodName   = "/plugins.PanelService/SetRegistrationEnabled"
 	PanelService_SetServerCreationEnabled_FullMethodName = "/plugins.PanelService/SetServerCreationEnabled"
@@ -545,6 +555,18 @@ type PanelServiceClient interface {
 	ListIPBans(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ListIPBansResponse, error)
 	CreateIPBan(ctx context.Context, in *CreateIPBanRequest, opts ...grpc.CallOption) (*IPBan, error)
 	DeleteIPBan(ctx context.Context, in *IDRequest, opts ...grpc.CallOption) (*Empty, error)
+	// Mounts (Admin)
+	ListMounts(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ListMountsResponse, error)
+	GetMount(ctx context.Context, in *IDRequest, opts ...grpc.CallOption) (*Mount, error)
+	CreateMount(ctx context.Context, in *CreateMountRequest, opts ...grpc.CallOption) (*Mount, error)
+	UpdateMount(ctx context.Context, in *UpdateMountRequest, opts ...grpc.CallOption) (*Mount, error)
+	DeleteMount(ctx context.Context, in *IDRequest, opts ...grpc.CallOption) (*Empty, error)
+	AddMountToServer(ctx context.Context, in *MountServerRequest, opts ...grpc.CallOption) (*Empty, error)
+	RemoveMountFromServer(ctx context.Context, in *MountServerRequest, opts ...grpc.CallOption) (*Empty, error)
+	// Mounts (Server)
+	GetServerMounts(ctx context.Context, in *IDRequest, opts ...grpc.CallOption) (*ServerMountsResponse, error)
+	MountServerMount(ctx context.Context, in *MountServerRequest, opts ...grpc.CallOption) (*Empty, error)
+	UnmountServerMount(ctx context.Context, in *MountServerRequest, opts ...grpc.CallOption) (*Empty, error)
 	// Settings
 	GetSettings(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Settings, error)
 	SetRegistrationEnabled(ctx context.Context, in *BoolRequest, opts ...grpc.CallOption) (*Empty, error)
@@ -1386,6 +1408,106 @@ func (c *panelServiceClient) DeleteIPBan(ctx context.Context, in *IDRequest, opt
 	return out, nil
 }
 
+func (c *panelServiceClient) ListMounts(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ListMountsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListMountsResponse)
+	err := c.cc.Invoke(ctx, PanelService_ListMounts_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *panelServiceClient) GetMount(ctx context.Context, in *IDRequest, opts ...grpc.CallOption) (*Mount, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Mount)
+	err := c.cc.Invoke(ctx, PanelService_GetMount_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *panelServiceClient) CreateMount(ctx context.Context, in *CreateMountRequest, opts ...grpc.CallOption) (*Mount, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Mount)
+	err := c.cc.Invoke(ctx, PanelService_CreateMount_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *panelServiceClient) UpdateMount(ctx context.Context, in *UpdateMountRequest, opts ...grpc.CallOption) (*Mount, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Mount)
+	err := c.cc.Invoke(ctx, PanelService_UpdateMount_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *panelServiceClient) DeleteMount(ctx context.Context, in *IDRequest, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, PanelService_DeleteMount_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *panelServiceClient) AddMountToServer(ctx context.Context, in *MountServerRequest, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, PanelService_AddMountToServer_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *panelServiceClient) RemoveMountFromServer(ctx context.Context, in *MountServerRequest, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, PanelService_RemoveMountFromServer_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *panelServiceClient) GetServerMounts(ctx context.Context, in *IDRequest, opts ...grpc.CallOption) (*ServerMountsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ServerMountsResponse)
+	err := c.cc.Invoke(ctx, PanelService_GetServerMounts_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *panelServiceClient) MountServerMount(ctx context.Context, in *MountServerRequest, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, PanelService_MountServerMount_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *panelServiceClient) UnmountServerMount(ctx context.Context, in *MountServerRequest, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, PanelService_UnmountServerMount_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *panelServiceClient) GetSettings(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Settings, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Settings)
@@ -1624,6 +1746,18 @@ type PanelServiceServer interface {
 	ListIPBans(context.Context, *Empty) (*ListIPBansResponse, error)
 	CreateIPBan(context.Context, *CreateIPBanRequest) (*IPBan, error)
 	DeleteIPBan(context.Context, *IDRequest) (*Empty, error)
+	// Mounts (Admin)
+	ListMounts(context.Context, *Empty) (*ListMountsResponse, error)
+	GetMount(context.Context, *IDRequest) (*Mount, error)
+	CreateMount(context.Context, *CreateMountRequest) (*Mount, error)
+	UpdateMount(context.Context, *UpdateMountRequest) (*Mount, error)
+	DeleteMount(context.Context, *IDRequest) (*Empty, error)
+	AddMountToServer(context.Context, *MountServerRequest) (*Empty, error)
+	RemoveMountFromServer(context.Context, *MountServerRequest) (*Empty, error)
+	// Mounts (Server)
+	GetServerMounts(context.Context, *IDRequest) (*ServerMountsResponse, error)
+	MountServerMount(context.Context, *MountServerRequest) (*Empty, error)
+	UnmountServerMount(context.Context, *MountServerRequest) (*Empty, error)
 	// Settings
 	GetSettings(context.Context, *Empty) (*Settings, error)
 	SetRegistrationEnabled(context.Context, *BoolRequest) (*Empty, error)
@@ -1892,6 +2026,36 @@ func (UnimplementedPanelServiceServer) CreateIPBan(context.Context, *CreateIPBan
 }
 func (UnimplementedPanelServiceServer) DeleteIPBan(context.Context, *IDRequest) (*Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteIPBan not implemented")
+}
+func (UnimplementedPanelServiceServer) ListMounts(context.Context, *Empty) (*ListMountsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListMounts not implemented")
+}
+func (UnimplementedPanelServiceServer) GetMount(context.Context, *IDRequest) (*Mount, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetMount not implemented")
+}
+func (UnimplementedPanelServiceServer) CreateMount(context.Context, *CreateMountRequest) (*Mount, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateMount not implemented")
+}
+func (UnimplementedPanelServiceServer) UpdateMount(context.Context, *UpdateMountRequest) (*Mount, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateMount not implemented")
+}
+func (UnimplementedPanelServiceServer) DeleteMount(context.Context, *IDRequest) (*Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteMount not implemented")
+}
+func (UnimplementedPanelServiceServer) AddMountToServer(context.Context, *MountServerRequest) (*Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method AddMountToServer not implemented")
+}
+func (UnimplementedPanelServiceServer) RemoveMountFromServer(context.Context, *MountServerRequest) (*Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method RemoveMountFromServer not implemented")
+}
+func (UnimplementedPanelServiceServer) GetServerMounts(context.Context, *IDRequest) (*ServerMountsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetServerMounts not implemented")
+}
+func (UnimplementedPanelServiceServer) MountServerMount(context.Context, *MountServerRequest) (*Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method MountServerMount not implemented")
+}
+func (UnimplementedPanelServiceServer) UnmountServerMount(context.Context, *MountServerRequest) (*Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method UnmountServerMount not implemented")
 }
 func (UnimplementedPanelServiceServer) GetSettings(context.Context, *Empty) (*Settings, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetSettings not implemented")
@@ -3378,6 +3542,186 @@ func _PanelService_DeleteIPBan_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PanelService_ListMounts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PanelServiceServer).ListMounts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PanelService_ListMounts_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PanelServiceServer).ListMounts(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PanelService_GetMount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PanelServiceServer).GetMount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PanelService_GetMount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PanelServiceServer).GetMount(ctx, req.(*IDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PanelService_CreateMount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateMountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PanelServiceServer).CreateMount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PanelService_CreateMount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PanelServiceServer).CreateMount(ctx, req.(*CreateMountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PanelService_UpdateMount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateMountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PanelServiceServer).UpdateMount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PanelService_UpdateMount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PanelServiceServer).UpdateMount(ctx, req.(*UpdateMountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PanelService_DeleteMount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PanelServiceServer).DeleteMount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PanelService_DeleteMount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PanelServiceServer).DeleteMount(ctx, req.(*IDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PanelService_AddMountToServer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MountServerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PanelServiceServer).AddMountToServer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PanelService_AddMountToServer_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PanelServiceServer).AddMountToServer(ctx, req.(*MountServerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PanelService_RemoveMountFromServer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MountServerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PanelServiceServer).RemoveMountFromServer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PanelService_RemoveMountFromServer_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PanelServiceServer).RemoveMountFromServer(ctx, req.(*MountServerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PanelService_GetServerMounts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PanelServiceServer).GetServerMounts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PanelService_GetServerMounts_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PanelServiceServer).GetServerMounts(ctx, req.(*IDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PanelService_MountServerMount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MountServerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PanelServiceServer).MountServerMount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PanelService_MountServerMount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PanelServiceServer).MountServerMount(ctx, req.(*MountServerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PanelService_UnmountServerMount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MountServerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PanelServiceServer).UnmountServerMount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PanelService_UnmountServerMount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PanelServiceServer).UnmountServerMount(ctx, req.(*MountServerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _PanelService_GetSettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Empty)
 	if err := dec(in); err != nil {
@@ -3948,6 +4292,46 @@ var PanelService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteIPBan",
 			Handler:    _PanelService_DeleteIPBan_Handler,
+		},
+		{
+			MethodName: "ListMounts",
+			Handler:    _PanelService_ListMounts_Handler,
+		},
+		{
+			MethodName: "GetMount",
+			Handler:    _PanelService_GetMount_Handler,
+		},
+		{
+			MethodName: "CreateMount",
+			Handler:    _PanelService_CreateMount_Handler,
+		},
+		{
+			MethodName: "UpdateMount",
+			Handler:    _PanelService_UpdateMount_Handler,
+		},
+		{
+			MethodName: "DeleteMount",
+			Handler:    _PanelService_DeleteMount_Handler,
+		},
+		{
+			MethodName: "AddMountToServer",
+			Handler:    _PanelService_AddMountToServer_Handler,
+		},
+		{
+			MethodName: "RemoveMountFromServer",
+			Handler:    _PanelService_RemoveMountFromServer_Handler,
+		},
+		{
+			MethodName: "GetServerMounts",
+			Handler:    _PanelService_GetServerMounts_Handler,
+		},
+		{
+			MethodName: "MountServerMount",
+			Handler:    _PanelService_MountServerMount_Handler,
+		},
+		{
+			MethodName: "UnmountServerMount",
+			Handler:    _PanelService_UnmountServerMount_Handler,
 		},
 		{
 			MethodName: "GetSettings",

@@ -153,6 +153,20 @@ service PanelService {
   rpc CreateIPBan(CreateIPBanRequest) returns (IPBan);
   rpc DeleteIPBan(IDRequest) returns (Empty);
 
+  // Mounts (Admin)
+  rpc ListMounts(Empty) returns (ListMountsResponse);
+  rpc GetMount(IDRequest) returns (Mount);
+  rpc CreateMount(CreateMountRequest) returns (Mount);
+  rpc UpdateMount(UpdateMountRequest) returns (Mount);
+  rpc DeleteMount(IDRequest) returns (Empty);
+  rpc AddMountToServer(MountServerRequest) returns (Empty);
+  rpc RemoveMountFromServer(MountServerRequest) returns (Empty);
+
+  // Mounts (Server)
+  rpc GetServerMounts(IDRequest) returns (ServerMountsResponse);
+  rpc MountServerMount(MountServerRequest) returns (Empty);
+  rpc UnmountServerMount(MountServerRequest) returns (Empty);
+
   // Settings
   rpc GetSettings(Empty) returns (Settings);
   rpc SetRegistrationEnabled(BoolRequest) returns (Empty);
@@ -489,6 +503,66 @@ message UpdatePackageRequest {
 message IPBan { string id = 1; string ip = 2; string reason = 3; string created_at = 4; }
 message ListIPBansResponse { repeated IPBan bans = 1; }
 message CreateIPBanRequest { string ip = 1; string reason = 2; }
+
+// Mounts
+message Mount {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string source = 4;
+  string target = 5;
+  bool read_only = 6;
+  bool user_mountable = 7;
+  bool navigable = 8;
+  repeated string server_ids = 9;
+  repeated string node_ids = 10;
+  repeated string package_ids = 11;
+  string created_at = 12;
+}
+
+message ListMountsResponse { repeated Mount mounts = 1; }
+message CreateMountRequest {
+  string name = 1;
+  string description = 2;
+  string source = 3;
+  string target = 4;
+  bool read_only = 5;
+  bool user_mountable = 6;
+  bool navigable = 7;
+  repeated string server_ids = 8;
+  repeated string node_ids = 9;
+  repeated string package_ids = 10;
+}
+message UpdateMountRequest {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string source = 4;
+  string target = 5;
+  bool read_only = 6;
+  bool user_mountable = 7;
+  bool navigable = 8;
+  repeated string server_ids = 9;
+  repeated string node_ids = 10;
+  repeated string package_ids = 11;
+}
+
+message MountServerRequest {
+  string mount_id = 1;
+  string server_id = 2;
+}
+
+message ServerMountInfo {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string source = 4;
+  string target = 5;
+  bool read_only = 6;
+  bool is_mounted = 7;
+  bool navigable = 8;
+}
+message ServerMountsResponse { repeated ServerMountInfo mounts = 1; }
 
 // Settings
 message Settings { bool registration_enabled = 1; bool server_creation_enabled = 2; }
