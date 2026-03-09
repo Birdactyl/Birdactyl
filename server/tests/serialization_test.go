@@ -24,11 +24,11 @@ func TestSystemInfoMarshal(t *testing.T) {
 			t.Fatalf("Failed to retrieve system info json value: %v", err)
 		}
 		
-		valStr, ok := val.(string)
+		valBytes, ok := val.([]byte)
 		if !ok {
-			t.Fatalf("Expected value to be a string representing JSON")
+			t.Fatalf("Expected value to be a []byte representing JSON")
 		}
-		if valStr == "" {
+		if len(valBytes) == 0 {
 			t.Fatalf("System info serialized string empty")
 		}
 	})

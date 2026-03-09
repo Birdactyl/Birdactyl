@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"strconv"
+	"strings"
 	"testing"
 
 	"birdactyl-panel-backend/internal/database"
@@ -23,14 +24,14 @@ func setupFileMockNodeAndServer() (*fiber.App, *models.User, *models.Server, *ht
 
 		w.WriteHeader(http.StatusOK)
 
-		if r.Method == "GET" && len(r.URL.Path) > 6 && r.URL.Path[len(r.URL.Path)-7:] == "/search" {
+		if r.Method == "GET" && strings.HasSuffix(r.URL.Path, "/search") {
 			w.Write([]byte(`{"success":true, "data": []}`))
-		} else if r.Method == "GET" && len(r.URL.Path) > 5 && r.URL.Path[len(r.URL.Path)-6:] == "/files" {
+		} else if r.Method == "GET" && strings.HasSuffix(r.URL.Path, "/files") {
 			w.Write([]byte(`{"success":true, "data": []}`))
-		} else if r.Method == "GET" && len(r.URL.Path) > 9 && r.URL.Path[len(r.URL.Path)-10:] == "/read" {
+		} else if r.Method == "GET" && strings.HasSuffix(r.URL.Path, "/read") {
 			w.Header().Set("Content-Type", "text/plain")
 			w.Write([]byte("mock file content"))
-		} else if r.Method == "GET" && len(r.URL.Path) > 13 && r.URL.Path[len(r.URL.Path)-14:] == "/download" {
+		} else if r.Method == "GET" && strings.HasSuffix(r.URL.Path, "/download") {
 			w.Header().Set("Content-Type", "application/octet-stream")
 			w.Header().Set("Content-Disposition", "attachment; filename=\"file.txt\"")
 			w.Write([]byte("mock file content"))

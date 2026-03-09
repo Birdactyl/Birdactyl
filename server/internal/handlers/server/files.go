@@ -408,9 +408,8 @@ func DownloadFile(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"success": false, "error": err.Error()})
 	}
-	defer resp.Body.Close()
-
 	if resp.StatusCode >= 400 {
+        defer resp.Body.Close()
 		return c.Status(resp.StatusCode).JSON(fiber.Map{"success": false, "error": "download failed"})
 	}
 	c.Set("Content-Disposition", resp.Header.Get("Content-Disposition"))
@@ -419,6 +418,7 @@ func DownloadFile(c *fiber.Ctx) error {
 		c.Set("Content-Length", cl)
 	}
 	c.Context().SetBodyStreamWriter(func(w *bufio.Writer) {
+        defer resp.Body.Close()
 		io.Copy(w, resp.Body)
 	})
 	return nil
