@@ -15,6 +15,7 @@ server/logs/
 server/plugins/
 server/*.db
 server/birdactyl
+server/tests/plugins/birdactyl
 
 axis/config.yaml
 axis/axis
