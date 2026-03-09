@@ -128,7 +128,7 @@ func (x AddonInstallAction_ActionType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use AddonInstallAction_ActionType.Descriptor instead.
 func (AddonInstallAction_ActionType) EnumDescriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{109, 0}
+	return file_plugin_proto_rawDescGZIP(), []int{116, 0}
 }
 
 type PluginMessage struct {
@@ -6102,6 +6102,619 @@ func (x *CreateIPBanRequest) GetReason() string {
 	return ""
 }
 
+// Mounts
+type Mount struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Description   string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	Source        string                 `protobuf:"bytes,4,opt,name=source,proto3" json:"source,omitempty"`
+	Target        string                 `protobuf:"bytes,5,opt,name=target,proto3" json:"target,omitempty"`
+	ReadOnly      bool                   `protobuf:"varint,6,opt,name=read_only,json=readOnly,proto3" json:"read_only,omitempty"`
+	UserMountable bool                   `protobuf:"varint,7,opt,name=user_mountable,json=userMountable,proto3" json:"user_mountable,omitempty"`
+	Navigable     bool                   `protobuf:"varint,8,opt,name=navigable,proto3" json:"navigable,omitempty"`
+	ServerIds     []string               `protobuf:"bytes,9,rep,name=server_ids,json=serverIds,proto3" json:"server_ids,omitempty"`
+	NodeIds       []string               `protobuf:"bytes,10,rep,name=node_ids,json=nodeIds,proto3" json:"node_ids,omitempty"`
+	PackageIds    []string               `protobuf:"bytes,11,rep,name=package_ids,json=packageIds,proto3" json:"package_ids,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,12,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Mount) Reset() {
+	*x = Mount{}
+	mi := &file_plugin_proto_msgTypes[90]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Mount) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Mount) ProtoMessage() {}
+
+func (x *Mount) ProtoReflect() protoreflect.Message {
+	mi := &file_plugin_proto_msgTypes[90]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Mount.ProtoReflect.Descriptor instead.
+func (*Mount) Descriptor() ([]byte, []int) {
+	return file_plugin_proto_rawDescGZIP(), []int{90}
+}
+
+func (x *Mount) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Mount) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Mount) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *Mount) GetSource() string {
+	if x != nil {
+		return x.Source
+	}
+	return ""
+}
+
+func (x *Mount) GetTarget() string {
+	if x != nil {
+		return x.Target
+	}
+	return ""
+}
+
+func (x *Mount) GetReadOnly() bool {
+	if x != nil {
+		return x.ReadOnly
+	}
+	return false
+}
+
+func (x *Mount) GetUserMountable() bool {
+	if x != nil {
+		return x.UserMountable
+	}
+	return false
+}
+
+func (x *Mount) GetNavigable() bool {
+	if x != nil {
+		return x.Navigable
+	}
+	return false
+}
+
+func (x *Mount) GetServerIds() []string {
+	if x != nil {
+		return x.ServerIds
+	}
+	return nil
+}
+
+func (x *Mount) GetNodeIds() []string {
+	if x != nil {
+		return x.NodeIds
+	}
+	return nil
+}
+
+func (x *Mount) GetPackageIds() []string {
+	if x != nil {
+		return x.PackageIds
+	}
+	return nil
+}
+
+func (x *Mount) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
+type ListMountsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Mounts        []*Mount               `protobuf:"bytes,1,rep,name=mounts,proto3" json:"mounts,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListMountsResponse) Reset() {
+	*x = ListMountsResponse{}
+	mi := &file_plugin_proto_msgTypes[91]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListMountsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListMountsResponse) ProtoMessage() {}
+
+func (x *ListMountsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_plugin_proto_msgTypes[91]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListMountsResponse.ProtoReflect.Descriptor instead.
+func (*ListMountsResponse) Descriptor() ([]byte, []int) {
+	return file_plugin_proto_rawDescGZIP(), []int{91}
+}
+
+func (x *ListMountsResponse) GetMounts() []*Mount {
+	if x != nil {
+		return x.Mounts
+	}
+	return nil
+}
+
+type CreateMountRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	Source        string                 `protobuf:"bytes,3,opt,name=source,proto3" json:"source,omitempty"`
+	Target        string                 `protobuf:"bytes,4,opt,name=target,proto3" json:"target,omitempty"`
+	ReadOnly      bool                   `protobuf:"varint,5,opt,name=read_only,json=readOnly,proto3" json:"read_only,omitempty"`
+	UserMountable bool                   `protobuf:"varint,6,opt,name=user_mountable,json=userMountable,proto3" json:"user_mountable,omitempty"`
+	Navigable     bool                   `protobuf:"varint,7,opt,name=navigable,proto3" json:"navigable,omitempty"`
+	ServerIds     []string               `protobuf:"bytes,8,rep,name=server_ids,json=serverIds,proto3" json:"server_ids,omitempty"`
+	NodeIds       []string               `protobuf:"bytes,9,rep,name=node_ids,json=nodeIds,proto3" json:"node_ids,omitempty"`
+	PackageIds    []string               `protobuf:"bytes,10,rep,name=package_ids,json=packageIds,proto3" json:"package_ids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateMountRequest) Reset() {
+	*x = CreateMountRequest{}
+	mi := &file_plugin_proto_msgTypes[92]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateMountRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateMountRequest) ProtoMessage() {}
+
+func (x *CreateMountRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_plugin_proto_msgTypes[92]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateMountRequest.ProtoReflect.Descriptor instead.
+func (*CreateMountRequest) Descriptor() ([]byte, []int) {
+	return file_plugin_proto_rawDescGZIP(), []int{92}
+}
+
+func (x *CreateMountRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CreateMountRequest) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *CreateMountRequest) GetSource() string {
+	if x != nil {
+		return x.Source
+	}
+	return ""
+}
+
+func (x *CreateMountRequest) GetTarget() string {
+	if x != nil {
+		return x.Target
+	}
+	return ""
+}
+
+func (x *CreateMountRequest) GetReadOnly() bool {
+	if x != nil {
+		return x.ReadOnly
+	}
+	return false
+}
+
+func (x *CreateMountRequest) GetUserMountable() bool {
+	if x != nil {
+		return x.UserMountable
+	}
+	return false
+}
+
+func (x *CreateMountRequest) GetNavigable() bool {
+	if x != nil {
+		return x.Navigable
+	}
+	return false
+}
+
+func (x *CreateMountRequest) GetServerIds() []string {
+	if x != nil {
+		return x.ServerIds
+	}
+	return nil
+}
+
+func (x *CreateMountRequest) GetNodeIds() []string {
+	if x != nil {
+		return x.NodeIds
+	}
+	return nil
+}
+
+func (x *CreateMountRequest) GetPackageIds() []string {
+	if x != nil {
+		return x.PackageIds
+	}
+	return nil
+}
+
+type UpdateMountRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Description   string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	Source        string                 `protobuf:"bytes,4,opt,name=source,proto3" json:"source,omitempty"`
+	Target        string                 `protobuf:"bytes,5,opt,name=target,proto3" json:"target,omitempty"`
+	ReadOnly      bool                   `protobuf:"varint,6,opt,name=read_only,json=readOnly,proto3" json:"read_only,omitempty"`
+	UserMountable bool                   `protobuf:"varint,7,opt,name=user_mountable,json=userMountable,proto3" json:"user_mountable,omitempty"`
+	Navigable     bool                   `protobuf:"varint,8,opt,name=navigable,proto3" json:"navigable,omitempty"`
+	ServerIds     []string               `protobuf:"bytes,9,rep,name=server_ids,json=serverIds,proto3" json:"server_ids,omitempty"`
+	NodeIds       []string               `protobuf:"bytes,10,rep,name=node_ids,json=nodeIds,proto3" json:"node_ids,omitempty"`
+	PackageIds    []string               `protobuf:"bytes,11,rep,name=package_ids,json=packageIds,proto3" json:"package_ids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateMountRequest) Reset() {
+	*x = UpdateMountRequest{}
+	mi := &file_plugin_proto_msgTypes[93]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateMountRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateMountRequest) ProtoMessage() {}
+
+func (x *UpdateMountRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_plugin_proto_msgTypes[93]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateMountRequest.ProtoReflect.Descriptor instead.
+func (*UpdateMountRequest) Descriptor() ([]byte, []int) {
+	return file_plugin_proto_rawDescGZIP(), []int{93}
+}
+
+func (x *UpdateMountRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *UpdateMountRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *UpdateMountRequest) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *UpdateMountRequest) GetSource() string {
+	if x != nil {
+		return x.Source
+	}
+	return ""
+}
+
+func (x *UpdateMountRequest) GetTarget() string {
+	if x != nil {
+		return x.Target
+	}
+	return ""
+}
+
+func (x *UpdateMountRequest) GetReadOnly() bool {
+	if x != nil {
+		return x.ReadOnly
+	}
+	return false
+}
+
+func (x *UpdateMountRequest) GetUserMountable() bool {
+	if x != nil {
+		return x.UserMountable
+	}
+	return false
+}
+
+func (x *UpdateMountRequest) GetNavigable() bool {
+	if x != nil {
+		return x.Navigable
+	}
+	return false
+}
+
+func (x *UpdateMountRequest) GetServerIds() []string {
+	if x != nil {
+		return x.ServerIds
+	}
+	return nil
+}
+
+func (x *UpdateMountRequest) GetNodeIds() []string {
+	if x != nil {
+		return x.NodeIds
+	}
+	return nil
+}
+
+func (x *UpdateMountRequest) GetPackageIds() []string {
+	if x != nil {
+		return x.PackageIds
+	}
+	return nil
+}
+
+type MountServerRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	MountId       string                 `protobuf:"bytes,1,opt,name=mount_id,json=mountId,proto3" json:"mount_id,omitempty"`
+	ServerId      string                 `protobuf:"bytes,2,opt,name=server_id,json=serverId,proto3" json:"server_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MountServerRequest) Reset() {
+	*x = MountServerRequest{}
+	mi := &file_plugin_proto_msgTypes[94]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MountServerRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MountServerRequest) ProtoMessage() {}
+
+func (x *MountServerRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_plugin_proto_msgTypes[94]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MountServerRequest.ProtoReflect.Descriptor instead.
+func (*MountServerRequest) Descriptor() ([]byte, []int) {
+	return file_plugin_proto_rawDescGZIP(), []int{94}
+}
+
+func (x *MountServerRequest) GetMountId() string {
+	if x != nil {
+		return x.MountId
+	}
+	return ""
+}
+
+func (x *MountServerRequest) GetServerId() string {
+	if x != nil {
+		return x.ServerId
+	}
+	return ""
+}
+
+type ServerMountInfo struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Description   string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	Source        string                 `protobuf:"bytes,4,opt,name=source,proto3" json:"source,omitempty"`
+	Target        string                 `protobuf:"bytes,5,opt,name=target,proto3" json:"target,omitempty"`
+	ReadOnly      bool                   `protobuf:"varint,6,opt,name=read_only,json=readOnly,proto3" json:"read_only,omitempty"`
+	IsMounted     bool                   `protobuf:"varint,7,opt,name=is_mounted,json=isMounted,proto3" json:"is_mounted,omitempty"`
+	Navigable     bool                   `protobuf:"varint,8,opt,name=navigable,proto3" json:"navigable,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ServerMountInfo) Reset() {
+	*x = ServerMountInfo{}
+	mi := &file_plugin_proto_msgTypes[95]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ServerMountInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ServerMountInfo) ProtoMessage() {}
+
+func (x *ServerMountInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_plugin_proto_msgTypes[95]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ServerMountInfo.ProtoReflect.Descriptor instead.
+func (*ServerMountInfo) Descriptor() ([]byte, []int) {
+	return file_plugin_proto_rawDescGZIP(), []int{95}
+}
+
+func (x *ServerMountInfo) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *ServerMountInfo) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ServerMountInfo) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *ServerMountInfo) GetSource() string {
+	if x != nil {
+		return x.Source
+	}
+	return ""
+}
+
+func (x *ServerMountInfo) GetTarget() string {
+	if x != nil {
+		return x.Target
+	}
+	return ""
+}
+
+func (x *ServerMountInfo) GetReadOnly() bool {
+	if x != nil {
+		return x.ReadOnly
+	}
+	return false
+}
+
+func (x *ServerMountInfo) GetIsMounted() bool {
+	if x != nil {
+		return x.IsMounted
+	}
+	return false
+}
+
+func (x *ServerMountInfo) GetNavigable() bool {
+	if x != nil {
+		return x.Navigable
+	}
+	return false
+}
+
+type ServerMountsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Mounts        []*ServerMountInfo     `protobuf:"bytes,1,rep,name=mounts,proto3" json:"mounts,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ServerMountsResponse) Reset() {
+	*x = ServerMountsResponse{}
+	mi := &file_plugin_proto_msgTypes[96]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ServerMountsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ServerMountsResponse) ProtoMessage() {}
+
+func (x *ServerMountsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_plugin_proto_msgTypes[96]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ServerMountsResponse.ProtoReflect.Descriptor instead.
+func (*ServerMountsResponse) Descriptor() ([]byte, []int) {
+	return file_plugin_proto_rawDescGZIP(), []int{96}
+}
+
+func (x *ServerMountsResponse) GetMounts() []*ServerMountInfo {
+	if x != nil {
+		return x.Mounts
+	}
+	return nil
+}
+
 // Settings
 type Settings struct {
 	state                 protoimpl.MessageState `protogen:"open.v1"`
@@ -6113,7 +6726,7 @@ type Settings struct {
 
 func (x *Settings) Reset() {
 	*x = Settings{}
-	mi := &file_plugin_proto_msgTypes[90]
+	mi := &file_plugin_proto_msgTypes[97]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6125,7 +6738,7 @@ func (x *Settings) String() string {
 func (*Settings) ProtoMessage() {}
 
 func (x *Settings) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[90]
+	mi := &file_plugin_proto_msgTypes[97]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6138,7 +6751,7 @@ func (x *Settings) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Settings.ProtoReflect.Descriptor instead.
 func (*Settings) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{90}
+	return file_plugin_proto_rawDescGZIP(), []int{97}
 }
 
 func (x *Settings) GetRegistrationEnabled() bool {
@@ -6172,7 +6785,7 @@ type ActivityLog struct {
 
 func (x *ActivityLog) Reset() {
 	*x = ActivityLog{}
-	mi := &file_plugin_proto_msgTypes[91]
+	mi := &file_plugin_proto_msgTypes[98]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6184,7 +6797,7 @@ func (x *ActivityLog) String() string {
 func (*ActivityLog) ProtoMessage() {}
 
 func (x *ActivityLog) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[91]
+	mi := &file_plugin_proto_msgTypes[98]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6197,7 +6810,7 @@ func (x *ActivityLog) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ActivityLog.ProtoReflect.Descriptor instead.
 func (*ActivityLog) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{91}
+	return file_plugin_proto_rawDescGZIP(), []int{98}
 }
 
 func (x *ActivityLog) GetId() string {
@@ -6268,7 +6881,7 @@ type GetLogsRequest struct {
 
 func (x *GetLogsRequest) Reset() {
 	*x = GetLogsRequest{}
-	mi := &file_plugin_proto_msgTypes[92]
+	mi := &file_plugin_proto_msgTypes[99]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6280,7 +6893,7 @@ func (x *GetLogsRequest) String() string {
 func (*GetLogsRequest) ProtoMessage() {}
 
 func (x *GetLogsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[92]
+	mi := &file_plugin_proto_msgTypes[99]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6293,7 +6906,7 @@ func (x *GetLogsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetLogsRequest.ProtoReflect.Descriptor instead.
 func (*GetLogsRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{92}
+	return file_plugin_proto_rawDescGZIP(), []int{99}
 }
 
 func (x *GetLogsRequest) GetLimit() int32 {
@@ -6334,7 +6947,7 @@ type GetLogsResponse struct {
 
 func (x *GetLogsResponse) Reset() {
 	*x = GetLogsResponse{}
-	mi := &file_plugin_proto_msgTypes[93]
+	mi := &file_plugin_proto_msgTypes[100]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6346,7 +6959,7 @@ func (x *GetLogsResponse) String() string {
 func (*GetLogsResponse) ProtoMessage() {}
 
 func (x *GetLogsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[93]
+	mi := &file_plugin_proto_msgTypes[100]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6359,7 +6972,7 @@ func (x *GetLogsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetLogsResponse.ProtoReflect.Descriptor instead.
 func (*GetLogsResponse) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{93}
+	return file_plugin_proto_rawDescGZIP(), []int{100}
 }
 
 func (x *GetLogsResponse) GetLogs() []*ActivityLog {
@@ -6387,7 +7000,7 @@ type LogRequest struct {
 
 func (x *LogRequest) Reset() {
 	*x = LogRequest{}
-	mi := &file_plugin_proto_msgTypes[94]
+	mi := &file_plugin_proto_msgTypes[101]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6399,7 +7012,7 @@ func (x *LogRequest) String() string {
 func (*LogRequest) ProtoMessage() {}
 
 func (x *LogRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[94]
+	mi := &file_plugin_proto_msgTypes[101]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6412,7 +7025,7 @@ func (x *LogRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LogRequest.ProtoReflect.Descriptor instead.
 func (*LogRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{94}
+	return file_plugin_proto_rawDescGZIP(), []int{101}
 }
 
 func (x *LogRequest) GetLevel() string {
@@ -6438,7 +7051,7 @@ type KVRequest struct {
 
 func (x *KVRequest) Reset() {
 	*x = KVRequest{}
-	mi := &file_plugin_proto_msgTypes[95]
+	mi := &file_plugin_proto_msgTypes[102]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6450,7 +7063,7 @@ func (x *KVRequest) String() string {
 func (*KVRequest) ProtoMessage() {}
 
 func (x *KVRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[95]
+	mi := &file_plugin_proto_msgTypes[102]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6463,7 +7076,7 @@ func (x *KVRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use KVRequest.ProtoReflect.Descriptor instead.
 func (*KVRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{95}
+	return file_plugin_proto_rawDescGZIP(), []int{102}
 }
 
 func (x *KVRequest) GetKey() string {
@@ -6483,7 +7096,7 @@ type KVResponse struct {
 
 func (x *KVResponse) Reset() {
 	*x = KVResponse{}
-	mi := &file_plugin_proto_msgTypes[96]
+	mi := &file_plugin_proto_msgTypes[103]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6495,7 +7108,7 @@ func (x *KVResponse) String() string {
 func (*KVResponse) ProtoMessage() {}
 
 func (x *KVResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[96]
+	mi := &file_plugin_proto_msgTypes[103]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6508,7 +7121,7 @@ func (x *KVResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use KVResponse.ProtoReflect.Descriptor instead.
 func (*KVResponse) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{96}
+	return file_plugin_proto_rawDescGZIP(), []int{103}
 }
 
 func (x *KVResponse) GetValue() string {
@@ -6535,7 +7148,7 @@ type KVSetRequest struct {
 
 func (x *KVSetRequest) Reset() {
 	*x = KVSetRequest{}
-	mi := &file_plugin_proto_msgTypes[97]
+	mi := &file_plugin_proto_msgTypes[104]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6547,7 +7160,7 @@ func (x *KVSetRequest) String() string {
 func (*KVSetRequest) ProtoMessage() {}
 
 func (x *KVSetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[97]
+	mi := &file_plugin_proto_msgTypes[104]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6560,7 +7173,7 @@ func (x *KVSetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use KVSetRequest.ProtoReflect.Descriptor instead.
 func (*KVSetRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{97}
+	return file_plugin_proto_rawDescGZIP(), []int{104}
 }
 
 func (x *KVSetRequest) GetKey() string {
@@ -6587,7 +7200,7 @@ type QueryDBRequest struct {
 
 func (x *QueryDBRequest) Reset() {
 	*x = QueryDBRequest{}
-	mi := &file_plugin_proto_msgTypes[98]
+	mi := &file_plugin_proto_msgTypes[105]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6599,7 +7212,7 @@ func (x *QueryDBRequest) String() string {
 func (*QueryDBRequest) ProtoMessage() {}
 
 func (x *QueryDBRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[98]
+	mi := &file_plugin_proto_msgTypes[105]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6612,7 +7225,7 @@ func (x *QueryDBRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QueryDBRequest.ProtoReflect.Descriptor instead.
 func (*QueryDBRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{98}
+	return file_plugin_proto_rawDescGZIP(), []int{105}
 }
 
 func (x *QueryDBRequest) GetQuery() string {
@@ -6638,7 +7251,7 @@ type QueryDBResponse struct {
 
 func (x *QueryDBResponse) Reset() {
 	*x = QueryDBResponse{}
-	mi := &file_plugin_proto_msgTypes[99]
+	mi := &file_plugin_proto_msgTypes[106]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6650,7 +7263,7 @@ func (x *QueryDBResponse) String() string {
 func (*QueryDBResponse) ProtoMessage() {}
 
 func (x *QueryDBResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[99]
+	mi := &file_plugin_proto_msgTypes[106]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6663,7 +7276,7 @@ func (x *QueryDBResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QueryDBResponse.ProtoReflect.Descriptor instead.
 func (*QueryDBResponse) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{99}
+	return file_plugin_proto_rawDescGZIP(), []int{106}
 }
 
 func (x *QueryDBResponse) GetRows() [][]byte {
@@ -6683,7 +7296,7 @@ type BroadcastEventRequest struct {
 
 func (x *BroadcastEventRequest) Reset() {
 	*x = BroadcastEventRequest{}
-	mi := &file_plugin_proto_msgTypes[100]
+	mi := &file_plugin_proto_msgTypes[107]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6695,7 +7308,7 @@ func (x *BroadcastEventRequest) String() string {
 func (*BroadcastEventRequest) ProtoMessage() {}
 
 func (x *BroadcastEventRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[100]
+	mi := &file_plugin_proto_msgTypes[107]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6708,7 +7321,7 @@ func (x *BroadcastEventRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BroadcastEventRequest.ProtoReflect.Descriptor instead.
 func (*BroadcastEventRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{100}
+	return file_plugin_proto_rawDescGZIP(), []int{107}
 }
 
 func (x *BroadcastEventRequest) GetEventType() string {
@@ -6737,7 +7350,7 @@ type NotificationRequest struct {
 
 func (x *NotificationRequest) Reset() {
 	*x = NotificationRequest{}
-	mi := &file_plugin_proto_msgTypes[101]
+	mi := &file_plugin_proto_msgTypes[108]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6749,7 +7362,7 @@ func (x *NotificationRequest) String() string {
 func (*NotificationRequest) ProtoMessage() {}
 
 func (x *NotificationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[101]
+	mi := &file_plugin_proto_msgTypes[108]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6762,7 +7375,7 @@ func (x *NotificationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NotificationRequest.ProtoReflect.Descriptor instead.
 func (*NotificationRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{101}
+	return file_plugin_proto_rawDescGZIP(), []int{108}
 }
 
 func (x *NotificationRequest) GetUserId() string {
@@ -6807,7 +7420,7 @@ type PluginHTTPRequest struct {
 
 func (x *PluginHTTPRequest) Reset() {
 	*x = PluginHTTPRequest{}
-	mi := &file_plugin_proto_msgTypes[102]
+	mi := &file_plugin_proto_msgTypes[109]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6819,7 +7432,7 @@ func (x *PluginHTTPRequest) String() string {
 func (*PluginHTTPRequest) ProtoMessage() {}
 
 func (x *PluginHTTPRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[102]
+	mi := &file_plugin_proto_msgTypes[109]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6832,7 +7445,7 @@ func (x *PluginHTTPRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PluginHTTPRequest.ProtoReflect.Descriptor instead.
 func (*PluginHTTPRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{102}
+	return file_plugin_proto_rawDescGZIP(), []int{109}
 }
 
 func (x *PluginHTTPRequest) GetMethod() string {
@@ -6882,7 +7495,7 @@ type PluginHTTPResponse struct {
 
 func (x *PluginHTTPResponse) Reset() {
 	*x = PluginHTTPResponse{}
-	mi := &file_plugin_proto_msgTypes[103]
+	mi := &file_plugin_proto_msgTypes[110]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6894,7 +7507,7 @@ func (x *PluginHTTPResponse) String() string {
 func (*PluginHTTPResponse) ProtoMessage() {}
 
 func (x *PluginHTTPResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[103]
+	mi := &file_plugin_proto_msgTypes[110]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6907,7 +7520,7 @@ func (x *PluginHTTPResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PluginHTTPResponse.ProtoReflect.Descriptor instead.
 func (*PluginHTTPResponse) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{103}
+	return file_plugin_proto_rawDescGZIP(), []int{110}
 }
 
 func (x *PluginHTTPResponse) GetStatus() int32 {
@@ -6950,7 +7563,7 @@ type CallPluginRequest struct {
 
 func (x *CallPluginRequest) Reset() {
 	*x = CallPluginRequest{}
-	mi := &file_plugin_proto_msgTypes[104]
+	mi := &file_plugin_proto_msgTypes[111]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6962,7 +7575,7 @@ func (x *CallPluginRequest) String() string {
 func (*CallPluginRequest) ProtoMessage() {}
 
 func (x *CallPluginRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[104]
+	mi := &file_plugin_proto_msgTypes[111]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6975,7 +7588,7 @@ func (x *CallPluginRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CallPluginRequest.ProtoReflect.Descriptor instead.
 func (*CallPluginRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{104}
+	return file_plugin_proto_rawDescGZIP(), []int{111}
 }
 
 func (x *CallPluginRequest) GetPluginId() string {
@@ -7009,7 +7622,7 @@ type CallPluginResponse struct {
 
 func (x *CallPluginResponse) Reset() {
 	*x = CallPluginResponse{}
-	mi := &file_plugin_proto_msgTypes[105]
+	mi := &file_plugin_proto_msgTypes[112]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7021,7 +7634,7 @@ func (x *CallPluginResponse) String() string {
 func (*CallPluginResponse) ProtoMessage() {}
 
 func (x *CallPluginResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[105]
+	mi := &file_plugin_proto_msgTypes[112]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7034,7 +7647,7 @@ func (x *CallPluginResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CallPluginResponse.ProtoReflect.Descriptor instead.
 func (*CallPluginResponse) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{105}
+	return file_plugin_proto_rawDescGZIP(), []int{112}
 }
 
 func (x *CallPluginResponse) GetData() []byte {
@@ -7062,7 +7675,7 @@ type AddonTypeInfo struct {
 
 func (x *AddonTypeInfo) Reset() {
 	*x = AddonTypeInfo{}
-	mi := &file_plugin_proto_msgTypes[106]
+	mi := &file_plugin_proto_msgTypes[113]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7074,7 +7687,7 @@ func (x *AddonTypeInfo) String() string {
 func (*AddonTypeInfo) ProtoMessage() {}
 
 func (x *AddonTypeInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[106]
+	mi := &file_plugin_proto_msgTypes[113]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7087,7 +7700,7 @@ func (x *AddonTypeInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddonTypeInfo.ProtoReflect.Descriptor instead.
 func (*AddonTypeInfo) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{106}
+	return file_plugin_proto_rawDescGZIP(), []int{113}
 }
 
 func (x *AddonTypeInfo) GetTypeId() string {
@@ -7127,7 +7740,7 @@ type AddonTypeRequest struct {
 
 func (x *AddonTypeRequest) Reset() {
 	*x = AddonTypeRequest{}
-	mi := &file_plugin_proto_msgTypes[107]
+	mi := &file_plugin_proto_msgTypes[114]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7139,7 +7752,7 @@ func (x *AddonTypeRequest) String() string {
 func (*AddonTypeRequest) ProtoMessage() {}
 
 func (x *AddonTypeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[107]
+	mi := &file_plugin_proto_msgTypes[114]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7152,7 +7765,7 @@ func (x *AddonTypeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddonTypeRequest.ProtoReflect.Descriptor instead.
 func (*AddonTypeRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{107}
+	return file_plugin_proto_rawDescGZIP(), []int{114}
 }
 
 func (x *AddonTypeRequest) GetTypeId() string {
@@ -7223,7 +7836,7 @@ type AddonTypeResponse struct {
 
 func (x *AddonTypeResponse) Reset() {
 	*x = AddonTypeResponse{}
-	mi := &file_plugin_proto_msgTypes[108]
+	mi := &file_plugin_proto_msgTypes[115]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7235,7 +7848,7 @@ func (x *AddonTypeResponse) String() string {
 func (*AddonTypeResponse) ProtoMessage() {}
 
 func (x *AddonTypeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[108]
+	mi := &file_plugin_proto_msgTypes[115]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7248,7 +7861,7 @@ func (x *AddonTypeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddonTypeResponse.ProtoReflect.Descriptor instead.
 func (*AddonTypeResponse) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{108}
+	return file_plugin_proto_rawDescGZIP(), []int{115}
 }
 
 func (x *AddonTypeResponse) GetSuccess() bool {
@@ -7295,7 +7908,7 @@ type AddonInstallAction struct {
 
 func (x *AddonInstallAction) Reset() {
 	*x = AddonInstallAction{}
-	mi := &file_plugin_proto_msgTypes[109]
+	mi := &file_plugin_proto_msgTypes[116]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7307,7 +7920,7 @@ func (x *AddonInstallAction) String() string {
 func (*AddonInstallAction) ProtoMessage() {}
 
 func (x *AddonInstallAction) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[109]
+	mi := &file_plugin_proto_msgTypes[116]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7320,7 +7933,7 @@ func (x *AddonInstallAction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddonInstallAction.ProtoReflect.Descriptor instead.
 func (*AddonInstallAction) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{109}
+	return file_plugin_proto_rawDescGZIP(), []int{116}
 }
 
 func (x *AddonInstallAction) GetType() AddonInstallAction_ActionType {
@@ -7859,7 +8472,70 @@ const file_plugin_proto_rawDesc = "" +
 	"\x04bans\x18\x01 \x03(\v2\x0e.plugins.IPBanR\x04bans\"<\n" +
 	"\x12CreateIPBanRequest\x12\x0e\n" +
 	"\x02ip\x18\x01 \x01(\tR\x02ip\x12\x16\n" +
-	"\x06reason\x18\x02 \x01(\tR\x06reason\"u\n" +
+	"\x06reason\x18\x02 \x01(\tR\x06reason\"\xd9\x02\n" +
+	"\x05Mount\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12 \n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x16\n" +
+	"\x06source\x18\x04 \x01(\tR\x06source\x12\x16\n" +
+	"\x06target\x18\x05 \x01(\tR\x06target\x12\x1b\n" +
+	"\tread_only\x18\x06 \x01(\bR\breadOnly\x12%\n" +
+	"\x0euser_mountable\x18\a \x01(\bR\ruserMountable\x12\x1c\n" +
+	"\tnavigable\x18\b \x01(\bR\tnavigable\x12\x1d\n" +
+	"\n" +
+	"server_ids\x18\t \x03(\tR\tserverIds\x12\x19\n" +
+	"\bnode_ids\x18\n" +
+	" \x03(\tR\anodeIds\x12\x1f\n" +
+	"\vpackage_ids\x18\v \x03(\tR\n" +
+	"packageIds\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\f \x01(\tR\tcreatedAt\"<\n" +
+	"\x12ListMountsResponse\x12&\n" +
+	"\x06mounts\x18\x01 \x03(\v2\x0e.plugins.MountR\x06mounts\"\xb7\x02\n" +
+	"\x12CreateMountRequest\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x16\n" +
+	"\x06source\x18\x03 \x01(\tR\x06source\x12\x16\n" +
+	"\x06target\x18\x04 \x01(\tR\x06target\x12\x1b\n" +
+	"\tread_only\x18\x05 \x01(\bR\breadOnly\x12%\n" +
+	"\x0euser_mountable\x18\x06 \x01(\bR\ruserMountable\x12\x1c\n" +
+	"\tnavigable\x18\a \x01(\bR\tnavigable\x12\x1d\n" +
+	"\n" +
+	"server_ids\x18\b \x03(\tR\tserverIds\x12\x19\n" +
+	"\bnode_ids\x18\t \x03(\tR\anodeIds\x12\x1f\n" +
+	"\vpackage_ids\x18\n" +
+	" \x03(\tR\n" +
+	"packageIds\"\xc7\x02\n" +
+	"\x12UpdateMountRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12 \n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x16\n" +
+	"\x06source\x18\x04 \x01(\tR\x06source\x12\x16\n" +
+	"\x06target\x18\x05 \x01(\tR\x06target\x12\x1b\n" +
+	"\tread_only\x18\x06 \x01(\bR\breadOnly\x12%\n" +
+	"\x0euser_mountable\x18\a \x01(\bR\ruserMountable\x12\x1c\n" +
+	"\tnavigable\x18\b \x01(\bR\tnavigable\x12\x1d\n" +
+	"\n" +
+	"server_ids\x18\t \x03(\tR\tserverIds\x12\x19\n" +
+	"\bnode_ids\x18\n" +
+	" \x03(\tR\anodeIds\x12\x1f\n" +
+	"\vpackage_ids\x18\v \x03(\tR\n" +
+	"packageIds\"L\n" +
+	"\x12MountServerRequest\x12\x19\n" +
+	"\bmount_id\x18\x01 \x01(\tR\amountId\x12\x1b\n" +
+	"\tserver_id\x18\x02 \x01(\tR\bserverId\"\xe1\x01\n" +
+	"\x0fServerMountInfo\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12 \n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x16\n" +
+	"\x06source\x18\x04 \x01(\tR\x06source\x12\x16\n" +
+	"\x06target\x18\x05 \x01(\tR\x06target\x12\x1b\n" +
+	"\tread_only\x18\x06 \x01(\bR\breadOnly\x12\x1d\n" +
+	"\n" +
+	"is_mounted\x18\a \x01(\bR\tisMounted\x12\x1c\n" +
+	"\tnavigable\x18\b \x01(\bR\tnavigable\"H\n" +
+	"\x14ServerMountsResponse\x120\n" +
+	"\x06mounts\x18\x01 \x03(\v2\x18.plugins.ServerMountInfoR\x06mounts\"u\n" +
 	"\bSettings\x121\n" +
 	"\x14registration_enabled\x18\x01 \x01(\bR\x13registrationEnabled\x126\n" +
 	"\x17server_creation_enabled\x18\x02 \x01(\bR\x15serverCreationEnabled\"\xd6\x01\n" +
@@ -7990,7 +8666,7 @@ const file_plugin_proto_rawDesc = "" +
 	"OnSchedule\x12\x18.plugins.ScheduleRequest\x1a\x0e.plugins.Empty\x128\n" +
 	"\aOnMixin\x12\x15.plugins.MixinRequest\x1a\x16.plugins.MixinResponse\x12*\n" +
 	"\bShutdown\x12\x0e.plugins.Empty\x1a\x0e.plugins.Empty\x126\n" +
-	"\tSendEmail\x12\x19.plugins.SendEmailRequest\x1a\x0e.plugins.Empty2\xa6,\n" +
+	"\tSendEmail\x12\x19.plugins.SendEmailRequest\x1a\x0e.plugins.Empty2\x8d1\n" +
 	"\fPanelService\x12<\n" +
 	"\aConnect\x12\x16.plugins.PluginMessage\x1a\x15.plugins.PanelMessage(\x010\x01\x120\n" +
 	"\tGetServer\x12\x12.plugins.IDRequest\x1a\x0f.plugins.Server\x12H\n" +
@@ -8084,7 +8760,18 @@ const file_plugin_proto_rawDesc = "" +
 	"\n" +
 	"ListIPBans\x12\x0e.plugins.Empty\x1a\x1b.plugins.ListIPBansResponse\x12:\n" +
 	"\vCreateIPBan\x12\x1b.plugins.CreateIPBanRequest\x1a\x0e.plugins.IPBan\x121\n" +
-	"\vDeleteIPBan\x12\x12.plugins.IDRequest\x1a\x0e.plugins.Empty\x120\n" +
+	"\vDeleteIPBan\x12\x12.plugins.IDRequest\x1a\x0e.plugins.Empty\x129\n" +
+	"\n" +
+	"ListMounts\x12\x0e.plugins.Empty\x1a\x1b.plugins.ListMountsResponse\x12.\n" +
+	"\bGetMount\x12\x12.plugins.IDRequest\x1a\x0e.plugins.Mount\x12:\n" +
+	"\vCreateMount\x12\x1b.plugins.CreateMountRequest\x1a\x0e.plugins.Mount\x12:\n" +
+	"\vUpdateMount\x12\x1b.plugins.UpdateMountRequest\x1a\x0e.plugins.Mount\x121\n" +
+	"\vDeleteMount\x12\x12.plugins.IDRequest\x1a\x0e.plugins.Empty\x12?\n" +
+	"\x10AddMountToServer\x12\x1b.plugins.MountServerRequest\x1a\x0e.plugins.Empty\x12D\n" +
+	"\x15RemoveMountFromServer\x12\x1b.plugins.MountServerRequest\x1a\x0e.plugins.Empty\x12D\n" +
+	"\x0fGetServerMounts\x12\x12.plugins.IDRequest\x1a\x1d.plugins.ServerMountsResponse\x12?\n" +
+	"\x10MountServerMount\x12\x1b.plugins.MountServerRequest\x1a\x0e.plugins.Empty\x12A\n" +
+	"\x12UnmountServerMount\x12\x1b.plugins.MountServerRequest\x1a\x0e.plugins.Empty\x120\n" +
 	"\vGetSettings\x12\x0e.plugins.Empty\x1a\x11.plugins.Settings\x12>\n" +
 	"\x16SetRegistrationEnabled\x12\x14.plugins.BoolRequest\x1a\x0e.plugins.Empty\x12@\n" +
 	"\x18SetServerCreationEnabled\x12\x14.plugins.BoolRequest\x1a\x0e.plugins.Empty\x12D\n" +
@@ -8115,7 +8802,7 @@ func file_plugin_proto_rawDescGZIP() []byte {
 }
 
 var file_plugin_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_plugin_proto_msgTypes = make([]protoimpl.MessageInfo, 121)
+var file_plugin_proto_msgTypes = make([]protoimpl.MessageInfo, 128)
 var file_plugin_proto_goTypes = []any{
 	(MixinResponse_Action)(0),          // 0: plugins.MixinResponse.Action
 	(AddonInstallAction_ActionType)(0), // 1: plugins.AddonInstallAction.ActionType
@@ -8209,37 +8896,44 @@ var file_plugin_proto_goTypes = []any{
 	(*IPBan)(nil),                      // 89: plugins.IPBan
 	(*ListIPBansResponse)(nil),         // 90: plugins.ListIPBansResponse
 	(*CreateIPBanRequest)(nil),         // 91: plugins.CreateIPBanRequest
-	(*Settings)(nil),                   // 92: plugins.Settings
-	(*ActivityLog)(nil),                // 93: plugins.ActivityLog
-	(*GetLogsRequest)(nil),             // 94: plugins.GetLogsRequest
-	(*GetLogsResponse)(nil),            // 95: plugins.GetLogsResponse
-	(*LogRequest)(nil),                 // 96: plugins.LogRequest
-	(*KVRequest)(nil),                  // 97: plugins.KVRequest
-	(*KVResponse)(nil),                 // 98: plugins.KVResponse
-	(*KVSetRequest)(nil),               // 99: plugins.KVSetRequest
-	(*QueryDBRequest)(nil),             // 100: plugins.QueryDBRequest
-	(*QueryDBResponse)(nil),            // 101: plugins.QueryDBResponse
-	(*BroadcastEventRequest)(nil),      // 102: plugins.BroadcastEventRequest
-	(*NotificationRequest)(nil),        // 103: plugins.NotificationRequest
-	(*PluginHTTPRequest)(nil),          // 104: plugins.PluginHTTPRequest
-	(*PluginHTTPResponse)(nil),         // 105: plugins.PluginHTTPResponse
-	(*CallPluginRequest)(nil),          // 106: plugins.CallPluginRequest
-	(*CallPluginResponse)(nil),         // 107: plugins.CallPluginResponse
-	(*AddonTypeInfo)(nil),              // 108: plugins.AddonTypeInfo
-	(*AddonTypeRequest)(nil),           // 109: plugins.AddonTypeRequest
-	(*AddonTypeResponse)(nil),          // 110: plugins.AddonTypeResponse
-	(*AddonInstallAction)(nil),         // 111: plugins.AddonInstallAction
-	nil,                                // 112: plugins.Event.DataEntry
-	nil,                                // 113: plugins.HTTPRequest.HeadersEntry
-	nil,                                // 114: plugins.HTTPRequest.QueryEntry
-	nil,                                // 115: plugins.HTTPResponse.HeadersEntry
-	nil,                                // 116: plugins.UpdateVariablesRequest.VariablesEntry
-	nil,                                // 117: plugins.BroadcastEventRequest.DataEntry
-	nil,                                // 118: plugins.PluginHTTPRequest.HeadersEntry
-	nil,                                // 119: plugins.PluginHTTPResponse.HeadersEntry
-	nil,                                // 120: plugins.AddonTypeRequest.SourceInfoEntry
-	nil,                                // 121: plugins.AddonTypeRequest.ServerVariablesEntry
-	nil,                                // 122: plugins.AddonInstallAction.HeadersEntry
+	(*Mount)(nil),                      // 92: plugins.Mount
+	(*ListMountsResponse)(nil),         // 93: plugins.ListMountsResponse
+	(*CreateMountRequest)(nil),         // 94: plugins.CreateMountRequest
+	(*UpdateMountRequest)(nil),         // 95: plugins.UpdateMountRequest
+	(*MountServerRequest)(nil),         // 96: plugins.MountServerRequest
+	(*ServerMountInfo)(nil),            // 97: plugins.ServerMountInfo
+	(*ServerMountsResponse)(nil),       // 98: plugins.ServerMountsResponse
+	(*Settings)(nil),                   // 99: plugins.Settings
+	(*ActivityLog)(nil),                // 100: plugins.ActivityLog
+	(*GetLogsRequest)(nil),             // 101: plugins.GetLogsRequest
+	(*GetLogsResponse)(nil),            // 102: plugins.GetLogsResponse
+	(*LogRequest)(nil),                 // 103: plugins.LogRequest
+	(*KVRequest)(nil),                  // 104: plugins.KVRequest
+	(*KVResponse)(nil),                 // 105: plugins.KVResponse
+	(*KVSetRequest)(nil),               // 106: plugins.KVSetRequest
+	(*QueryDBRequest)(nil),             // 107: plugins.QueryDBRequest
+	(*QueryDBResponse)(nil),            // 108: plugins.QueryDBResponse
+	(*BroadcastEventRequest)(nil),      // 109: plugins.BroadcastEventRequest
+	(*NotificationRequest)(nil),        // 110: plugins.NotificationRequest
+	(*PluginHTTPRequest)(nil),          // 111: plugins.PluginHTTPRequest
+	(*PluginHTTPResponse)(nil),         // 112: plugins.PluginHTTPResponse
+	(*CallPluginRequest)(nil),          // 113: plugins.CallPluginRequest
+	(*CallPluginResponse)(nil),         // 114: plugins.CallPluginResponse
+	(*AddonTypeInfo)(nil),              // 115: plugins.AddonTypeInfo
+	(*AddonTypeRequest)(nil),           // 116: plugins.AddonTypeRequest
+	(*AddonTypeResponse)(nil),          // 117: plugins.AddonTypeResponse
+	(*AddonInstallAction)(nil),         // 118: plugins.AddonInstallAction
+	nil,                                // 119: plugins.Event.DataEntry
+	nil,                                // 120: plugins.HTTPRequest.HeadersEntry
+	nil,                                // 121: plugins.HTTPRequest.QueryEntry
+	nil,                                // 122: plugins.HTTPResponse.HeadersEntry
+	nil,                                // 123: plugins.UpdateVariablesRequest.VariablesEntry
+	nil,                                // 124: plugins.BroadcastEventRequest.DataEntry
+	nil,                                // 125: plugins.PluginHTTPRequest.HeadersEntry
+	nil,                                // 126: plugins.PluginHTTPResponse.HeadersEntry
+	nil,                                // 127: plugins.AddonTypeRequest.SourceInfoEntry
+	nil,                                // 128: plugins.AddonTypeRequest.ServerVariablesEntry
+	nil,                                // 129: plugins.AddonInstallAction.HeadersEntry
 }
 var file_plugin_proto_depIdxs = []int32{
 	12,  // 0: plugins.PluginMessage.register:type_name -> plugins.PluginInfo
@@ -8247,18 +8941,18 @@ var file_plugin_proto_depIdxs = []int32{
 	28,  // 2: plugins.PluginMessage.http_response:type_name -> plugins.HTTPResponse
 	4,   // 3: plugins.PluginMessage.schedule_response:type_name -> plugins.Empty
 	20,  // 4: plugins.PluginMessage.mixin_response:type_name -> plugins.MixinResponse
-	110, // 5: plugins.PluginMessage.addon_type_response:type_name -> plugins.AddonTypeResponse
+	117, // 5: plugins.PluginMessage.addon_type_response:type_name -> plugins.AddonTypeResponse
 	4,   // 6: plugins.PanelMessage.registered:type_name -> plugins.Empty
 	25,  // 7: plugins.PanelMessage.event:type_name -> plugins.Event
 	27,  // 8: plugins.PanelMessage.http:type_name -> plugins.HTTPRequest
 	29,  // 9: plugins.PanelMessage.schedule:type_name -> plugins.ScheduleRequest
 	19,  // 10: plugins.PanelMessage.mixin:type_name -> plugins.MixinRequest
 	4,   // 11: plugins.PanelMessage.shutdown:type_name -> plugins.Empty
-	109, // 12: plugins.PanelMessage.addon_type:type_name -> plugins.AddonTypeRequest
+	116, // 12: plugins.PanelMessage.addon_type:type_name -> plugins.AddonTypeRequest
 	22,  // 13: plugins.PluginInfo.routes:type_name -> plugins.RouteInfo
 	24,  // 14: plugins.PluginInfo.schedules:type_name -> plugins.ScheduleInfo
 	18,  // 15: plugins.PluginInfo.mixins:type_name -> plugins.MixinInfo
-	108, // 16: plugins.PluginInfo.addon_types:type_name -> plugins.AddonTypeInfo
+	115, // 16: plugins.PluginInfo.addon_types:type_name -> plugins.AddonTypeInfo
 	13,  // 17: plugins.PluginInfo.ui:type_name -> plugins.PluginUIInfo
 	14,  // 18: plugins.PluginUIInfo.pages:type_name -> plugins.PluginUIPage
 	15,  // 19: plugins.PluginUIInfo.tabs:type_name -> plugins.PluginUITab
@@ -8267,12 +8961,12 @@ var file_plugin_proto_depIdxs = []int32{
 	0,   // 22: plugins.MixinResponse.action:type_name -> plugins.MixinResponse.Action
 	21,  // 23: plugins.MixinResponse.notifications:type_name -> plugins.Notification
 	23,  // 24: plugins.RouteInfo.rate_limit:type_name -> plugins.RateLimitConfig
-	112, // 25: plugins.Event.data:type_name -> plugins.Event.DataEntry
-	113, // 26: plugins.HTTPRequest.headers:type_name -> plugins.HTTPRequest.HeadersEntry
-	114, // 27: plugins.HTTPRequest.query:type_name -> plugins.HTTPRequest.QueryEntry
-	115, // 28: plugins.HTTPResponse.headers:type_name -> plugins.HTTPResponse.HeadersEntry
+	119, // 25: plugins.Event.data:type_name -> plugins.Event.DataEntry
+	120, // 26: plugins.HTTPRequest.headers:type_name -> plugins.HTTPRequest.HeadersEntry
+	121, // 27: plugins.HTTPRequest.query:type_name -> plugins.HTTPRequest.QueryEntry
+	122, // 28: plugins.HTTPResponse.headers:type_name -> plugins.HTTPResponse.HeadersEntry
 	30,  // 29: plugins.ListServersResponse.servers:type_name -> plugins.Server
-	116, // 30: plugins.UpdateVariablesRequest.variables:type_name -> plugins.UpdateVariablesRequest.VariablesEntry
+	123, // 30: plugins.UpdateVariablesRequest.variables:type_name -> plugins.UpdateVariablesRequest.VariablesEntry
 	48,  // 31: plugins.SearchLogsResponse.matches:type_name -> plugins.LogMatch
 	50,  // 32: plugins.LogFilesResponse.files:type_name -> plugins.LogFileInfo
 	52,  // 33: plugins.ListUsersResponse.users:type_name -> plugins.User
@@ -8285,222 +8979,244 @@ var file_plugin_proto_depIdxs = []int32{
 	80,  // 40: plugins.NodeWithToken.node:type_name -> plugins.Node
 	85,  // 41: plugins.ListPackagesResponse.packages:type_name -> plugins.Package
 	89,  // 42: plugins.ListIPBansResponse.bans:type_name -> plugins.IPBan
-	93,  // 43: plugins.GetLogsResponse.logs:type_name -> plugins.ActivityLog
-	117, // 44: plugins.BroadcastEventRequest.data:type_name -> plugins.BroadcastEventRequest.DataEntry
-	118, // 45: plugins.PluginHTTPRequest.headers:type_name -> plugins.PluginHTTPRequest.HeadersEntry
-	119, // 46: plugins.PluginHTTPResponse.headers:type_name -> plugins.PluginHTTPResponse.HeadersEntry
-	120, // 47: plugins.AddonTypeRequest.source_info:type_name -> plugins.AddonTypeRequest.SourceInfoEntry
-	121, // 48: plugins.AddonTypeRequest.server_variables:type_name -> plugins.AddonTypeRequest.ServerVariablesEntry
-	111, // 49: plugins.AddonTypeResponse.actions:type_name -> plugins.AddonInstallAction
-	1,   // 50: plugins.AddonInstallAction.type:type_name -> plugins.AddonInstallAction.ActionType
-	122, // 51: plugins.AddonInstallAction.headers:type_name -> plugins.AddonInstallAction.HeadersEntry
-	4,   // 52: plugins.PluginService.GetInfo:input_type -> plugins.Empty
-	25,  // 53: plugins.PluginService.OnEvent:input_type -> plugins.Event
-	27,  // 54: plugins.PluginService.OnHTTP:input_type -> plugins.HTTPRequest
-	29,  // 55: plugins.PluginService.OnSchedule:input_type -> plugins.ScheduleRequest
-	19,  // 56: plugins.PluginService.OnMixin:input_type -> plugins.MixinRequest
-	4,   // 57: plugins.PluginService.Shutdown:input_type -> plugins.Empty
-	9,   // 58: plugins.PluginService.SendEmail:input_type -> plugins.SendEmailRequest
-	2,   // 59: plugins.PanelService.Connect:input_type -> plugins.PluginMessage
-	5,   // 60: plugins.PanelService.GetServer:input_type -> plugins.IDRequest
-	31,  // 61: plugins.PanelService.ListServers:input_type -> plugins.ListServersRequest
-	33,  // 62: plugins.PanelService.CreateServer:input_type -> plugins.CreateServerRequest
-	5,   // 63: plugins.PanelService.DeleteServer:input_type -> plugins.IDRequest
-	34,  // 64: plugins.PanelService.UpdateServer:input_type -> plugins.UpdateServerRequest
-	5,   // 65: plugins.PanelService.SuspendServer:input_type -> plugins.IDRequest
-	5,   // 66: plugins.PanelService.UnsuspendServer:input_type -> plugins.IDRequest
-	5,   // 67: plugins.PanelService.StartServer:input_type -> plugins.IDRequest
-	5,   // 68: plugins.PanelService.StopServer:input_type -> plugins.IDRequest
-	5,   // 69: plugins.PanelService.RestartServer:input_type -> plugins.IDRequest
-	5,   // 70: plugins.PanelService.KillServer:input_type -> plugins.IDRequest
-	5,   // 71: plugins.PanelService.ReinstallServer:input_type -> plugins.IDRequest
-	35,  // 72: plugins.PanelService.TransferServer:input_type -> plugins.TransferServerRequest
-	36,  // 73: plugins.PanelService.GetConsoleLog:input_type -> plugins.ConsoleLogRequest
-	38,  // 74: plugins.PanelService.SendCommand:input_type -> plugins.SendCommandRequest
-	43,  // 75: plugins.PanelService.StreamConsole:input_type -> plugins.StreamConsoleRequest
-	5,   // 76: plugins.PanelService.GetFullLog:input_type -> plugins.IDRequest
-	46,  // 77: plugins.PanelService.SearchLogs:input_type -> plugins.SearchLogsRequest
-	5,   // 78: plugins.PanelService.ListLogFiles:input_type -> plugins.IDRequest
-	51,  // 79: plugins.PanelService.ReadLogFile:input_type -> plugins.ReadLogFileRequest
-	5,   // 80: plugins.PanelService.GetServerStats:input_type -> plugins.IDRequest
-	40,  // 81: plugins.PanelService.AddAllocation:input_type -> plugins.AllocationRequest
-	40,  // 82: plugins.PanelService.DeleteAllocation:input_type -> plugins.AllocationRequest
-	40,  // 83: plugins.PanelService.SetPrimaryAllocation:input_type -> plugins.AllocationRequest
-	42,  // 84: plugins.PanelService.UpdateServerVariables:input_type -> plugins.UpdateVariablesRequest
-	5,   // 85: plugins.PanelService.GetUser:input_type -> plugins.IDRequest
-	6,   // 86: plugins.PanelService.GetUserByEmail:input_type -> plugins.EmailRequest
-	7,   // 87: plugins.PanelService.GetUserByUsername:input_type -> plugins.UsernameRequest
-	53,  // 88: plugins.PanelService.ListUsers:input_type -> plugins.ListUsersRequest
-	55,  // 89: plugins.PanelService.CreateUser:input_type -> plugins.CreateUserRequest
-	5,   // 90: plugins.PanelService.DeleteUser:input_type -> plugins.IDRequest
-	56,  // 91: plugins.PanelService.UpdateUser:input_type -> plugins.UpdateUserRequest
-	5,   // 92: plugins.PanelService.BanUser:input_type -> plugins.IDRequest
-	5,   // 93: plugins.PanelService.UnbanUser:input_type -> plugins.IDRequest
-	5,   // 94: plugins.PanelService.SetAdmin:input_type -> plugins.IDRequest
-	5,   // 95: plugins.PanelService.RevokeAdmin:input_type -> plugins.IDRequest
-	57,  // 96: plugins.PanelService.SetUserResources:input_type -> plugins.SetUserResourcesRequest
-	5,   // 97: plugins.PanelService.ForcePasswordReset:input_type -> plugins.IDRequest
-	6,   // 98: plugins.PanelService.RequestPasswordReset:input_type -> plugins.EmailRequest
-	5,   // 99: plugins.PanelService.SendVerificationEmail:input_type -> plugins.IDRequest
-	5,   // 100: plugins.PanelService.GetUser2FAStatus:input_type -> plugins.IDRequest
-	10,  // 101: plugins.PanelService.AdminDisable2FA:input_type -> plugins.Handle2FARequest
-	5,   // 102: plugins.PanelService.ListSubusers:input_type -> plugins.IDRequest
-	60,  // 103: plugins.PanelService.AddSubuser:input_type -> plugins.AddSubuserRequest
-	61,  // 104: plugins.PanelService.UpdateSubuser:input_type -> plugins.UpdateSubuserRequest
-	62,  // 105: plugins.PanelService.RemoveSubuser:input_type -> plugins.RemoveSubuserRequest
-	5,   // 106: plugins.PanelService.ListDatabases:input_type -> plugins.IDRequest
-	65,  // 107: plugins.PanelService.CreateDatabase:input_type -> plugins.CreateDatabaseRequest
-	5,   // 108: plugins.PanelService.DeleteDatabase:input_type -> plugins.IDRequest
-	5,   // 109: plugins.PanelService.RotateDatabasePassword:input_type -> plugins.IDRequest
-	4,   // 110: plugins.PanelService.ListDatabaseHosts:input_type -> plugins.Empty
-	68,  // 111: plugins.PanelService.CreateDatabaseHost:input_type -> plugins.CreateDatabaseHostRequest
-	69,  // 112: plugins.PanelService.UpdateDatabaseHost:input_type -> plugins.UpdateDatabaseHostRequest
-	5,   // 113: plugins.PanelService.DeleteDatabaseHost:input_type -> plugins.IDRequest
-	72,  // 114: plugins.PanelService.ListFiles:input_type -> plugins.FilePathRequest
-	72,  // 115: plugins.PanelService.ReadFile:input_type -> plugins.FilePathRequest
-	74,  // 116: plugins.PanelService.WriteFile:input_type -> plugins.WriteFileRequest
-	72,  // 117: plugins.PanelService.DeleteFile:input_type -> plugins.FilePathRequest
-	72,  // 118: plugins.PanelService.CreateFolder:input_type -> plugins.FilePathRequest
-	75,  // 119: plugins.PanelService.MoveFile:input_type -> plugins.MoveFileRequest
-	75,  // 120: plugins.PanelService.CopyFile:input_type -> plugins.MoveFileRequest
-	41,  // 121: plugins.PanelService.CompressFiles:input_type -> plugins.CompressRequest
-	72,  // 122: plugins.PanelService.DecompressFile:input_type -> plugins.FilePathRequest
-	5,   // 123: plugins.PanelService.ListBackups:input_type -> plugins.IDRequest
-	78,  // 124: plugins.PanelService.CreateBackup:input_type -> plugins.CreateBackupRequest
-	79,  // 125: plugins.PanelService.DeleteBackup:input_type -> plugins.DeleteBackupRequest
-	4,   // 126: plugins.PanelService.ListNodes:input_type -> plugins.Empty
-	5,   // 127: plugins.PanelService.GetNode:input_type -> plugins.IDRequest
-	82,  // 128: plugins.PanelService.CreateNode:input_type -> plugins.CreateNodeRequest
-	5,   // 129: plugins.PanelService.DeleteNode:input_type -> plugins.IDRequest
-	5,   // 130: plugins.PanelService.ResetNodeToken:input_type -> plugins.IDRequest
-	4,   // 131: plugins.PanelService.ListPackages:input_type -> plugins.Empty
-	5,   // 132: plugins.PanelService.GetPackage:input_type -> plugins.IDRequest
-	87,  // 133: plugins.PanelService.CreatePackage:input_type -> plugins.CreatePackageRequest
-	88,  // 134: plugins.PanelService.UpdatePackage:input_type -> plugins.UpdatePackageRequest
-	5,   // 135: plugins.PanelService.DeletePackage:input_type -> plugins.IDRequest
-	4,   // 136: plugins.PanelService.ListIPBans:input_type -> plugins.Empty
-	91,  // 137: plugins.PanelService.CreateIPBan:input_type -> plugins.CreateIPBanRequest
-	5,   // 138: plugins.PanelService.DeleteIPBan:input_type -> plugins.IDRequest
-	4,   // 139: plugins.PanelService.GetSettings:input_type -> plugins.Empty
-	8,   // 140: plugins.PanelService.SetRegistrationEnabled:input_type -> plugins.BoolRequest
-	8,   // 141: plugins.PanelService.SetServerCreationEnabled:input_type -> plugins.BoolRequest
-	94,  // 142: plugins.PanelService.GetActivityLogs:input_type -> plugins.GetLogsRequest
-	96,  // 143: plugins.PanelService.Log:input_type -> plugins.LogRequest
-	97,  // 144: plugins.PanelService.GetKV:input_type -> plugins.KVRequest
-	99,  // 145: plugins.PanelService.SetKV:input_type -> plugins.KVSetRequest
-	97,  // 146: plugins.PanelService.DeleteKV:input_type -> plugins.KVRequest
-	100, // 147: plugins.PanelService.QueryDB:input_type -> plugins.QueryDBRequest
-	102, // 148: plugins.PanelService.BroadcastEvent:input_type -> plugins.BroadcastEventRequest
-	103, // 149: plugins.PanelService.SendNotification:input_type -> plugins.NotificationRequest
-	104, // 150: plugins.PanelService.HTTPRequest:input_type -> plugins.PluginHTTPRequest
-	106, // 151: plugins.PanelService.CallPlugin:input_type -> plugins.CallPluginRequest
-	9,   // 152: plugins.PanelService.SendEmail:input_type -> plugins.SendEmailRequest
-	12,  // 153: plugins.PluginService.GetInfo:output_type -> plugins.PluginInfo
-	26,  // 154: plugins.PluginService.OnEvent:output_type -> plugins.EventResponse
-	28,  // 155: plugins.PluginService.OnHTTP:output_type -> plugins.HTTPResponse
-	4,   // 156: plugins.PluginService.OnSchedule:output_type -> plugins.Empty
-	20,  // 157: plugins.PluginService.OnMixin:output_type -> plugins.MixinResponse
-	4,   // 158: plugins.PluginService.Shutdown:output_type -> plugins.Empty
-	4,   // 159: plugins.PluginService.SendEmail:output_type -> plugins.Empty
-	3,   // 160: plugins.PanelService.Connect:output_type -> plugins.PanelMessage
-	30,  // 161: plugins.PanelService.GetServer:output_type -> plugins.Server
-	32,  // 162: plugins.PanelService.ListServers:output_type -> plugins.ListServersResponse
-	30,  // 163: plugins.PanelService.CreateServer:output_type -> plugins.Server
-	4,   // 164: plugins.PanelService.DeleteServer:output_type -> plugins.Empty
-	30,  // 165: plugins.PanelService.UpdateServer:output_type -> plugins.Server
-	4,   // 166: plugins.PanelService.SuspendServer:output_type -> plugins.Empty
-	4,   // 167: plugins.PanelService.UnsuspendServer:output_type -> plugins.Empty
-	4,   // 168: plugins.PanelService.StartServer:output_type -> plugins.Empty
-	4,   // 169: plugins.PanelService.StopServer:output_type -> plugins.Empty
-	4,   // 170: plugins.PanelService.RestartServer:output_type -> plugins.Empty
-	4,   // 171: plugins.PanelService.KillServer:output_type -> plugins.Empty
-	4,   // 172: plugins.PanelService.ReinstallServer:output_type -> plugins.Empty
-	4,   // 173: plugins.PanelService.TransferServer:output_type -> plugins.Empty
-	37,  // 174: plugins.PanelService.GetConsoleLog:output_type -> plugins.ConsoleLogResponse
-	4,   // 175: plugins.PanelService.SendCommand:output_type -> plugins.Empty
-	44,  // 176: plugins.PanelService.StreamConsole:output_type -> plugins.ConsoleLine
-	45,  // 177: plugins.PanelService.GetFullLog:output_type -> plugins.FullLogResponse
-	47,  // 178: plugins.PanelService.SearchLogs:output_type -> plugins.SearchLogsResponse
-	49,  // 179: plugins.PanelService.ListLogFiles:output_type -> plugins.LogFilesResponse
-	45,  // 180: plugins.PanelService.ReadLogFile:output_type -> plugins.FullLogResponse
-	39,  // 181: plugins.PanelService.GetServerStats:output_type -> plugins.ServerStats
-	4,   // 182: plugins.PanelService.AddAllocation:output_type -> plugins.Empty
-	4,   // 183: plugins.PanelService.DeleteAllocation:output_type -> plugins.Empty
-	4,   // 184: plugins.PanelService.SetPrimaryAllocation:output_type -> plugins.Empty
-	4,   // 185: plugins.PanelService.UpdateServerVariables:output_type -> plugins.Empty
-	52,  // 186: plugins.PanelService.GetUser:output_type -> plugins.User
-	52,  // 187: plugins.PanelService.GetUserByEmail:output_type -> plugins.User
-	52,  // 188: plugins.PanelService.GetUserByUsername:output_type -> plugins.User
-	54,  // 189: plugins.PanelService.ListUsers:output_type -> plugins.ListUsersResponse
-	52,  // 190: plugins.PanelService.CreateUser:output_type -> plugins.User
-	4,   // 191: plugins.PanelService.DeleteUser:output_type -> plugins.Empty
-	52,  // 192: plugins.PanelService.UpdateUser:output_type -> plugins.User
-	4,   // 193: plugins.PanelService.BanUser:output_type -> plugins.Empty
-	4,   // 194: plugins.PanelService.UnbanUser:output_type -> plugins.Empty
-	4,   // 195: plugins.PanelService.SetAdmin:output_type -> plugins.Empty
-	4,   // 196: plugins.PanelService.RevokeAdmin:output_type -> plugins.Empty
-	4,   // 197: plugins.PanelService.SetUserResources:output_type -> plugins.Empty
-	4,   // 198: plugins.PanelService.ForcePasswordReset:output_type -> plugins.Empty
-	4,   // 199: plugins.PanelService.RequestPasswordReset:output_type -> plugins.Empty
-	4,   // 200: plugins.PanelService.SendVerificationEmail:output_type -> plugins.Empty
-	11,  // 201: plugins.PanelService.GetUser2FAStatus:output_type -> plugins.TwoFactorStatus
-	4,   // 202: plugins.PanelService.AdminDisable2FA:output_type -> plugins.Empty
-	59,  // 203: plugins.PanelService.ListSubusers:output_type -> plugins.ListSubusersResponse
-	58,  // 204: plugins.PanelService.AddSubuser:output_type -> plugins.Subuser
-	4,   // 205: plugins.PanelService.UpdateSubuser:output_type -> plugins.Empty
-	4,   // 206: plugins.PanelService.RemoveSubuser:output_type -> plugins.Empty
-	64,  // 207: plugins.PanelService.ListDatabases:output_type -> plugins.ListDatabasesResponse
-	63,  // 208: plugins.PanelService.CreateDatabase:output_type -> plugins.Database
-	4,   // 209: plugins.PanelService.DeleteDatabase:output_type -> plugins.Empty
-	63,  // 210: plugins.PanelService.RotateDatabasePassword:output_type -> plugins.Database
-	67,  // 211: plugins.PanelService.ListDatabaseHosts:output_type -> plugins.ListDatabaseHostsResponse
-	66,  // 212: plugins.PanelService.CreateDatabaseHost:output_type -> plugins.DatabaseHost
-	4,   // 213: plugins.PanelService.UpdateDatabaseHost:output_type -> plugins.Empty
-	4,   // 214: plugins.PanelService.DeleteDatabaseHost:output_type -> plugins.Empty
-	71,  // 215: plugins.PanelService.ListFiles:output_type -> plugins.ListFilesResponse
-	73,  // 216: plugins.PanelService.ReadFile:output_type -> plugins.FileContent
-	4,   // 217: plugins.PanelService.WriteFile:output_type -> plugins.Empty
-	4,   // 218: plugins.PanelService.DeleteFile:output_type -> plugins.Empty
-	4,   // 219: plugins.PanelService.CreateFolder:output_type -> plugins.Empty
-	4,   // 220: plugins.PanelService.MoveFile:output_type -> plugins.Empty
-	4,   // 221: plugins.PanelService.CopyFile:output_type -> plugins.Empty
-	4,   // 222: plugins.PanelService.CompressFiles:output_type -> plugins.Empty
-	4,   // 223: plugins.PanelService.DecompressFile:output_type -> plugins.Empty
-	77,  // 224: plugins.PanelService.ListBackups:output_type -> plugins.ListBackupsResponse
-	4,   // 225: plugins.PanelService.CreateBackup:output_type -> plugins.Empty
-	4,   // 226: plugins.PanelService.DeleteBackup:output_type -> plugins.Empty
-	81,  // 227: plugins.PanelService.ListNodes:output_type -> plugins.ListNodesResponse
-	80,  // 228: plugins.PanelService.GetNode:output_type -> plugins.Node
-	83,  // 229: plugins.PanelService.CreateNode:output_type -> plugins.NodeWithToken
-	4,   // 230: plugins.PanelService.DeleteNode:output_type -> plugins.Empty
-	84,  // 231: plugins.PanelService.ResetNodeToken:output_type -> plugins.NodeToken
-	86,  // 232: plugins.PanelService.ListPackages:output_type -> plugins.ListPackagesResponse
-	85,  // 233: plugins.PanelService.GetPackage:output_type -> plugins.Package
-	85,  // 234: plugins.PanelService.CreatePackage:output_type -> plugins.Package
-	85,  // 235: plugins.PanelService.UpdatePackage:output_type -> plugins.Package
-	4,   // 236: plugins.PanelService.DeletePackage:output_type -> plugins.Empty
-	90,  // 237: plugins.PanelService.ListIPBans:output_type -> plugins.ListIPBansResponse
-	89,  // 238: plugins.PanelService.CreateIPBan:output_type -> plugins.IPBan
-	4,   // 239: plugins.PanelService.DeleteIPBan:output_type -> plugins.Empty
-	92,  // 240: plugins.PanelService.GetSettings:output_type -> plugins.Settings
-	4,   // 241: plugins.PanelService.SetRegistrationEnabled:output_type -> plugins.Empty
-	4,   // 242: plugins.PanelService.SetServerCreationEnabled:output_type -> plugins.Empty
-	95,  // 243: plugins.PanelService.GetActivityLogs:output_type -> plugins.GetLogsResponse
-	4,   // 244: plugins.PanelService.Log:output_type -> plugins.Empty
-	98,  // 245: plugins.PanelService.GetKV:output_type -> plugins.KVResponse
-	4,   // 246: plugins.PanelService.SetKV:output_type -> plugins.Empty
-	4,   // 247: plugins.PanelService.DeleteKV:output_type -> plugins.Empty
-	101, // 248: plugins.PanelService.QueryDB:output_type -> plugins.QueryDBResponse
-	4,   // 249: plugins.PanelService.BroadcastEvent:output_type -> plugins.Empty
-	4,   // 250: plugins.PanelService.SendNotification:output_type -> plugins.Empty
-	105, // 251: plugins.PanelService.HTTPRequest:output_type -> plugins.PluginHTTPResponse
-	107, // 252: plugins.PanelService.CallPlugin:output_type -> plugins.CallPluginResponse
-	4,   // 253: plugins.PanelService.SendEmail:output_type -> plugins.Empty
-	153, // [153:254] is the sub-list for method output_type
-	52,  // [52:153] is the sub-list for method input_type
-	52,  // [52:52] is the sub-list for extension type_name
-	52,  // [52:52] is the sub-list for extension extendee
-	0,   // [0:52] is the sub-list for field type_name
+	92,  // 43: plugins.ListMountsResponse.mounts:type_name -> plugins.Mount
+	97,  // 44: plugins.ServerMountsResponse.mounts:type_name -> plugins.ServerMountInfo
+	100, // 45: plugins.GetLogsResponse.logs:type_name -> plugins.ActivityLog
+	124, // 46: plugins.BroadcastEventRequest.data:type_name -> plugins.BroadcastEventRequest.DataEntry
+	125, // 47: plugins.PluginHTTPRequest.headers:type_name -> plugins.PluginHTTPRequest.HeadersEntry
+	126, // 48: plugins.PluginHTTPResponse.headers:type_name -> plugins.PluginHTTPResponse.HeadersEntry
+	127, // 49: plugins.AddonTypeRequest.source_info:type_name -> plugins.AddonTypeRequest.SourceInfoEntry
+	128, // 50: plugins.AddonTypeRequest.server_variables:type_name -> plugins.AddonTypeRequest.ServerVariablesEntry
+	118, // 51: plugins.AddonTypeResponse.actions:type_name -> plugins.AddonInstallAction
+	1,   // 52: plugins.AddonInstallAction.type:type_name -> plugins.AddonInstallAction.ActionType
+	129, // 53: plugins.AddonInstallAction.headers:type_name -> plugins.AddonInstallAction.HeadersEntry
+	4,   // 54: plugins.PluginService.GetInfo:input_type -> plugins.Empty
+	25,  // 55: plugins.PluginService.OnEvent:input_type -> plugins.Event
+	27,  // 56: plugins.PluginService.OnHTTP:input_type -> plugins.HTTPRequest
+	29,  // 57: plugins.PluginService.OnSchedule:input_type -> plugins.ScheduleRequest
+	19,  // 58: plugins.PluginService.OnMixin:input_type -> plugins.MixinRequest
+	4,   // 59: plugins.PluginService.Shutdown:input_type -> plugins.Empty
+	9,   // 60: plugins.PluginService.SendEmail:input_type -> plugins.SendEmailRequest
+	2,   // 61: plugins.PanelService.Connect:input_type -> plugins.PluginMessage
+	5,   // 62: plugins.PanelService.GetServer:input_type -> plugins.IDRequest
+	31,  // 63: plugins.PanelService.ListServers:input_type -> plugins.ListServersRequest
+	33,  // 64: plugins.PanelService.CreateServer:input_type -> plugins.CreateServerRequest
+	5,   // 65: plugins.PanelService.DeleteServer:input_type -> plugins.IDRequest
+	34,  // 66: plugins.PanelService.UpdateServer:input_type -> plugins.UpdateServerRequest
+	5,   // 67: plugins.PanelService.SuspendServer:input_type -> plugins.IDRequest
+	5,   // 68: plugins.PanelService.UnsuspendServer:input_type -> plugins.IDRequest
+	5,   // 69: plugins.PanelService.StartServer:input_type -> plugins.IDRequest
+	5,   // 70: plugins.PanelService.StopServer:input_type -> plugins.IDRequest
+	5,   // 71: plugins.PanelService.RestartServer:input_type -> plugins.IDRequest
+	5,   // 72: plugins.PanelService.KillServer:input_type -> plugins.IDRequest
+	5,   // 73: plugins.PanelService.ReinstallServer:input_type -> plugins.IDRequest
+	35,  // 74: plugins.PanelService.TransferServer:input_type -> plugins.TransferServerRequest
+	36,  // 75: plugins.PanelService.GetConsoleLog:input_type -> plugins.ConsoleLogRequest
+	38,  // 76: plugins.PanelService.SendCommand:input_type -> plugins.SendCommandRequest
+	43,  // 77: plugins.PanelService.StreamConsole:input_type -> plugins.StreamConsoleRequest
+	5,   // 78: plugins.PanelService.GetFullLog:input_type -> plugins.IDRequest
+	46,  // 79: plugins.PanelService.SearchLogs:input_type -> plugins.SearchLogsRequest
+	5,   // 80: plugins.PanelService.ListLogFiles:input_type -> plugins.IDRequest
+	51,  // 81: plugins.PanelService.ReadLogFile:input_type -> plugins.ReadLogFileRequest
+	5,   // 82: plugins.PanelService.GetServerStats:input_type -> plugins.IDRequest
+	40,  // 83: plugins.PanelService.AddAllocation:input_type -> plugins.AllocationRequest
+	40,  // 84: plugins.PanelService.DeleteAllocation:input_type -> plugins.AllocationRequest
+	40,  // 85: plugins.PanelService.SetPrimaryAllocation:input_type -> plugins.AllocationRequest
+	42,  // 86: plugins.PanelService.UpdateServerVariables:input_type -> plugins.UpdateVariablesRequest
+	5,   // 87: plugins.PanelService.GetUser:input_type -> plugins.IDRequest
+	6,   // 88: plugins.PanelService.GetUserByEmail:input_type -> plugins.EmailRequest
+	7,   // 89: plugins.PanelService.GetUserByUsername:input_type -> plugins.UsernameRequest
+	53,  // 90: plugins.PanelService.ListUsers:input_type -> plugins.ListUsersRequest
+	55,  // 91: plugins.PanelService.CreateUser:input_type -> plugins.CreateUserRequest
+	5,   // 92: plugins.PanelService.DeleteUser:input_type -> plugins.IDRequest
+	56,  // 93: plugins.PanelService.UpdateUser:input_type -> plugins.UpdateUserRequest
+	5,   // 94: plugins.PanelService.BanUser:input_type -> plugins.IDRequest
+	5,   // 95: plugins.PanelService.UnbanUser:input_type -> plugins.IDRequest
+	5,   // 96: plugins.PanelService.SetAdmin:input_type -> plugins.IDRequest
+	5,   // 97: plugins.PanelService.RevokeAdmin:input_type -> plugins.IDRequest
+	57,  // 98: plugins.PanelService.SetUserResources:input_type -> plugins.SetUserResourcesRequest
+	5,   // 99: plugins.PanelService.ForcePasswordReset:input_type -> plugins.IDRequest
+	6,   // 100: plugins.PanelService.RequestPasswordReset:input_type -> plugins.EmailRequest
+	5,   // 101: plugins.PanelService.SendVerificationEmail:input_type -> plugins.IDRequest
+	5,   // 102: plugins.PanelService.GetUser2FAStatus:input_type -> plugins.IDRequest
+	10,  // 103: plugins.PanelService.AdminDisable2FA:input_type -> plugins.Handle2FARequest
+	5,   // 104: plugins.PanelService.ListSubusers:input_type -> plugins.IDRequest
+	60,  // 105: plugins.PanelService.AddSubuser:input_type -> plugins.AddSubuserRequest
+	61,  // 106: plugins.PanelService.UpdateSubuser:input_type -> plugins.UpdateSubuserRequest
+	62,  // 107: plugins.PanelService.RemoveSubuser:input_type -> plugins.RemoveSubuserRequest
+	5,   // 108: plugins.PanelService.ListDatabases:input_type -> plugins.IDRequest
+	65,  // 109: plugins.PanelService.CreateDatabase:input_type -> plugins.CreateDatabaseRequest
+	5,   // 110: plugins.PanelService.DeleteDatabase:input_type -> plugins.IDRequest
+	5,   // 111: plugins.PanelService.RotateDatabasePassword:input_type -> plugins.IDRequest
+	4,   // 112: plugins.PanelService.ListDatabaseHosts:input_type -> plugins.Empty
+	68,  // 113: plugins.PanelService.CreateDatabaseHost:input_type -> plugins.CreateDatabaseHostRequest
+	69,  // 114: plugins.PanelService.UpdateDatabaseHost:input_type -> plugins.UpdateDatabaseHostRequest
+	5,   // 115: plugins.PanelService.DeleteDatabaseHost:input_type -> plugins.IDRequest
+	72,  // 116: plugins.PanelService.ListFiles:input_type -> plugins.FilePathRequest
+	72,  // 117: plugins.PanelService.ReadFile:input_type -> plugins.FilePathRequest
+	74,  // 118: plugins.PanelService.WriteFile:input_type -> plugins.WriteFileRequest
+	72,  // 119: plugins.PanelService.DeleteFile:input_type -> plugins.FilePathRequest
+	72,  // 120: plugins.PanelService.CreateFolder:input_type -> plugins.FilePathRequest
+	75,  // 121: plugins.PanelService.MoveFile:input_type -> plugins.MoveFileRequest
+	75,  // 122: plugins.PanelService.CopyFile:input_type -> plugins.MoveFileRequest
+	41,  // 123: plugins.PanelService.CompressFiles:input_type -> plugins.CompressRequest
+	72,  // 124: plugins.PanelService.DecompressFile:input_type -> plugins.FilePathRequest
+	5,   // 125: plugins.PanelService.ListBackups:input_type -> plugins.IDRequest
+	78,  // 126: plugins.PanelService.CreateBackup:input_type -> plugins.CreateBackupRequest
+	79,  // 127: plugins.PanelService.DeleteBackup:input_type -> plugins.DeleteBackupRequest
+	4,   // 128: plugins.PanelService.ListNodes:input_type -> plugins.Empty
+	5,   // 129: plugins.PanelService.GetNode:input_type -> plugins.IDRequest
+	82,  // 130: plugins.PanelService.CreateNode:input_type -> plugins.CreateNodeRequest
+	5,   // 131: plugins.PanelService.DeleteNode:input_type -> plugins.IDRequest
+	5,   // 132: plugins.PanelService.ResetNodeToken:input_type -> plugins.IDRequest
+	4,   // 133: plugins.PanelService.ListPackages:input_type -> plugins.Empty
+	5,   // 134: plugins.PanelService.GetPackage:input_type -> plugins.IDRequest
+	87,  // 135: plugins.PanelService.CreatePackage:input_type -> plugins.CreatePackageRequest
+	88,  // 136: plugins.PanelService.UpdatePackage:input_type -> plugins.UpdatePackageRequest
+	5,   // 137: plugins.PanelService.DeletePackage:input_type -> plugins.IDRequest
+	4,   // 138: plugins.PanelService.ListIPBans:input_type -> plugins.Empty
+	91,  // 139: plugins.PanelService.CreateIPBan:input_type -> plugins.CreateIPBanRequest
+	5,   // 140: plugins.PanelService.DeleteIPBan:input_type -> plugins.IDRequest
+	4,   // 141: plugins.PanelService.ListMounts:input_type -> plugins.Empty
+	5,   // 142: plugins.PanelService.GetMount:input_type -> plugins.IDRequest
+	94,  // 143: plugins.PanelService.CreateMount:input_type -> plugins.CreateMountRequest
+	95,  // 144: plugins.PanelService.UpdateMount:input_type -> plugins.UpdateMountRequest
+	5,   // 145: plugins.PanelService.DeleteMount:input_type -> plugins.IDRequest
+	96,  // 146: plugins.PanelService.AddMountToServer:input_type -> plugins.MountServerRequest
+	96,  // 147: plugins.PanelService.RemoveMountFromServer:input_type -> plugins.MountServerRequest
+	5,   // 148: plugins.PanelService.GetServerMounts:input_type -> plugins.IDRequest
+	96,  // 149: plugins.PanelService.MountServerMount:input_type -> plugins.MountServerRequest
+	96,  // 150: plugins.PanelService.UnmountServerMount:input_type -> plugins.MountServerRequest
+	4,   // 151: plugins.PanelService.GetSettings:input_type -> plugins.Empty
+	8,   // 152: plugins.PanelService.SetRegistrationEnabled:input_type -> plugins.BoolRequest
+	8,   // 153: plugins.PanelService.SetServerCreationEnabled:input_type -> plugins.BoolRequest
+	101, // 154: plugins.PanelService.GetActivityLogs:input_type -> plugins.GetLogsRequest
+	103, // 155: plugins.PanelService.Log:input_type -> plugins.LogRequest
+	104, // 156: plugins.PanelService.GetKV:input_type -> plugins.KVRequest
+	106, // 157: plugins.PanelService.SetKV:input_type -> plugins.KVSetRequest
+	104, // 158: plugins.PanelService.DeleteKV:input_type -> plugins.KVRequest
+	107, // 159: plugins.PanelService.QueryDB:input_type -> plugins.QueryDBRequest
+	109, // 160: plugins.PanelService.BroadcastEvent:input_type -> plugins.BroadcastEventRequest
+	110, // 161: plugins.PanelService.SendNotification:input_type -> plugins.NotificationRequest
+	111, // 162: plugins.PanelService.HTTPRequest:input_type -> plugins.PluginHTTPRequest
+	113, // 163: plugins.PanelService.CallPlugin:input_type -> plugins.CallPluginRequest
+	9,   // 164: plugins.PanelService.SendEmail:input_type -> plugins.SendEmailRequest
+	12,  // 165: plugins.PluginService.GetInfo:output_type -> plugins.PluginInfo
+	26,  // 166: plugins.PluginService.OnEvent:output_type -> plugins.EventResponse
+	28,  // 167: plugins.PluginService.OnHTTP:output_type -> plugins.HTTPResponse
+	4,   // 168: plugins.PluginService.OnSchedule:output_type -> plugins.Empty
+	20,  // 169: plugins.PluginService.OnMixin:output_type -> plugins.MixinResponse
+	4,   // 170: plugins.PluginService.Shutdown:output_type -> plugins.Empty
+	4,   // 171: plugins.PluginService.SendEmail:output_type -> plugins.Empty
+	3,   // 172: plugins.PanelService.Connect:output_type -> plugins.PanelMessage
+	30,  // 173: plugins.PanelService.GetServer:output_type -> plugins.Server
+	32,  // 174: plugins.PanelService.ListServers:output_type -> plugins.ListServersResponse
+	30,  // 175: plugins.PanelService.CreateServer:output_type -> plugins.Server
+	4,   // 176: plugins.PanelService.DeleteServer:output_type -> plugins.Empty
+	30,  // 177: plugins.PanelService.UpdateServer:output_type -> plugins.Server
+	4,   // 178: plugins.PanelService.SuspendServer:output_type -> plugins.Empty
+	4,   // 179: plugins.PanelService.UnsuspendServer:output_type -> plugins.Empty
+	4,   // 180: plugins.PanelService.StartServer:output_type -> plugins.Empty
+	4,   // 181: plugins.PanelService.StopServer:output_type -> plugins.Empty
+	4,   // 182: plugins.PanelService.RestartServer:output_type -> plugins.Empty
+	4,   // 183: plugins.PanelService.KillServer:output_type -> plugins.Empty
+	4,   // 184: plugins.PanelService.ReinstallServer:output_type -> plugins.Empty
+	4,   // 185: plugins.PanelService.TransferServer:output_type -> plugins.Empty
+	37,  // 186: plugins.PanelService.GetConsoleLog:output_type -> plugins.ConsoleLogResponse
+	4,   // 187: plugins.PanelService.SendCommand:output_type -> plugins.Empty
+	44,  // 188: plugins.PanelService.StreamConsole:output_type -> plugins.ConsoleLine
+	45,  // 189: plugins.PanelService.GetFullLog:output_type -> plugins.FullLogResponse
+	47,  // 190: plugins.PanelService.SearchLogs:output_type -> plugins.SearchLogsResponse
+	49,  // 191: plugins.PanelService.ListLogFiles:output_type -> plugins.LogFilesResponse
+	45,  // 192: plugins.PanelService.ReadLogFile:output_type -> plugins.FullLogResponse
+	39,  // 193: plugins.PanelService.GetServerStats:output_type -> plugins.ServerStats
+	4,   // 194: plugins.PanelService.AddAllocation:output_type -> plugins.Empty
+	4,   // 195: plugins.PanelService.DeleteAllocation:output_type -> plugins.Empty
+	4,   // 196: plugins.PanelService.SetPrimaryAllocation:output_type -> plugins.Empty
+	4,   // 197: plugins.PanelService.UpdateServerVariables:output_type -> plugins.Empty
+	52,  // 198: plugins.PanelService.GetUser:output_type -> plugins.User
+	52,  // 199: plugins.PanelService.GetUserByEmail:output_type -> plugins.User
+	52,  // 200: plugins.PanelService.GetUserByUsername:output_type -> plugins.User
+	54,  // 201: plugins.PanelService.ListUsers:output_type -> plugins.ListUsersResponse
+	52,  // 202: plugins.PanelService.CreateUser:output_type -> plugins.User
+	4,   // 203: plugins.PanelService.DeleteUser:output_type -> plugins.Empty
+	52,  // 204: plugins.PanelService.UpdateUser:output_type -> plugins.User
+	4,   // 205: plugins.PanelService.BanUser:output_type -> plugins.Empty
+	4,   // 206: plugins.PanelService.UnbanUser:output_type -> plugins.Empty
+	4,   // 207: plugins.PanelService.SetAdmin:output_type -> plugins.Empty
+	4,   // 208: plugins.PanelService.RevokeAdmin:output_type -> plugins.Empty
+	4,   // 209: plugins.PanelService.SetUserResources:output_type -> plugins.Empty
+	4,   // 210: plugins.PanelService.ForcePasswordReset:output_type -> plugins.Empty
+	4,   // 211: plugins.PanelService.RequestPasswordReset:output_type -> plugins.Empty
+	4,   // 212: plugins.PanelService.SendVerificationEmail:output_type -> plugins.Empty
+	11,  // 213: plugins.PanelService.GetUser2FAStatus:output_type -> plugins.TwoFactorStatus
+	4,   // 214: plugins.PanelService.AdminDisable2FA:output_type -> plugins.Empty
+	59,  // 215: plugins.PanelService.ListSubusers:output_type -> plugins.ListSubusersResponse
+	58,  // 216: plugins.PanelService.AddSubuser:output_type -> plugins.Subuser
+	4,   // 217: plugins.PanelService.UpdateSubuser:output_type -> plugins.Empty
+	4,   // 218: plugins.PanelService.RemoveSubuser:output_type -> plugins.Empty
+	64,  // 219: plugins.PanelService.ListDatabases:output_type -> plugins.ListDatabasesResponse
+	63,  // 220: plugins.PanelService.CreateDatabase:output_type -> plugins.Database
+	4,   // 221: plugins.PanelService.DeleteDatabase:output_type -> plugins.Empty
+	63,  // 222: plugins.PanelService.RotateDatabasePassword:output_type -> plugins.Database
+	67,  // 223: plugins.PanelService.ListDatabaseHosts:output_type -> plugins.ListDatabaseHostsResponse
+	66,  // 224: plugins.PanelService.CreateDatabaseHost:output_type -> plugins.DatabaseHost
+	4,   // 225: plugins.PanelService.UpdateDatabaseHost:output_type -> plugins.Empty
+	4,   // 226: plugins.PanelService.DeleteDatabaseHost:output_type -> plugins.Empty
+	71,  // 227: plugins.PanelService.ListFiles:output_type -> plugins.ListFilesResponse
+	73,  // 228: plugins.PanelService.ReadFile:output_type -> plugins.FileContent
+	4,   // 229: plugins.PanelService.WriteFile:output_type -> plugins.Empty
+	4,   // 230: plugins.PanelService.DeleteFile:output_type -> plugins.Empty
+	4,   // 231: plugins.PanelService.CreateFolder:output_type -> plugins.Empty
+	4,   // 232: plugins.PanelService.MoveFile:output_type -> plugins.Empty
+	4,   // 233: plugins.PanelService.CopyFile:output_type -> plugins.Empty
+	4,   // 234: plugins.PanelService.CompressFiles:output_type -> plugins.Empty
+	4,   // 235: plugins.PanelService.DecompressFile:output_type -> plugins.Empty
+	77,  // 236: plugins.PanelService.ListBackups:output_type -> plugins.ListBackupsResponse
+	4,   // 237: plugins.PanelService.CreateBackup:output_type -> plugins.Empty
+	4,   // 238: plugins.PanelService.DeleteBackup:output_type -> plugins.Empty
+	81,  // 239: plugins.PanelService.ListNodes:output_type -> plugins.ListNodesResponse
+	80,  // 240: plugins.PanelService.GetNode:output_type -> plugins.Node
+	83,  // 241: plugins.PanelService.CreateNode:output_type -> plugins.NodeWithToken
+	4,   // 242: plugins.PanelService.DeleteNode:output_type -> plugins.Empty
+	84,  // 243: plugins.PanelService.ResetNodeToken:output_type -> plugins.NodeToken
+	86,  // 244: plugins.PanelService.ListPackages:output_type -> plugins.ListPackagesResponse
+	85,  // 245: plugins.PanelService.GetPackage:output_type -> plugins.Package
+	85,  // 246: plugins.PanelService.CreatePackage:output_type -> plugins.Package
+	85,  // 247: plugins.PanelService.UpdatePackage:output_type -> plugins.Package
+	4,   // 248: plugins.PanelService.DeletePackage:output_type -> plugins.Empty
+	90,  // 249: plugins.PanelService.ListIPBans:output_type -> plugins.ListIPBansResponse
+	89,  // 250: plugins.PanelService.CreateIPBan:output_type -> plugins.IPBan
+	4,   // 251: plugins.PanelService.DeleteIPBan:output_type -> plugins.Empty
+	93,  // 252: plugins.PanelService.ListMounts:output_type -> plugins.ListMountsResponse
+	92,  // 253: plugins.PanelService.GetMount:output_type -> plugins.Mount
+	92,  // 254: plugins.PanelService.CreateMount:output_type -> plugins.Mount
+	92,  // 255: plugins.PanelService.UpdateMount:output_type -> plugins.Mount
+	4,   // 256: plugins.PanelService.DeleteMount:output_type -> plugins.Empty
+	4,   // 257: plugins.PanelService.AddMountToServer:output_type -> plugins.Empty
+	4,   // 258: plugins.PanelService.RemoveMountFromServer:output_type -> plugins.Empty
+	98,  // 259: plugins.PanelService.GetServerMounts:output_type -> plugins.ServerMountsResponse
+	4,   // 260: plugins.PanelService.MountServerMount:output_type -> plugins.Empty
+	4,   // 261: plugins.PanelService.UnmountServerMount:output_type -> plugins.Empty
+	99,  // 262: plugins.PanelService.GetSettings:output_type -> plugins.Settings
+	4,   // 263: plugins.PanelService.SetRegistrationEnabled:output_type -> plugins.Empty
+	4,   // 264: plugins.PanelService.SetServerCreationEnabled:output_type -> plugins.Empty
+	102, // 265: plugins.PanelService.GetActivityLogs:output_type -> plugins.GetLogsResponse
+	4,   // 266: plugins.PanelService.Log:output_type -> plugins.Empty
+	105, // 267: plugins.PanelService.GetKV:output_type -> plugins.KVResponse
+	4,   // 268: plugins.PanelService.SetKV:output_type -> plugins.Empty
+	4,   // 269: plugins.PanelService.DeleteKV:output_type -> plugins.Empty
+	108, // 270: plugins.PanelService.QueryDB:output_type -> plugins.QueryDBResponse
+	4,   // 271: plugins.PanelService.BroadcastEvent:output_type -> plugins.Empty
+	4,   // 272: plugins.PanelService.SendNotification:output_type -> plugins.Empty
+	112, // 273: plugins.PanelService.HTTPRequest:output_type -> plugins.PluginHTTPResponse
+	114, // 274: plugins.PanelService.CallPlugin:output_type -> plugins.CallPluginResponse
+	4,   // 275: plugins.PanelService.SendEmail:output_type -> plugins.Empty
+	165, // [165:276] is the sub-list for method output_type
+	54,  // [54:165] is the sub-list for method input_type
+	54,  // [54:54] is the sub-list for extension type_name
+	54,  // [54:54] is the sub-list for extension extendee
+	0,   // [0:54] is the sub-list for field type_name
 }
 
 func init() { file_plugin_proto_init() }
@@ -8531,7 +9247,7 @@ func file_plugin_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_plugin_proto_rawDesc), len(file_plugin_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   121,
+			NumMessages:   128,
 			NumExtensions: 0,
 			NumServices:   2,
 		},

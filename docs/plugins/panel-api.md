@@ -660,6 +660,106 @@ api.deleteBackup("server-id", "backup-id");
 ```
 
 
+## Mount Management
+
+### List Mounts
+
+**Go:**
+```go
+mounts := api.ListMounts()
+```
+
+**Java:**
+```java
+List<PanelAPI.Mount> mounts = api.listMounts();
+```
+
+Mount fields: `ID`, `Name`, `Description`, `Source`, `Target`, `ReadOnly`, `UserMountable`, `Navigable`
+
+### Get Mount
+
+**Go:**
+```go
+mount, err := api.GetMount("mount-id")
+```
+
+**Java:**
+```java
+PanelAPI.Mount mount = api.getMount("mount-id");
+```
+
+### Create Mount
+
+**Go:**
+```go
+mount, err := api.CreateMount("Name", "Desc", "/source", "/target", false, true, true)
+```
+
+**Java:**
+```java
+PanelAPI.Mount mount = api.createMount("Name", "Desc", "/source", "/target", false, true, true);
+```
+
+### Update Mount
+
+**Go:**
+```go
+mount, err := api.UpdateMount("mount-id", "New Name", "New Desc", "/new-source", "/new-target", nil, nil, nil)
+```
+
+**Java:**
+```java
+PanelAPI.Mount mount = api.updateMount("mount-id", "New Name", "New Desc", "/new-source", "/new-target", null, null, null);
+```
+
+### Delete Mount
+
+**Go:**
+```go
+api.DeleteMount("mount-id")
+```
+
+**Java:**
+```java
+api.deleteMount("mount-id");
+```
+
+### Server Mount Associations
+
+**Go:**
+```go
+// Add mount to server
+api.AddMountToServer("mount-id", "server-id")
+
+// Remove mount from server
+api.RemoveMountFromServer("mount-id", "server-id")
+
+// List mounts assigned to a server
+serverMounts := api.GetServerMounts("server-id")
+// ServerMountInfo fields: ID, Name, Description, Source, Target, ReadOnly, IsMounted, Navigable
+
+// Mount execution
+api.MountServerMount("mount-id", "server-id")
+api.UnmountServerMount("mount-id", "server-id")
+```
+
+**Java:**
+```java
+// Add mount to server
+api.addMountToServer("mount-id", "server-id");
+
+// Remove mount from server
+api.removeMountFromServer("mount-id", "server-id");
+
+// List mounts assigned to a server
+List<PanelAPI.ServerMountInfo> serverMounts = api.getServerMounts("server-id");
+
+// Mount execution
+api.mountServerMount("mount-id", "server-id");
+api.unmountServerMount("mount-id", "server-id");
+```
+
+
 ## Database Management
 
 ### List Databases

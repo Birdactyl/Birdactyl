@@ -1120,3 +1120,134 @@ func (s *PanelServer) SendEmail(ctx context.Context, req *pb.SendEmailRequest) (
 	}
 	return &pb.Empty{}, nil
 }
+
+func mountToProto(m *models.Mount) *pb.Mount {
+	servers := []string{}
+	for _, s := range m.Servers {
+		servers = append(servers, s.ID.String())
+	}
+	nodes := []string{}
+	for _, n := range m.Nodes {
+		nodes = append(nodes, n.ID.String())
+	}
+	pkgs := []string{}
+	for _, p := range m.Packages {
+		pkgs = append(pkgs, p.ID.String())
+	}
+
+	return &pb.Mount{
+		Id: m.ID.String(), Name: m.Name, Description: m.Description,
+		Source: m.Source, Target: m.Target, ReadOnly: m.ReadOnly,
+		UserMountable: m.UserMountable, Navigable: m.Navigable,
+		ServerIds: servers, NodeIds: nodes, PackageIds: pkgs,
+		CreatedAt: m.CreatedAt.String(),
+	}
+}
+
+func (s *PanelServer) ListMounts(ctx context.Context, req *pb.Empty) (*pb.ListMountsResponse, error) {
+	var mounts []models.Mount
+	database.DB.Preload("Servers").Preload("Nodes").Preload("Packages").Find(&mounts)
+	result := make([]*pb.Mount, len(mounts))
+	for i, m := range mounts {
+		result[i] = mountToProto(&m)
+	}
+	return &pb.ListMountsResponse{Mounts: result}, nil
+}
+
+func (s *PanelServer) GetMount(ctx context.Context, req *pb.IDRequest) (*pb.Mount, error) {
+	var m models.Mount
+	if err := database.DB.Preload("Servers").Preload("Nodes").Preload("Packages").First(&m, "id = ?", req.Id).Error; err != nil {
+		return nil, status.Error(codes.NotFound, "mount not found")
+	}
+	return mountToProto(&m), nil
+}
+
+func (s *PanelServer) CreateMount(ctx context.Context, req *pb.CreateMountRequest) (*pb.Mount, error) {
+	m := &models.Mount{
+		Name: req.Name, Description: req.Description, Source: req.Source,
+		Target: req.Target, ReadOnly: req.ReadOnly, UserMountable: req.UserMountable,
+		Navigable: req.Navigable,
+	}
+
+	database.DB.Create(m)
+	return mountToProto(m), nil
+}
+
+func (s *PanelServer) UpdateMount(ctx context.Context, req *pb.UpdateMountRequest) (*pb.Mount, error) {
+	var m models.Mount
+	if err := database.DB.Preload("Servers").Preload("Nodes").Preload("Packages").First(&m, "id = ?", req.Id).Error; err != nil {
+		return nil, status.Error(codes.NotFound, "mount not found")
+	}
+	
+	updates := map[string]interface{}{}
+	if req.Name != "" {
+		updates["name"] = req.Name
+	}
+	if req.Source != "" {
+		updates["source"] = req.Source
+	}
+	if req.Target != "" {
+		updates["target"] = req.Target
+	}
+	updates["description"] = req.Description
+	updates["read_only"] = req.ReadOnly
+	updates["user_mountable"] = req.UserMountable
+	updates["navigable"] = req.Navigable
+
+	database.DB.Model(&m).Updates(updates)
+	return mountToProto(&m), nil
+}
+
+func (s *PanelServer) DeleteMount(ctx context.Context, req *pb.IDRequest) (*pb.Empty, error) {
+	database.DB.Delete(&models.Mount{}, "id = ?", req.Id)
+	return &pb.Empty{}, nil
+}
+
+func (s *PanelServer) AddMountToServer(ctx context.Context, req *pb.MountServerRequest) (*pb.Empty, error) {
+	var server models.Server
+	if err := database.DB.First(&server, "id = ?", req.ServerId).Error; err != nil {
+		return nil, status.Error(codes.NotFound, "server not found")
+	}
+	var m models.Mount
+	if err := database.DB.First(&m, "id = ?", req.MountId).Error; err != nil {
+		return nil, status.Error(codes.NotFound, "mount not found")
+	}
+	database.DB.Model(&server).Association("Mounts").Append(&m)
+	return &pb.Empty{}, nil
+}
+
+func (s *PanelServer) RemoveMountFromServer(ctx context.Context, req *pb.MountServerRequest) (*pb.Empty, error) {
+	var server models.Server
+	if err := database.DB.First(&server, "id = ?", req.ServerId).Error; err != nil {
+		return nil, status.Error(codes.NotFound, "server not found")
+	}
+	var m models.Mount
+	if err := database.DB.First(&m, "id = ?", req.MountId).Error; err != nil {
+		return nil, status.Error(codes.NotFound, "mount not found")
+	}
+	database.DB.Model(&server).Association("Mounts").Delete(&m)
+	return &pb.Empty{}, nil
+}
+
+func (s *PanelServer) GetServerMounts(ctx context.Context, req *pb.IDRequest) (*pb.ServerMountsResponse, error) {
+	serverID, _ := uuid.Parse(req.Id)
+	var server models.Server
+	database.DB.Preload("Mounts").First(&server, "id = ?", serverID)
+	result := make([]*pb.ServerMountInfo, len(server.Mounts))
+	for i, sm := range server.Mounts {
+		result[i] = &pb.ServerMountInfo{
+			Id: sm.ID.String(), Name: sm.Name, Description: sm.Description,
+			Source: sm.Source, Target: sm.Target, ReadOnly: sm.ReadOnly,
+			IsMounted: true, Navigable: sm.Navigable,
+		}
+	}
+	return &pb.ServerMountsResponse{Mounts: result}, nil
+}
+
+func (s *PanelServer) MountServerMount(ctx context.Context, req *pb.MountServerRequest) (*pb.Empty, error) {
+	return s.AddMountToServer(ctx, req)
+}
+
+func (s *PanelServer) UnmountServerMount(ctx context.Context, req *pb.MountServerRequest) (*pb.Empty, error) {
+	return s.RemoveMountFromServer(ctx, req)
+}
