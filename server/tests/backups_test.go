@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"strconv"
+	"strings"
 	"testing"
 
 	"birdactyl-panel-backend/internal/database"
@@ -23,9 +24,9 @@ func setupBackupMockNodeAndServer() (*fiber.App, *models.User, *models.Server, *
 
 		w.WriteHeader(http.StatusOK)
 
-		if r.Method == "GET" && len(r.URL.Path) > 8 && r.URL.Path[len(r.URL.Path)-8:] == "/backups" {
+		if r.Method == "GET" && strings.HasSuffix(r.URL.Path, "/backups") {
 			w.Write([]byte(`{"success":true, "data": []}`))
-		} else if r.Method == "GET" && len(r.URL.Path) > 9 && r.URL.Path[len(r.URL.Path)-9:] == "/download" {
+		} else if r.Method == "GET" && strings.HasSuffix(r.URL.Path, "/download") {
 			w.Header().Set("Content-Type", "application/octet-stream")
 			w.Write([]byte("mock backup content"))
 		} else {

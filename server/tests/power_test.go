@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"strconv"
+	"strings"
 	"testing"
 
 	"birdactyl-panel-backend/internal/database"
@@ -24,22 +25,19 @@ func setupMockNodeAndServer() (*fiber.App, *models.User, *models.Server, *httpte
 		errResp := `{"success": false, "error": "not implemented in mock"}`
 
 		switch {
-		case r.Method == "POST" && r.URL.Path == fmt.Sprintf("/api/servers/%s/start", ":id"):
+		case r.Method == "POST" && strings.HasSuffix(r.URL.Path, "/start"):
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte(`{"success": true}`))
-		case r.Method == "POST" && (len(r.URL.Path) > 5 && r.URL.Path[len(r.URL.Path)-6:] == "/start"):
+		case r.Method == "POST" && strings.HasSuffix(r.URL.Path, "/stop"):
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte(`{"success": true}`))
-		case r.Method == "POST" && (len(r.URL.Path) > 4 && r.URL.Path[len(r.URL.Path)-5:] == "/stop"):
+		case r.Method == "POST" && strings.HasSuffix(r.URL.Path, "/kill"):
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte(`{"success": true}`))
-		case r.Method == "POST" && (len(r.URL.Path) > 4 && r.URL.Path[len(r.URL.Path)-5:] == "/kill"):
+		case r.Method == "POST" && strings.HasSuffix(r.URL.Path, "/restart"):
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte(`{"success": true}`))
-		case r.Method == "POST" && (len(r.URL.Path) > 7 && r.URL.Path[len(r.URL.Path)-8:] == "/restart"):
-			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`{"success": true}`))
-		case r.Method == "POST" && (len(r.URL.Path) > 9 && r.URL.Path[len(r.URL.Path)-10:] == "/reinstall"):
+		case r.Method == "POST" && strings.HasSuffix(r.URL.Path, "/reinstall"):
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte(`{"success": true}`))
 		default:
