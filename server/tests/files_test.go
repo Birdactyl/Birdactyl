@@ -57,6 +57,7 @@ func setupFileMockNodeAndServer() (*fiber.App, *models.User, *models.Server, *ht
 		Name:        "Mock Node - Files",
 		FQDN:        host,
 		Port:        port,
+		TokenID:     uuid.New().String(),
 		DaemonToken: "mock_token_123",
 	}
 	database.DB.Create(testNode)

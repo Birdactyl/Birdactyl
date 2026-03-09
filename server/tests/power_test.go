@@ -63,6 +63,7 @@ func setupMockNodeAndServer() (*fiber.App, *models.User, *models.Server, *httpte
 		Name:        "Mock Node - Power Tests",
 		FQDN:        host,
 		Port:        port,
+		TokenID:     uuid.New().String(),
 		DaemonToken: "mock_token_123",
 	}
 	database.DB.Create(testNode)

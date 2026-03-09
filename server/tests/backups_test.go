@@ -51,6 +51,7 @@ func setupBackupMockNodeAndServer() (*fiber.App, *models.User, *models.Server, *
 		Name:        "Mock Node - Backups",
 		FQDN:        host,
 		Port:        port,
+		TokenID:     uuid.New().String(),
 		DaemonToken: "mock_token_123",
 	}
 	database.DB.Create(testNode)
