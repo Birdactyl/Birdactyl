@@ -335,7 +335,11 @@ export default function AuthPage() {
             </div>
           </div>
         </main>
-        <p className="fixed bottom-6 left-0 right-0 z-10 text-center text-sm font-semibold text-neutral-500 tracking-tight pointer-events-none">Birdactyl</p>
+        <p className="fixed bottom-6 left-0 right-0 z-10 text-center text-sm font-semibold text-neutral-500 tracking-tight">
+          <a href="https://github.com/Birdactyl/Birdactyl" target="_blank" rel="noopener noreferrer" className="hover:text-neutral-300 transition-colors">
+            Powered by Birdactyl
+          </a>
+        </p>
       </div>
     );
   }
@@ -368,7 +372,11 @@ export default function AuthPage() {
             </div>
           </div>
         </main>
-        <p className="fixed bottom-6 left-0 right-0 z-10 text-center text-sm font-semibold text-neutral-500 tracking-tight pointer-events-none">Birdactyl</p>
+        <p className="fixed bottom-6 left-0 right-0 z-10 text-center text-sm font-semibold text-neutral-500 tracking-tight">
+          <a href="https://github.com/Birdactyl/Birdactyl" target="_blank" rel="noopener noreferrer" className="hover:text-neutral-300 transition-colors">
+            Powered by Birdactyl
+          </a>
+        </p>
       </div>
     );
   }
@@ -406,7 +414,11 @@ export default function AuthPage() {
             )}
           </div>
         </main>
-        <p className="fixed bottom-6 left-0 right-0 z-10 text-center text-sm font-semibold text-neutral-500 tracking-tight pointer-events-none">Birdactyl</p>
+        <p className="fixed bottom-6 left-0 right-0 z-10 text-center text-sm font-semibold text-neutral-500 tracking-tight">
+          <a href="https://github.com/Birdactyl/Birdactyl" target="_blank" rel="noopener noreferrer" className="hover:text-neutral-300 transition-colors">
+            Powered by Birdactyl
+          </a>
+        </p>
       </div>
     );
   }
@@ -455,7 +467,11 @@ export default function AuthPage() {
             </div>
           </div>
         </main>
-        <p className="fixed bottom-6 left-0 right-0 z-10 text-center text-sm font-semibold text-neutral-500 tracking-tight pointer-events-none">Birdactyl</p>
+        <p className="fixed bottom-6 left-0 right-0 z-10 text-center text-sm font-semibold text-neutral-500 tracking-tight">
+          <a href="https://github.com/Birdactyl/Birdactyl" target="_blank" rel="noopener noreferrer" className="hover:text-neutral-300 transition-colors">
+            Powered by Birdactyl
+          </a>
+        </p>
       </div>
     );
   }
@@ -481,7 +497,11 @@ export default function AuthPage() {
             </div>
           </div>
         </main>
-        <p className="fixed bottom-6 left-0 right-0 z-10 text-center text-sm font-semibold text-neutral-500 tracking-tight pointer-events-none">Birdactyl</p>
+        <p className="fixed bottom-6 left-0 right-0 z-10 text-center text-sm font-semibold text-neutral-500 tracking-tight">
+          <a href="https://github.com/Birdactyl/Birdactyl" target="_blank" rel="noopener noreferrer" className="hover:text-neutral-300 transition-colors">
+            Powered by Birdactyl
+          </a>
+        </p>
       </div>
     );
   }
@@ -562,7 +582,11 @@ export default function AuthPage() {
           </p>
         </div>
       </main>
-      <p className="fixed bottom-6 left-0 right-0 z-10 text-center text-sm font-semibold text-neutral-500 tracking-tight pointer-events-none">Birdactyl</p>
+      <p className="fixed bottom-6 left-0 right-0 z-10 text-center text-sm font-semibold text-neutral-500 tracking-tight">
+        <a href="https://github.com/Birdactyl/Birdactyl" target="_blank" rel="noopener noreferrer" className="hover:text-neutral-300 transition-colors">
+          Powered by Birdactyl
+        </a>
+      </p>
     </div>
   );
 }
