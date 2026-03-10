@@ -10,7 +10,7 @@ Add the dependency to your `pom.xml`:
 <dependency>
     <groupId>io.birdactyl</groupId>
     <artifactId>birdactyl-sdk</artifactId>
-    <version>0.2.3</version>
+    <version>0.2.5</version>
 </dependency>
 ```
 
