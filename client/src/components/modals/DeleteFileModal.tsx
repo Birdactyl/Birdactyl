@@ -7,11 +7,12 @@ interface Props {
   isDir: boolean;
   isBulk?: boolean;
   count?: number;
+  isPermanent?: boolean;
   onClose: () => void;
   onConfirm: () => Promise<void>;
 }
 
-export default function DeleteFileModal({ open, fileName, isDir, isBulk, count, onClose, onConfirm }: Props) {
+export default function DeleteFileModal({ open, fileName, isDir, isBulk, count, isPermanent, onClose, onConfirm }: Props) {
   const [loading, setLoading] = useState(false);
   const submittingRef = useRef(false);
 
@@ -30,10 +31,18 @@ export default function DeleteFileModal({ open, fileName, isDir, isBulk, count, 
     onClose();
   };
 
-  const title = isBulk ? `Delete ${count} item${count !== 1 ? 's' : ''}` : `Delete ${isDir ? 'folder' : 'file'}`;
-  const description = isBulk
-    ? `Are you sure you want to delete ${count} selected item${count !== 1 ? 's' : ''}? This action cannot be undone.`
-    : `Are you sure you want to delete "${fileName}"? This action cannot be undone.`;
+  const titleAction = isPermanent ? 'Permanently Delete' : 'Delete';
+  const title = isBulk ? `${titleAction} ${count} item${count !== 1 ? 's' : ''}` : `${titleAction} ${isDir ? 'folder' : 'file'}`;
+  
+  const descriptionPrefix = isBulk
+    ? `Are you sure you want to delete ${count} selected item${count !== 1 ? 's' : ''}?`
+    : `Are you sure you want to delete "${fileName}"?`;
+    
+  const descriptionSuffix = isPermanent 
+    ? 'This action cannot be undone.'
+    : 'This will be moved to the Recycle Bin (.trash).';
+
+  const description = `${descriptionPrefix} ${descriptionSuffix}`;
 
   return (
     <Modal open={open} onClose={onClose} title={title} description={description}>

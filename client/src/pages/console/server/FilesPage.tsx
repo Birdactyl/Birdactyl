@@ -5,7 +5,7 @@ import { getServer, Server, FileEntry, SearchResult, getDownloadUrl } from '../.
 import { formatBytes, formatDate } from '../../../lib/utils';
 import { useFileManager } from '../../../hooks/useFileManager';
 import { useServerPermissions } from '../../../hooks/useServerPermissions';
-import { UploadModal, CreateFolderModal, CreateFileModal, MoveFileModal, RenameFileModal, CompressFileModal, ClipboardPanel, Button, Icons, Checkbox, PermissionDenied, Input, DeleteFileModal, ContextMenuZone, BulkActionBar } from '../../../components';
+import { UploadModal, CreateFolderModal, CreateFileModal, MoveFileModal, RenameFileModal, CompressFileModal, ClipboardPanel, Button, Icons, Checkbox, PermissionDenied, Input, DeleteFileModal, ContextMenuZone, BulkActionBar, ContextMenu } from '../../../components';
 
 const getFileIconColor = (name: string, isDir: boolean): string => {
   if (isDir) return 'text-amber-500';
@@ -23,6 +23,28 @@ const FileIcon = ({ name, is_dir }: { name: string; is_dir: boolean }) => {
 };
 
 const isArchive = (name: string) => /\.(zip|tar|tar\.gz|tgz)$/i.test(name);
+
+const parseTrashFilename = (filename: string) => {
+  const parts = filename.split('__');
+  if (parts.length >= 3) {
+    const originalDirHex = parts.pop()!;
+    const timestamp = parts.pop()!;
+    const baseName = parts.join('__');
+    
+    if (/^\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}$/.test(timestamp)) {
+      let originalDir = '/';
+      try {
+        originalDir = decodeURIComponent(originalDirHex.replace(/(..)/g, '%$1'));
+      } catch (e) {}
+      return { baseName, timestamp, originalDir };
+    }
+  }
+  
+  const m = filename.match(/^(.*)_(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})$/);
+  if (m) return { baseName: m[1], timestamp: m[2], originalDir: '/' };
+  
+  return null;
+};
 
 export default function FilesPage() {
   const { id } = useParams<{ id: string }>();
@@ -52,6 +74,15 @@ export default function FilesPage() {
     if (file.name === '..') return [];
     if (file.is_dir) {
       return [
+        ...(fm.currentPath.startsWith('/.trash') ? [{
+          label: 'Restore',
+          onClick: () => {
+            const info = parseTrashFilename(file.name);
+            const destDir = info ? info.originalDir : '/';
+            const destFile = info ? info.baseName : file.name;
+            fm.actions.move(file, `${destDir === '/' ? '' : destDir}/${destFile}`);
+          }
+        }, 'separator' as const] : []),
         ...(can('file.copy') ? [{ label: 'Move', onClick: () => setFileTarget({ type: 'move', file }) }] : []),
         ...(can('file.rename') ? [{ label: 'Rename', onClick: () => setFileTarget({ type: 'rename', file }) }] : []),
         ...(can('file.compress') ? [{ label: 'Compress', onClick: () => setFileTarget({ type: 'compress', file }) }] : []),
@@ -68,6 +99,15 @@ export default function FilesPage() {
       ...(can('file.copy') ? [{ label: 'Move', onClick: () => setFileTarget({ type: 'move', file }) }] : []),
       ...(can('file.rename') ? [{ label: 'Rename', onClick: () => setFileTarget({ type: 'rename', file }) }] : []),
       'separator' as const,
+      ...(fm.currentPath.startsWith('/.trash') ? [{
+        label: 'Restore',
+        onClick: () => {
+          const info = parseTrashFilename(file.name);
+          const destDir = info ? info.originalDir : '/';
+          const destFile = info ? info.baseName : file.name;
+          fm.actions.move(file, `${destDir === '/' ? '' : destDir}/${destFile}`);
+        }
+      }, 'separator' as const] : []),
       ...(can('file.compress') ? [{ label: 'Compress', onClick: () => setFileTarget({ type: 'compress', file }) }] : []),
       ...(isArchive(file.name) && can('file.compress') ? [{ label: fm.decompressing ? 'Extracting...' : 'Extract', onClick: () => fm.actions.decompress(file), disabled: fm.decompressing }] : []),
       'separator' as const,
@@ -148,25 +188,34 @@ export default function FilesPage() {
                     </td>
                     <td className="px-3 py-3 text-sm text-neutral-400">{result.is_dir ? '\u2014' : formatBytes(result.size)}</td>
                     <td className="px-3 py-3 text-sm text-neutral-400">{formatDate(result.mod_time)}</td>
-                    <td className="px-3 py-3"><Button variant="ghost"><Icons.ellipsis className="w-5 h-5" /></Button></td>
+                    <td className="px-3 py-3" onClick={e => e.stopPropagation()}>
+                      <ContextMenu trigger={<Button variant="ghost"><Icons.ellipsis className="w-5 h-5" /></Button>} items={getSearchActions(result)} />
+                    </td>
                   </ContextMenuZone>
                 ))
               ) : fm.files.length === 0 ? (
                 <tr><td colSpan={5} className="px-4 py-8 text-center text-sm text-neutral-500">No files found</td></tr>
               ) : fm.files.map(file => {
                 const actions = getFileActions(file);
+                const isTrash = fm.currentPath.startsWith('/.trash') && file.name !== '..';
+                const trashInfo = isTrash ? parseTrashFilename(file.name) : null;
+                const displayName = trashInfo ? trashInfo.baseName : file.name;
+                
                 const row = (
                   <>
                     <td className="pl-4 py-3" onClick={e => e.stopPropagation()}>{file.name !== '..' && <Checkbox checked={fm.selected.has(file.name)} onChange={() => fm.toggleSelect(file.name)} />}</td>
                     <td className="px-3 py-3">
                       <div className="flex items-center gap-3">
-                        <FileIcon name={file.name} is_dir={file.is_dir} />
-                        <span className="text-sm text-neutral-100 truncate">{file.name}</span>
+                        <FileIcon name={displayName} is_dir={file.is_dir} />
+                        <div className="min-w-0">
+                          <span className="text-sm text-neutral-100 truncate block">{displayName}</span>
+                          {trashInfo && <span className="text-xs text-neutral-500 truncate block">From: {trashInfo.originalDir}</span>}
+                        </div>
                       </div>
                     </td>
                     <td className="px-3 py-3 text-sm text-neutral-400">{file.is_dir ? '\u2014' : formatBytes(file.size)}</td>
                     <td className="px-3 py-3 text-sm text-neutral-400">{formatDate(file.mod_time)}</td>
-                    <td className="px-3 py-3">{file.name !== '..' && <Button variant="ghost"><Icons.ellipsis className="w-5 h-5" /></Button>}</td>
+                    <td className="px-3 py-3" onClick={e => e.stopPropagation()}>{file.name !== '..' && <ContextMenu trigger={<Button variant="ghost"><Icons.ellipsis className="w-5 h-5" /></Button>} items={actions} />}</td>
                   </>
                 );
                 return actions.length > 0 ? (
@@ -196,13 +245,19 @@ export default function FilesPage() {
                   <div className="text-sm text-neutral-100 truncate">{result.name}</div>
                   <div className="text-xs text-neutral-500">{result.is_dir ? 'Folder' : formatBytes(result.size)}</div>
                 </div>
-                <Button variant="ghost"><Icons.ellipsis className="w-5 h-5" /></Button>
+                <div onClick={e => e.stopPropagation()}>
+                  <ContextMenu trigger={<Button variant="ghost"><Icons.ellipsis className="w-5 h-5" /></Button>} items={getSearchActions(result)} />
+                </div>
               </ContextMenuZone>
             ))
           ) : fm.files.length === 0 ? (
             <div className="px-4 py-8 text-center text-sm text-neutral-500">No files found</div>
           ) : fm.files.map(file => {
             const actions = getFileActions(file);
+            const isTrash = fm.currentPath.startsWith('/.trash') && file.name !== '..';
+            const trashInfo = isTrash ? parseTrashFilename(file.name) : null;
+            const displayName = trashInfo ? trashInfo.baseName : file.name;
+            
             const content = (
               <>
                 {file.name !== '..' && (
@@ -210,13 +265,17 @@ export default function FilesPage() {
                     <Checkbox checked={fm.selected.has(file.name)} onChange={() => fm.toggleSelect(file.name)} />
                   </div>
                 )}
-                <FileIcon name={file.name} is_dir={file.is_dir} />
+                <FileIcon name={displayName} is_dir={file.is_dir} />
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm text-neutral-100 truncate">{file.name}</div>
-                  <div className="text-xs text-neutral-500">{file.is_dir ? 'Folder' : formatBytes(file.size)}</div>
+                  <div className="text-sm text-neutral-100 truncate">{displayName}</div>
+                  <div className="text-xs text-neutral-500 truncate">
+                    {trashInfo ? `From: ${trashInfo.originalDir}` : file.is_dir ? 'Folder' : formatBytes(file.size)}
+                  </div>
                 </div>
                 {file.name !== '..' && (
-                  <Button variant="ghost"><Icons.ellipsis className="w-5 h-5" /></Button>
+                  <div onClick={e => e.stopPropagation()}>
+                    <ContextMenu trigger={<Button variant="ghost"><Icons.ellipsis className="w-5 h-5" /></Button>} items={actions} />
+                  </div>
                 )}
               </>
             );
@@ -256,6 +315,7 @@ export default function FilesPage() {
         isDir={deleteTarget && 'file' in deleteTarget ? deleteTarget.file.is_dir : false}
         isBulk={!!(deleteTarget && 'bulk' in deleteTarget)}
         count={fm.selected.size}
+        isPermanent={fm.currentPath.startsWith('/.trash')}
         onClose={() => setDeleteTarget(null)}
         onConfirm={async () => {
           if (deleteTarget && 'file' in deleteTarget) {
