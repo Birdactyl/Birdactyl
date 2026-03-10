@@ -118,6 +118,10 @@ func ListFiles(serverID, subPath string) ([]FileEntry, error) {
 
 	entries, err := afero.ReadDir(fs, target)
 	if err != nil {
+		if strings.HasPrefix(target, "/.trash") && os.IsNotExist(err) {
+			fs.MkdirAll("/.trash", 0755)
+			return []FileEntry{}, nil
+		}
 		return nil, err
 	}
 
@@ -257,7 +261,24 @@ func DeletePath(serverID, subPath string) error {
 	if target == "/" || target == "." {
 		return fmt.Errorf("cannot delete root workspace")
 	}
-	return fs.RemoveAll(target)
+
+	if strings.HasPrefix(target, "/.trash") {
+		return fs.RemoveAll(target)
+	}
+
+	trashDir := "/.trash"
+	fs.MkdirAll(trashDir, 0755)
+
+	baseName := filepath.Base(target)
+	timestamp := time.Now().Format("2006-01-02_15-04-05")
+	dirHex := hex.EncodeToString([]byte(filepath.Dir(target)))
+	trashTarget := filepath.Join(trashDir, fmt.Sprintf("%s__%s__%s", baseName, timestamp, dirHex))
+
+	err := fs.Rename(target, trashTarget)
+	if err != nil {
+		return fs.RemoveAll(target)
+	}
+	return nil
 }
 
 func MovePath(serverID, srcPath, destPath string) error {
@@ -302,13 +323,34 @@ func GetFilePath(serverID, subPath string) (string, error) {
 func BulkDelete(serverID string, paths []string) (int, error) {
 	fs := GetVFS(serverID)
 	deleted := 0
+
+	trashDir := "/.trash"
+	fs.MkdirAll(trashDir, 0755)
+
 	for _, p := range paths {
 		target := filepath.Clean("/" + p)
 		if target == "/" || target == "." {
 			continue
 		}
-		if err := fs.RemoveAll(target); err == nil {
+
+		if strings.HasPrefix(target, "/.trash") {
+			if err := fs.RemoveAll(target); err == nil {
+				deleted++
+			}
+			continue
+		}
+
+		baseName := filepath.Base(target)
+		timestamp := time.Now().Format("2006-01-02_15-04-05")
+		dirHex := hex.EncodeToString([]byte(filepath.Dir(target)))
+		trashTarget := filepath.Join(trashDir, fmt.Sprintf("%s__%s__%s", baseName, timestamp, dirHex))
+
+		if err := fs.Rename(target, trashTarget); err == nil {
 			deleted++
+		} else {
+			if err := fs.RemoveAll(target); err == nil {
+				deleted++
+			}
 		}
 	}
 	return deleted, nil

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   listFiles, FileEntry, searchFiles, SearchResult, deleteFile, moveFile, copyFile,
   compressFile, decompressFile, createFolder, writeFile, bulkDeleteFiles, bulkCopyFiles, bulkCompressFiles
@@ -8,8 +8,9 @@ import { notify } from '../components/feedback/Notification';
 
 export function useFileManager(serverId: string | undefined, initialPath: string) {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [files, setFiles] = useState<FileEntry[]>([]);
-  const [currentPath, setCurrentPath] = useState(initialPath);
+  const [currentPath, setCurrentPath] = useState(searchParams.get('path') || initialPath);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
@@ -30,9 +31,22 @@ export function useFileManager(serverId: string | undefined, initialPath: string
         setError(null);
       } else if (res.error === 'Permission denied') {
         setError("You don't have permission to view files");
+      } else if (res.error) {
+        setError(res.error);
       }
     });
   }, [serverId, currentPath]);
+
+  useEffect(() => {
+    const p = currentPath === '/' ? '' : currentPath;
+    const urlPath = searchParams.get('path') || '';
+    if (p !== urlPath) {
+      const sp = new URLSearchParams(searchParams);
+      if (p) sp.set('path', p);
+      else sp.delete('path');
+      setSearchParams(sp, { replace: true });
+    }
+  }, [currentPath, searchParams, setSearchParams]);
 
   useEffect(() => {
     if (!serverId) return;
@@ -44,6 +58,8 @@ export function useFileManager(serverId: string | undefined, initialPath: string
         setError(null);
       } else if (res.error === 'Permission denied') {
         setError("You don't have permission to view files");
+      } else if (res.error) {
+        setError(res.error);
       }
       setLoading(false);
     });
