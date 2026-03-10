@@ -19,7 +19,11 @@ const (
 	Gray    = "\033[90m"
 )
 
-var fileWriter io.Writer
+var (
+	fileWriter io.Writer
+	LogChannel chan string
+	Headless   bool = true
+)
 
 func SetFile(w io.Writer) {
 	fileWriter = w
@@ -30,7 +34,15 @@ func log(color, prefix, msg string) {
 	colored := fmt.Sprintf("%s%s%s %s%s%s %s", Gray, ts, Reset, color, prefix, Reset, msg)
 	plain := fmt.Sprintf("%s %s %s", ts, prefix, msg)
 
-	fmt.Println(colored)
+	if Headless {
+		fmt.Println(colored)
+	} else if LogChannel != nil {
+		select {
+		case LogChannel <- colored:
+		default:
+		}
+	}
+
 	if fileWriter != nil {
 		fmt.Fprintln(fileWriter, plain)
 	}
@@ -52,12 +64,33 @@ func Error(format string, args ...interface{}) {
 	log(Red, "ERROR", fmt.Sprintf(format, args...))
 }
 
+func Command(format string, args ...interface{}) {
+	log(Blue, "CMD", fmt.Sprintf(format, args...))
+}
+
+func TUIOut(msg string) {
+	if !Headless && LogChannel != nil {
+		select {
+		case LogChannel <- msg:
+		default:
+		}
+	}
+}
+
 func Plugin(pluginID, msg string) {
 	ts := time.Now().Format("15:04:05")
 	colored := fmt.Sprintf("%s%s%s %s[%s]%s %s", Gray, ts, Reset, Magenta, pluginID, Reset, msg)
 	plain := fmt.Sprintf("%s [%s] %s", ts, pluginID, msg)
 
-	fmt.Println(colored)
+	if Headless {
+		fmt.Println(colored)
+	} else if LogChannel != nil {
+		select {
+		case LogChannel <- colored:
+		default:
+		}
+	}
+
 	if fileWriter != nil {
 		fmt.Fprintln(fileWriter, plain)
 	}
