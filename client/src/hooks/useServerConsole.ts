@@ -7,7 +7,7 @@ import { eventBus } from '../lib/eventBus';
 export interface LogLine { time: string; text: string; color: string; isAxis?: boolean; }
 export interface ServerStats { memoryUsage: number; memoryLimit: number; cpuPercent: number; diskUsage: number; netRx: number; netTx: number; }
 
-export const DEFAULT_STATS: ServerStats = { memoryUsage: 0, memoryLimit: 1, cpuPercent: 0, diskUsage: 0, netRx: 0, netTx: 0 };
+export const DEFAULT_STATS: ServerStats = { memoryUsage: 0, memoryLimit: 0, cpuPercent: 0, diskUsage: 0, netRx: 0, netTx: 0 };
 
 const MAX_RECONNECT_DELAY = 30000;
 const INITIAL_RECONNECT_DELAY = 1000;
@@ -108,7 +108,7 @@ export function useServerConsole(id: string | undefined) {
         } else if (data.type === 'stats' && data.stats) {
           const newStats = {
             memoryUsage: data.stats.memory_usage || 0,
-            memoryLimit: data.stats.memory_limit || 1,
+            memoryLimit: data.stats.memory_limit || 0,
             cpuPercent: data.stats.cpu_percent || 0,
             diskUsage: data.stats.disk_usage || 0,
             netRx: data.stats.net_rx || 0,

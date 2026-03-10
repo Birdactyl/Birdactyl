@@ -16,12 +16,37 @@ import (
 	"birdactyl-panel-backend/internal/plugins"
 	"birdactyl-panel-backend/internal/routes"
 	"birdactyl-panel-backend/internal/services"
+	"birdactyl-panel-backend/internal/tui"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 )
 
 func main() {
+	var isTui, isHeadless bool
+	for _, arg := range os.Args[1:] {
+		if arg == "tui" {
+			isTui = true
+		} else if arg == "headless" {
+			isHeadless = true
+		}
+	}
+
+	if isTui && !isHeadless {
+		logger.Headless = false
+		logger.LogChannel = make(chan string, 1000)
+		go runServer()
+		tui.Start()
+
+		p, _ := os.FindProcess(os.Getpid())
+		p.Signal(os.Interrupt)
+		time.Sleep(3 * time.Second)
+	} else {
+		runServer()
+	}
+}
+
+func runServer() {
 	cfg, err := config.Load("config.yaml")
 	if err != nil && err != config.ErrConfigGenerated {
 		logger.Fatal("Config load failed: %v", err)
