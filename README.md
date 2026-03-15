@@ -27,4 +27,4 @@ Configure `config.yaml` in each component after first run.
 - Go 1.24+
 - PostgreSQL/MySQL/SQLite
 - Docker (on nodes, if not present axis will install and set it up.)
-- Node.js 18+ or Bun (for client)
+- Node.js 18+ or Bun (for client) 
